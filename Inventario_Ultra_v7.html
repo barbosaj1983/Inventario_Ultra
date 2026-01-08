@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#059669">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Inventário Ultra Popular</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+  
+  <style>
+    :root {
+      --primary: #059669;
+      --primary-dark: #047857;
+      --danger: #dc2626;
+      --danger-light: #ef4444;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --bg: #f8fafc;
+      --bg-dark: #0f172a;
+      --card: #ffffff;
+      --card-dark: #1e293b;
+      --text: #1e293b;
+      --text-dark: #f1f5f9;
+      --border: #e2e8f0;
+      --border-dark: #334155;
+    }
+    
+    [data-theme="dark"] {
+      --bg: var(--bg-dark);
+      --card: var(--card-dark);
+      --text: var(--text-dark);
+      --border: var(--border-dark);
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--bg) 0%, var(--border) 100%);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 12px 20px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      box-shadow: 0 4px 20px rgba(5, 150, 105, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header-content { max-width: 500px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .header h1 { font-size: 16px; font-weight: 600; }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    .header-badge { background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+    .btn-header { background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+    .logo-section { padding: 20px 20px 12px; text-align: center; }
+    .logo-container { display: inline-flex; align-items: center; gap: 10px; background: var(--card); padding: 12px 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer; transition: transform 0.2s; position: relative; }
+    .logo-container:hover { transform: translateY(-2px); }
+    .logo-container.has-image { padding: 8px; }
+    .logo-edit-hint { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; font-size: 9px; padding: 2px 8px; border-radius: 10px; opacity: 0; transition: opacity 0.2s; white-space: nowrap; }
+    .logo-container:hover .logo-edit-hint { opacity: 1; }
+    .logo-image-full { height: 60px; max-width: 200px; object-fit: contain; border-radius: 8px; }
+    .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; color: white; }
+    .logo-text-container { text-align: left; }
+    .logo-text { font-size: 22px; font-weight: 700; color: var(--primary); line-height: 1; }
+    .logo-subtitle { font-size: 9px; color: var(--danger); font-weight: 600; letter-spacing: 0.5px; }
+    #logoInput { display: none; }
+
+    .main-content { max-width: 500px; margin: 0 auto; padding: 0 16px 160px; }
+
+    .stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+    .stat-card { background: var(--card); padding: 12px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .stat-card-value { font-size: 20px; font-weight: 700; color: var(--primary); }
+    .stat-card-label { font-size: 10px; color: #64748b; margin-top: 2px; }
+
+    .form-card { background: var(--card); border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 12px; }
+
+    .input-group { margin-bottom: 16px; }
+    .input-label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
+    .input-wrapper { display: flex; gap: 8px; }
+    .input-field { flex: 1; padding: 12px 14px; font-size: 16px; font-weight: 500; border: 2px solid var(--border); border-radius: 10px; transition: all 0.2s; background: var(--bg); color: var(--text); -webkit-appearance: none; }
+    .input-field:focus { outline: none; border-color: var(--primary); background: var(--card); }
+    .input-field.valid { border-color: var(--success); background: rgba(16, 185, 129, 0.1); }
+    .input-field.invalid { border-color: var(--danger); background: rgba(220, 38, 38, 0.1); }
+    .btn-clear { padding: 12px 14px; background: var(--bg); border: 2px solid var(--border); border-radius: 10px; font-size: 12px; font-weight: 600; color: #64748b; cursor: pointer; }
+
+    .qty-wrapper { display: flex; gap: 8px; align-items: center; }
+    .qty-btn { width: 44px; height: 44px; border: 2px solid var(--border); border-radius: 10px; background: var(--bg); font-size: 20px; font-weight: 600; color: var(--primary); cursor: pointer; }
+    .qty-btn:active { transform: scale(0.9); background: var(--primary); color: white; }
+    .qty-input { width: 80px; text-align: center; font-size: 20px; font-weight: 700; }
+
+    .validation-msg { display: none; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; font-weight: 500; }
+    .validation-msg.show { display: flex; }
+    .validation-msg.valid { color: var(--success); }
+    .validation-msg.invalid { color: var(--danger); }
+
+    .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+    .btn-scan { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 20px; background: linear-gradient(135deg, var(--danger-light) 0%, var(--danger) 100%); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
+    .btn-save { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 20px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4); }
+    .btn-save:disabled, .btn-scan:disabled { background: #94a3b8; box-shadow: none; cursor: not-allowed; }
+
+    .history-card { background: var(--card); border-radius: 16px; padding: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .history-title { font-size: 14px; font-weight: 600; color: #64748b; }
+    .history-actions { display: flex; gap: 8px; }
+    .btn-history { padding: 6px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; font-size: 11px; font-weight: 600; color: #64748b; cursor: pointer; }
+    .history-list { max-height: 250px; overflow-y: auto; }
+    .history-item { display: flex; align-items: center; padding: 10px 12px; background: var(--bg); border-radius: 8px; margin-bottom: 6px; font-size: 13px; gap: 10px; }
+    .history-item-info { flex: 1; min-width: 0; }
+    .history-item-code { font-weight: 600; font-family: monospace; font-size: 14px; display: block; }
+    .history-item-meta { display: flex; gap: 8px; align-items: center; margin-top: 2px; flex-wrap: wrap; }
+    .history-item-qty { background: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; }
+    .history-item-time { color: #94a3b8; font-size: 10px; }
+    .history-item-status { font-size: 10px; padding: 2px 6px; border-radius: 8px; }
+    .history-item-status.synced { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+    .history-item-status.pending { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+    .btn-delete { width: 32px; height: 32px; border: none; background: rgba(220, 38, 38, 0.1); color: var(--danger); border-radius: 8px; font-size: 14px; cursor: pointer; }
+    .btn-delete:hover { background: var(--danger); color: white; }
+    .history-empty { text-align: center; padding: 20px; color: #94a3b8; font-size: 13px; }
+
+    .api-status { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: var(--bg); border-radius: 8px; margin-bottom: 12px; font-size: 11px; cursor: pointer; }
+    .api-status-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
+    .api-status-dot.connected { background: var(--success); }
+    .api-status-dot.error { background: var(--danger); }
+    .api-status-text { color: #64748b; flex: 1; }
+    .api-status-action { color: var(--primary); font-weight: 600; }
+
+    .loading-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; transition: opacity 0.3s; }
+    .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+    .loading-spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { color: white; font-size: 14px; font-weight: 500; }
+
+    .alert { position: fixed; top: 70px; left: 50%; transform: translateX(-50%) translateY(-20px); padding: 12px 16px; border-radius: 10px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; z-index: 200; max-width: 90%; box-shadow: 0 4px 20px rgba(0,0,0,0.15); opacity: 0; transition: all 0.3s; pointer-events: none; }
+    .alert.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+    .alert-error { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
+    .alert-success { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; }
+    .alert-info { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .alert-close { background: none; border: none; font-size: 18px; cursor: pointer; opacity: 0.6; margin-left: 4px; }
+
+    .confirm-overlay, .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .confirm-overlay.show, .modal-overlay.show { opacity: 1; pointer-events: auto; }
+    .confirm-dialog, .modal { background: var(--card); border-radius: 16px; padding: 24px; width: 100%; max-width: 320px; text-align: center; transform: scale(0.9); transition: transform 0.3s; }
+    .confirm-overlay.show .confirm-dialog, .modal-overlay.show .modal { transform: scale(1); }
+    .confirm-icon { font-size: 48px; margin-bottom: 16px; }
+    .confirm-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .confirm-message { font-size: 14px; color: #64748b; margin-bottom: 16px; }
+    .confirm-code { font-family: monospace; background: var(--bg); padding: 8px 12px; border-radius: 8px; font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+    .confirm-status { font-size: 12px; padding: 8px; background: #fffbeb; color: #b45309; border-radius: 8px; margin-bottom: 16px; }
+    .confirm-actions { display: flex; gap: 10px; }
+    .btn-confirm { flex: 1; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+    .btn-confirm-cancel { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+    .btn-confirm-delete { background: var(--danger); color: white; }
+    .btn-confirm-delete:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .modal { max-width: 400px; max-height: 80vh; overflow-y: auto; text-align: left; padding: 0; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+    .modal-title { font-size: 16px; font-weight: 600; }
+    .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b; }
+    .modal-body { padding: 20px; }
+    .setting-group { margin-bottom: 16px; }
+    .setting-label { font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+    .setting-label-badge { background: var(--primary); color: white; font-size: 9px; padding: 2px 6px; border-radius: 4px; }
+    .setting-input { width: 100%; padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 11px; font-family: monospace; background: var(--bg); color: var(--text); }
+    .setting-input:focus { outline: none; border-color: var(--primary); }
+    .setting-hint { font-size: 10px; color: #94a3b8; margin-top: 4px; }
+    .setting-toggle { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .toggle-label { font-size: 14px; font-weight: 500; }
+    .toggle-switch { width: 50px; height: 28px; background: var(--border); border-radius: 14px; position: relative; cursor: pointer; transition: background 0.3s; }
+    .toggle-switch.active { background: var(--primary); }
+    .toggle-switch::after { content: ''; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: transform 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .toggle-switch.active::after { transform: translateX(22px); }
+    .modal-footer { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
+    .btn-modal { flex: 1; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+    .btn-modal-primary { background: var(--primary); color: white; }
+    .btn-modal-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+
+    .scanner-overlay { position: fixed; inset: 0; background: #000; z-index: 300; display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .scanner-overlay.show { opacity: 1; pointer-events: auto; }
+    .scanner-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; padding-top: max(12px, env(safe-area-inset-top)); background: rgba(0,0,0,0.8); color: white; position: absolute; top: 0; left: 0; right: 0; z-index: 10; }
+    .scanner-header h3 { font-size: 15px; font-weight: 600; }
+    .scanner-header-actions { display: flex; gap: 8px; }
+    .btn-scanner { background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .btn-scanner.active { background: var(--warning); }
+    #scanner-container { flex: 1; position: relative; overflow: hidden; }
+    #scanner-container video { width: 100%; height: 100%; object-fit: cover; }
+    #scanner-container canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    .scanner-target { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 280px; height: 150px; border: 3px solid var(--primary); border-radius: 12px; box-shadow: 0 0 0 9999px rgba(0,0,0,0.5); z-index: 5; }
+    .scanner-target::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, #00ff00, transparent); animation: scanLine 1.5s ease-in-out infinite; }
+    @keyframes scanLine { 0%, 100% { top: 0; } 50% { top: calc(100% - 3px); } }
+    .scanner-footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px; padding-bottom: max(16px, env(safe-area-inset-bottom)); background: rgba(0,0,0,0.8); z-index: 10; }
+    .scanner-status { text-align: center; color: white; margin-bottom: 12px; font-size: 13px; }
+    .scanner-actions { display: flex; gap: 10px; }
+    .btn-manual, .btn-cancel { flex: 1; padding: 12px 14px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .btn-manual { background: var(--primary); color: white; }
+    .btn-cancel { background: rgba(255,255,255,0.2); color: white; }
+
+    .debug-panel { background: #1e293b; color: #94a3b8; padding: 12px; border-radius: 8px; margin-top: 12px; font-size: 10px; font-family: monospace; max-height: 150px; overflow-y: auto; display: none; }
+    .debug-panel.show { display: block; }
+    .debug-panel .log-success { color: #4ade80; }
+    .debug-panel .log-error { color: #f87171; }
+    .debug-panel .log-info { color: #60a5fa; }
+
+    .hidden-iframe { display: none; }
+  </style>
+</head>
+<body>
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Carregando...</div>
+  </div>
+
+  <div class="alert" id="alert">
+    <span id="alertIcon">⚠️</span>
+    <span id="alertMessage"></span>
+    <button class="alert-close" onclick="hideAlert()">×</button>
+  </div>
+
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-dialog">
+      <div class="confirm-icon">🗑️</div>
+      <div class="confirm-title">Deletar Item?</div>
+      <div class="confirm-message">Remove do histórico e da planilha</div>
+      <div class="confirm-code" id="confirmCode"></div>
+      <div class="confirm-status" id="confirmStatus"></div>
+      <div class="confirm-actions">
+        <button class="btn-confirm btn-confirm-cancel" onclick="closeConfirm()">Cancelar</button>
+        <button class="btn-confirm btn-confirm-delete" id="btnConfirmDelete" onclick="confirmDelete()">Deletar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="scanner-overlay" id="scannerOverlay">
+    <div class="scanner-header">
+      <h3>📷 Scanner</h3>
+      <div class="scanner-header-actions">
+        <button class="btn-scanner" id="btnFlash" onclick="toggleFlash()">🔦</button>
+        <button class="btn-scanner" onclick="closeScanner()">✕</button>
+      </div>
+    </div>
+    <div id="scanner-container"><div class="scanner-target"></div></div>
+    <div class="scanner-footer">
+      <div class="scanner-status" id="scannerStatus">Posicione o código de barras</div>
+      <div class="scanner-actions">
+        <button class="btn-manual" onclick="manualInput()">⌨️ Digitar</button>
+        <button class="btn-cancel" onclick="closeScanner()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">⚙️ Configurações</span>
+        <button class="modal-close" onclick="closeSettings()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-group">
+          <div class="setting-label">
+            🔗 URL do Apps Script (API)
+            <span class="setting-label-badge">SALVAR/DELETAR</span>
+          </div>
+          <input type="text" class="setting-input" id="settingApiUrl" placeholder="https://script.google.com/macros/s/.../exec">
+          <div class="setting-hint">Para salvar e deletar da planilha de dados</div>
+        </div>
+        
+        <div class="setting-group">
+          <div class="setting-label">
+            📋 ID Planilha CADASTRO
+            <span class="setting-label-badge">VALIDAÇÃO</span>
+          </div>
+          <input type="text" class="setting-input" id="settingCadastroId" placeholder="1VdZPW6...">
+          <div class="setting-hint">BaseAlpha7 - para validar códigos de barras</div>
+        </div>
+        
+        <div class="setting-group">
+          <div class="setting-label">
+            📊 ID Planilha DADOS
+            <span class="setting-label-badge">INVENTÁRIO</span>
+          </div>
+          <input type="text" class="setting-input" id="settingDadosId" placeholder="1ROSdUmw...">
+          <div class="setting-hint">Onde os dados são salvos (mesma do Apps Script)</div>
+        </div>
+        
+        <div class="setting-toggle">
+          <span class="toggle-label">🔊 Sons</span>
+          <div class="toggle-switch" id="toggleSound" onclick="toggleSetting('sound')"></div>
+        </div>
+        <div class="setting-toggle">
+          <span class="toggle-label">📳 Vibração</span>
+          <div class="toggle-switch" id="toggleVibration" onclick="toggleSetting('vibration')"></div>
+        </div>
+        <div class="setting-toggle">
+          <span class="toggle-label">🌙 Tema Escuro</span>
+          <div class="toggle-switch" id="toggleDarkMode" onclick="toggleSetting('darkMode')"></div>
+        </div>
+        <div class="setting-toggle">
+          <span class="toggle-label">🐛 Modo Debug</span>
+          <div class="toggle-switch" id="toggleDebug" onclick="toggleSetting('debug')"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal btn-modal-secondary" onclick="closeSettings()">Cancelar</button>
+        <button class="btn-modal btn-modal-primary" onclick="saveSettings()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="header">
+    <div class="header-content">
+      <h1>📦 Inventário</h1>
+      <div class="header-actions">
+        <span class="header-badge" id="savedBadge">0</span>
+        <button class="btn-header" onclick="openSettings()">⚙️</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="logo-section">
+    <div class="logo-container" id="logoContainer" onclick="document.getElementById('logoInput').click()">
+      <div id="logoDisplay"><div class="logo-icon">✚</div></div>
+      <div class="logo-text-container" id="logoTextContainer">
+        <div class="logo-text" id="companyName">Ultra</div>
+        <div class="logo-subtitle" id="companySubtitle">DROGARIAS • POPULAR</div>
+      </div>
+      <span class="logo-edit-hint">📷 Trocar logo</span>
+    </div>
+    <input type="file" id="logoInput" accept="image/*" onchange="handleLogoUpload(event)">
+  </div>
+
+  <main class="main-content">
+    <div class="stats-bar">
+      <div class="stat-card"><div class="stat-card-value" id="statTotal">0</div><div class="stat-card-label">Total Itens</div></div>
+      <div class="stat-card"><div class="stat-card-value" id="statUnique">0</div><div class="stat-card-label">Únicos</div></div>
+      <div class="stat-card"><div class="stat-card-value" id="statCadastro">-</div><div class="stat-card-label">Cadastro</div></div>
+    </div>
+
+    <div class="form-card">
+      <div class="api-status" id="apiStatus" onclick="testApiConnection()">
+        <div class="api-status-dot" id="apiStatusDot"></div>
+        <span class="api-status-text" id="apiStatusText">Verificando...</span>
+        <span class="api-status-action">Testar</span>
+      </div>
+      
+      <div class="input-group">
+        <label class="input-label"><span>🏷️</span> Código de Barras</label>
+        <div class="input-wrapper">
+          <input type="text" inputmode="numeric" class="input-field" id="barrasInput" placeholder="Escaneie ou digite" autocomplete="off" oninput="validateBarras()" onkeydown="handleBarrasKeydown(event)">
+          <button class="btn-clear" onclick="clearFields()">✕</button>
+        </div>
+        <div class="validation-msg" id="validationMsg">
+          <span id="validationIcon">✓</span>
+          <span id="validationText"></span>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label"><span>📊</span> Quantidade</label>
+        <div class="qty-wrapper">
+          <button class="qty-btn" onclick="adjustQty(-1)">−</button>
+          <input type="number" inputmode="numeric" class="input-field qty-input" id="qtdInput" value="1" min="1" autocomplete="off" oninput="updateSaveButton()" onkeydown="handleQtdKeydown(event)">
+          <button class="qty-btn" onclick="adjustQty(1)">+</button>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn-scan" onclick="openScanner()">📷 SCAN</button>
+        <button class="btn-save" id="btnSave" onclick="saveData()" disabled>
+          <span id="saveIcon">💾</span>
+          <span id="saveText">SALVAR</span>
+        </button>
+      </div>
+      
+      <div class="debug-panel" id="debugPanel"></div>
+    </div>
+
+    <div class="history-card">
+      <div class="history-header">
+        <span class="history-title">📋 Últimos Salvos</span>
+        <div class="history-actions">
+          <button class="btn-history" onclick="exportHistory()">📥 CSV</button>
+          <button class="btn-history" onclick="clearAllHistory()">🗑️</button>
+        </div>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="history-empty">Nenhum item salvo</div>
+      </div>
+    </div>
+  </main>
+
+  <iframe class="hidden-iframe" id="formFrame" name="formFrame"></iframe>
+
+  <script>
+    // ============================================
+    // CONFIGURAÇÃO - IDs SEPARADOS
+    // ============================================
+    const DEFAULT_CONFIG = {
+      API_URL: '',
+      // Planilha de CADASTRO (BaseAlpha7) - para validar códigos
+      CADASTRO_ID: '1VdZPW6awQJmV3gTQ_tncPjPtLHMPCLDNLSTglqezvu8',
+      // Planilha de DADOS - onde salva/deleta (Apps Script)
+      DADOS_ID: '1ROSdUmwBl2P9EwCPCGKe-Qh6eyBOzoYMX8h9vC-nph4'
+    };
+
+    function getConfig(key) {
+      const saved = localStorage.getItem(key);
+      return (saved !== null && saved !== '') ? saved : DEFAULT_CONFIG[key] || '';
+    }
+
+    const CONFIG = {
+      get API_URL() { return getConfig('apiUrl'); },
+      get CADASTRO_ID() { return getConfig('cadastroId') || DEFAULT_CONFIG.CADASTRO_ID; },
+      get DADOS_ID() { return getConfig('dadosId') || DEFAULT_CONFIG.DADOS_ID; },
+      
+      // URLs para carregar cadastro (validação)
+      get CADASTRO_URLS() {
+        const id = this.CADASTRO_ID;
+        return [
+          `https://docs.google.com/spreadsheets/d/${id}/export?format=csv`,
+          `https://corsproxy.io/?${encodeURIComponent(`https://docs.google.com/spreadsheets/d/${id}/export?format=csv`)}`
+        ];
+      }
+    };
+
+    let settings = {
+      sound: localStorage.getItem('sound') === 'true',
+      vibration: localStorage.getItem('vibration') !== 'false',
+      darkMode: localStorage.getItem('darkMode') === 'true',
+      debug: localStorage.getItem('debug') === 'true'
+    };
+
+    // ============================================
+    // ESTADO
+    // ============================================
+    let cadastro = [];
+    let history = JSON.parse(localStorage.getItem('history') || '[]');
+    let isValid = false;
+    let isSaving = false;
+    let apiConnected = false;
+    let deleteTarget = null;
+    let cameraTrack = null;
+    let flashOn = false;
+
+    // ============================================
+    // ELEMENTOS DOM
+    // ============================================
+    const el = {
+      loadingOverlay: document.getElementById('loadingOverlay'),
+      loadingText: document.getElementById('loadingText'),
+      alert: document.getElementById('alert'),
+      alertIcon: document.getElementById('alertIcon'),
+      alertMessage: document.getElementById('alertMessage'),
+      scannerOverlay: document.getElementById('scannerOverlay'),
+      scannerStatus: document.getElementById('scannerStatus'),
+      barrasInput: document.getElementById('barrasInput'),
+      qtdInput: document.getElementById('qtdInput'),
+      validationMsg: document.getElementById('validationMsg'),
+      validationIcon: document.getElementById('validationIcon'),
+      validationText: document.getElementById('validationText'),
+      btnSave: document.getElementById('btnSave'),
+      saveIcon: document.getElementById('saveIcon'),
+      saveText: document.getElementById('saveText'),
+      savedBadge: document.getElementById('savedBadge'),
+      formFrame: document.getElementById('formFrame'),
+      historyList: document.getElementById('historyList'),
+      statTotal: document.getElementById('statTotal'),
+      statUnique: document.getElementById('statUnique'),
+      statCadastro: document.getElementById('statCadastro'),
+      settingsModal: document.getElementById('settingsModal'),
+      confirmOverlay: document.getElementById('confirmOverlay'),
+      confirmCode: document.getElementById('confirmCode'),
+      confirmStatus: document.getElementById('confirmStatus'),
+      btnConfirmDelete: document.getElementById('btnConfirmDelete'),
+      btnFlash: document.getElementById('btnFlash'),
+      logoContainer: document.getElementById('logoContainer'),
+      logoDisplay: document.getElementById('logoDisplay'),
+      logoTextContainer: document.getElementById('logoTextContainer'),
+      companyName: document.getElementById('companyName'),
+      companySubtitle: document.getElementById('companySubtitle'),
+      apiStatusDot: document.getElementById('apiStatusDot'),
+      apiStatusText: document.getElementById('apiStatusText'),
+      debugPanel: document.getElementById('debugPanel')
+    };
+
+    // ============================================
+    // DEBUG
+    // ============================================
+    function log(message, type = 'info') {
+      const time = new Date().toLocaleTimeString();
+      console.log(`[${type.toUpperCase()}] ${message}`);
+      if (settings.debug) {
+        el.debugPanel.classList.add('show');
+        el.debugPanel.innerHTML += `<div class="log-${type}">[${time}] ${message}</div>`;
+        el.debugPanel.scrollTop = el.debugPanel.scrollHeight;
+      }
+    }
+
+    // ============================================
+    // INICIALIZAÇÃO
+    // ============================================
+    document.addEventListener('DOMContentLoaded', async () => {
+      applyTheme();
+      loadLogo();
+      initSettingsUI();
+      if (settings.debug) el.debugPanel.classList.add('show');
+      
+      log(`Cadastro ID: ${CONFIG.CADASTRO_ID}`);
+      log(`Dados ID: ${CONFIG.DADOS_ID}`);
+      log(`API URL: ${CONFIG.API_URL || '(não configurada)'}`);
+      
+      await checkApiStatus();
+      await loadCadastro();
+      renderHistory();
+      updateStats();
+    });
+
+    function applyTheme() {
+      document.body.setAttribute('data-theme', settings.darkMode ? 'dark' : 'light');
+    }
+
+    // ============================================
+    // API STATUS
+    // ============================================
+    async function checkApiStatus() {
+      const apiUrl = CONFIG.API_URL;
+      
+      if (!apiUrl) {
+        el.apiStatusDot.className = 'api-status-dot error';
+        el.apiStatusText.textContent = 'API não configurada';
+        apiConnected = false;
+        log('API URL não configurada', 'error');
+        return;
+      }
+      
+      el.apiStatusText.textContent = 'Verificando...';
+      log(`Testando API: ${apiUrl}`);
+      
+      try {
+        const response = await fetch(`${apiUrl}?action=test`);
+        const data = await response.json();
+        
+        if (data.success) {
+          el.apiStatusDot.className = 'api-status-dot connected';
+          el.apiStatusText.textContent = `API OK (${data.totalRows || 0} linhas)`;
+          apiConnected = true;
+          log(`API conectada! Sheet: ${data.sheetName}`, 'success');
+        } else {
+          throw new Error(data.error);
+        }
+      } catch (error) {
+        el.apiStatusDot.className = 'api-status-dot error';
+        el.apiStatusText.textContent = 'API offline';
+        apiConnected = false;
+        log(`Erro API: ${error.message}`, 'error');
+      }
+    }
+
+    async function testApiConnection() {
+      showAlert('Testando conexão...', 'info');
+      await checkApiStatus();
+      showAlert(apiConnected ? 'API conectada!' : 'Falha na conexão', apiConnected ? 'success' : 'error');
+    }
+
+    // ============================================
+    // LOGO UPLOAD
+    // ============================================
+    function loadLogo() {
+      const savedLogo = localStorage.getItem('companyLogo');
+      const savedName = localStorage.getItem('companyName');
+      const savedSubtitle = localStorage.getItem('companySubtitle');
+      
+      if (savedLogo) {
+        el.logoDisplay.innerHTML = `<img src="${savedLogo}" class="logo-image-full" alt="Logo">`;
+        el.logoTextContainer.style.display = 'none';
+        el.logoContainer.classList.add('has-image');
+      } else {
+        el.logoDisplay.innerHTML = `<div class="logo-icon">✚</div>`;
+        el.logoTextContainer.style.display = 'block';
+        el.logoContainer.classList.remove('has-image');
+        if (savedName) el.companyName.textContent = savedName;
+        if (savedSubtitle) el.companySubtitle.textContent = savedSubtitle;
+      }
+    }
+
+    function handleLogoUpload(event) {
+      const file = event.target.files[0];
+      if (!file || !file.type.startsWith('image/')) return;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        localStorage.setItem('companyLogo', e.target.result);
+        el.logoDisplay.innerHTML = `<img src="${e.target.result}" class="logo-image-full" alt="Logo">`;
+        el.logoTextContainer.style.display = 'none';
+        el.logoContainer.classList.add('has-image');
+        showAlert('Logo atualizada!', 'success');
+        
+        setTimeout(() => {
+          if (confirm('Logo salva!\n\nDeseja REMOVER a logo?')) {
+            localStorage.removeItem('companyLogo');
+            loadLogo();
+          }
+        }, 500);
+      };
+      reader.readAsDataURL(file);
+      event.target.value = '';
+    }
+
+    // ============================================
+    // CARREGAR CADASTRO (BaseAlpha7)
+    // ============================================
+    async function loadCadastro() {
+      el.loadingText.textContent = 'Carregando cadastro...';
+      log('Carregando cadastro de: ' + CONFIG.CADASTRO_ID);
+      
+      for (const url of CONFIG.CADASTRO_URLS) {
+        try {
+          log(`Tentando: ${url.substring(0, 60)}...`);
+          const response = await fetch(url);
+          if (!response.ok) {
+            log(`HTTP ${response.status}`, 'error');
+            continue;
+          }
+          
+          const csvText = await response.text();
+          log(`CSV recebido: ${csvText.length} bytes`);
+          
+          cadastro = csvText.split('\n').slice(1)
+            .map(line => {
+              const cols = line.split(',');
+              return cols[0]?.replace(/"/g, '').trim();
+            })
+            .filter(code => code && code !== 'BARRAS' && code.length > 0);
+          
+          if (cadastro.length > 0) {
+            el.statCadastro.textContent = cadastro.length;
+            el.loadingText.textContent = `✓ ${cadastro.length} produtos`;
+            log(`Cadastro OK: ${cadastro.length} códigos`, 'success');
+            log(`Exemplos: ${cadastro.slice(0, 3).join(', ')}...`);
+            setTimeout(() => el.loadingOverlay.classList.add('hidden'), 500);
+            return;
+          }
+        } catch (e) {
+          log(`Erro: ${e.message}`, 'error');
+        }
+      }
+      
+      el.statCadastro.textContent = 'OFF';
+      el.loadingText.textContent = 'Modo offline';
+      log('Cadastro não carregado - modo offline', 'error');
+      setTimeout(() => el.loadingOverlay.classList.add('hidden'), 500);
+    }
+
+    // ============================================
+    // VALIDAÇÃO
+    // ============================================
+    function validateBarras() {
+      const barras = el.barrasInput.value.trim();
+      
+      if (!barras) {
+        isValid = false;
+        el.barrasInput.className = 'input-field';
+        el.validationMsg.className = 'validation-msg';
+        updateSaveButton();
+        return;
+      }
+
+      if (cadastro.length === 0) {
+        isValid = true;
+        el.barrasInput.className = 'input-field valid';
+        el.validationMsg.className = 'validation-msg show valid';
+        el.validationIcon.textContent = '✓';
+        el.validationText.textContent = 'Modo offline';
+      } else {
+        const found = cadastro.includes(barras);
+        isValid = found;
+        el.barrasInput.className = `input-field ${found ? 'valid' : 'invalid'}`;
+        el.validationMsg.className = `validation-msg show ${found ? 'valid' : 'invalid'}`;
+        el.validationIcon.textContent = found ? '✓' : '✗';
+        el.validationText.textContent = found ? 'Cadastrado ✓' : 'Não cadastrado';
+        if (!found) {
+          showAlert('Código não encontrado no cadastro', 'error');
+          vibrate(30);
+        }
+      }
+      updateSaveButton();
+    }
+
+    function updateSaveButton() {
+      el.btnSave.disabled = !(isValid && el.barrasInput.value.trim() && el.qtdInput.value.trim() && !isSaving);
+    }
+
+    function adjustQty(delta) {
+      el.qtdInput.value = Math.max(1, (parseInt(el.qtdInput.value) || 1) + delta);
+      vibrate(10);
+      updateSaveButton();
+    }
+
+    // ============================================
+    // SCANNER
+    // ============================================
+    function openScanner() {
+      el.scannerOverlay.classList.add('show');
+      el.scannerStatus.textContent = 'Iniciando câmera...';
+      
+      Quagga.init({
+        inputStream: { name: "Live", type: "LiveStream", target: '#scanner-container', constraints: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } }, area: { top: "25%", right: "10%", left: "10%", bottom: "25%" } },
+        locator: { patchSize: "medium", halfSample: false },
+        numOfWorkers: navigator.hardwareConcurrency || 4,
+        decoder: { readers: ["ean_reader", "ean_8_reader", "code_128_reader", "code_39_reader", "upc_reader"] },
+        locate: true
+      }, (err) => {
+        if (err) { el.scannerStatus.textContent = '❌ Erro na câmera'; return; }
+        el.scannerStatus.textContent = 'Posicione o código';
+        Quagga.start();
+        const video = document.querySelector('#scanner-container video');
+        if (video?.srcObject) cameraTrack = video.srcObject.getVideoTracks()[0];
+      });
+      Quagga.onDetected(onBarcodeDetected);
+    }
+
+    let lastCode = '', lastCodeTime = 0, codeBuffer = [];
+    function onBarcodeDetected(result) {
+      const code = result.codeResult.code;
+      if (code === lastCode && Date.now() - lastCodeTime < 2000) return;
+      codeBuffer.push(code);
+      if (codeBuffer.length > 5) codeBuffer.shift();
+      if (codeBuffer.filter(c => c === code).length >= 2) {
+        lastCode = code; lastCodeTime = Date.now(); codeBuffer = [];
+        vibrate([100, 50, 100]);
+        closeScanner();
+        el.barrasInput.value = code;
+        validateBarras();
+        if (isValid) { el.qtdInput.value = '1'; el.qtdInput.focus(); }
+        updateSaveButton();
+      }
+    }
+
+    function closeScanner() {
+      codeBuffer = []; flashOn = false;
+      el.btnFlash?.classList.remove('active');
+      try { Quagga.offDetected(onBarcodeDetected); Quagga.stop(); } catch(e) {}
+      el.scannerOverlay.classList.remove('show');
+    }
+
+    function toggleFlash() {
+      if (!cameraTrack?.getCapabilities()?.torch) { showAlert('Lanterna indisponível', 'info'); return; }
+      flashOn = !flashOn;
+      cameraTrack.applyConstraints({ advanced: [{ torch: flashOn }] });
+      el.btnFlash.classList.toggle('active', flashOn);
+    }
+
+    function manualInput() {
+      closeScanner();
+      const code = prompt('Digite o código:');
+      if (code?.trim()) {
+        el.barrasInput.value = code.trim();
+        validateBarras();
+        if (isValid) { el.qtdInput.value = '1'; el.qtdInput.focus(); }
+        updateSaveButton();
+      }
+    }
+
+    // ============================================
+    // SALVAR
+    // ============================================
+    async function saveData() {
+      const barras = el.barrasInput.value.trim();
+      const qtd = el.qtdInput.value.trim();
+      if (!barras || !qtd || !isValid) return;
+
+      isSaving = true;
+      el.saveIcon.textContent = '⏳';
+      el.saveText.textContent = 'SALVANDO...';
+      el.btnSave.disabled = true;
+
+      const id = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+      log(`Salvando: ${barras} x${qtd} (ID: ${id})`);
+      
+      let savedViaApi = false;
+      
+      try {
+        if (apiConnected && CONFIG.API_URL) {
+          log('Salvando via API...');
+          const url = `${CONFIG.API_URL}?action=add&barras=${encodeURIComponent(barras)}&qtd=${encodeURIComponent(qtd)}&id=${encodeURIComponent(id)}`;
+          const response = await fetch(url);
+          const data = await response.json();
+          if (data.success) {
+            savedViaApi = true;
+            log('Salvo via API!', 'success');
+          } else {
+            log(`API erro: ${data.error}`, 'error');
+          }
+        } else {
+          log('API não disponível', 'error');
+        }
+        
+        // Histórico local
+        history.unshift({
+          id, code: barras, qty: parseInt(qtd),
+          time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+          synced: savedViaApi
+        });
+        if (history.length > 100) history.pop();
+        localStorage.setItem('history', JSON.stringify(history));
+        
+        updateStats();
+        renderHistory();
+        showAlert(savedViaApi ? '✓ Salvo na planilha!' : '⚠️ Salvo apenas localmente', savedViaApi ? 'success' : 'info');
+        vibrate([50, 30, 50]);
+        clearFields();
+        
+      } catch (error) {
+        log(`Erro: ${error.message}`, 'error');
+        showAlert('Erro ao salvar', 'error');
+      } finally {
+        isSaving = false;
+        el.saveIcon.textContent = '💾';
+        el.saveText.textContent = 'SALVAR';
+        updateSaveButton();
+      }
+    }
+
+    // ============================================
+    // DELETAR
+    // ============================================
+    function askDelete(index) {
+      const item = history[index];
+      if (!item) return;
+      
+      deleteTarget = { index, item };
+      el.confirmCode.textContent = `${item.code} (×${item.qty})`;
+      
+      if (!apiConnected || !CONFIG.API_URL) {
+        el.confirmStatus.textContent = '⚠️ API não configurada - só deleta do local';
+        el.confirmStatus.style.background = '#fffbeb';
+        el.confirmStatus.style.color = '#b45309';
+      } else {
+        el.confirmStatus.textContent = '✓ Vai deletar da planilha e do local';
+        el.confirmStatus.style.background = '#f0fdf4';
+        el.confirmStatus.style.color = '#047857';
+      }
+      el.confirmStatus.style.display = 'block';
+      el.confirmOverlay.classList.add('show');
+    }
+
+    function closeConfirm() {
+      el.confirmOverlay.classList.remove('show');
+      deleteTarget = null;
+    }
+
+    async function confirmDelete() {
+      if (!deleteTarget) return;
+      const { index, item } = deleteTarget;
+      
+      el.btnConfirmDelete.disabled = true;
+      el.btnConfirmDelete.textContent = 'Deletando...';
+      
+      log(`Deletando: ${item.code} x${item.qty} (ID: ${item.id})`);
+      
+      try {
+        if (apiConnected && CONFIG.API_URL) {
+          // Tenta por ID primeiro
+          let url = `${CONFIG.API_URL}?action=delete&id=${encodeURIComponent(item.id)}`;
+          log(`GET: ${url}`);
+          let response = await fetch(url);
+          let data = await response.json();
+          log(`Response: ${JSON.stringify(data)}`);
+          
+          // Se não achou por ID, tenta por Barras+Qtd
+          if (!data.success) {
+            log('ID não encontrado, tentando Barras+Qtd...');
+            url = `${CONFIG.API_URL}?action=delete&barras=${encodeURIComponent(item.code)}&qtd=${encodeURIComponent(item.qty)}`;
+            log(`GET: ${url}`);
+            response = await fetch(url);
+            data = await response.json();
+            log(`Response: ${JSON.stringify(data)}`);
+          }
+          
+          if (data.success) {
+            log(`Deletado! Linha ${data.row}`, 'success');
+            showAlert('Deletado da planilha!', 'success');
+          } else {
+            log(`Não encontrado: ${data.error}`, 'error');
+            showAlert('Não encontrado na planilha', 'info');
+          }
+        } else {
+          showAlert('Removido do local', 'info');
+        }
+        
+        history.splice(index, 1);
+        localStorage.setItem('history', JSON.stringify(history));
+        renderHistory();
+        updateStats();
+        
+      } catch (error) {
+        log(`Erro: ${error.message}`, 'error');
+        showAlert('Erro: ' + error.message, 'error');
+      } finally {
+        el.btnConfirmDelete.disabled = false;
+        el.btnConfirmDelete.textContent = 'Deletar';
+        closeConfirm();
+      }
+    }
+
+    // ============================================
+    // HISTÓRICO
+    // ============================================
+    function renderHistory() {
+      if (history.length === 0) {
+        el.historyList.innerHTML = '<div class="history-empty">Nenhum item salvo</div>';
+        return;
+      }
+      el.historyList.innerHTML = history.slice(0, 15).map((item, i) => `
+        <div class="history-item">
+          <div class="history-item-info">
+            <span class="history-item-code">${item.code}</span>
+            <div class="history-item-meta">
+              <span class="history-item-qty">×${item.qty}</span>
+              <span class="history-item-time">${item.time}</span>
+              <span class="history-item-status ${item.synced ? 'synced' : 'pending'}">${item.synced ? '✓ Sync' : '⏳ Local'}</span>
+            </div>
+          </div>
+          <button class="btn-delete" onclick="askDelete(${i})">🗑️</button>
+        </div>
+      `).join('');
+    }
+
+    function clearAllHistory() {
+      if (confirm('Limpar histórico LOCAL?')) {
+        history = [];
+        localStorage.setItem('history', '[]');
+        renderHistory();
+        updateStats();
+        showAlert('Histórico limpo', 'info');
+      }
+    }
+
+    function exportHistory() {
+      if (!history.length) { showAlert('Nenhum dado', 'info'); return; }
+      const csv = 'Codigo,Quantidade,Hora,ID,Sync\n' + history.map(i => `${i.code},${i.qty},${i.time},${i.id||''},${i.synced?'Sim':'Nao'}`).join('\n');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+      a.download = `inventario_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      showAlert('CSV exportado!', 'success');
+    }
+
+    function updateStats() {
+      el.savedBadge.textContent = history.length;
+      el.statTotal.textContent = history.reduce((s, i) => s + i.qty, 0);
+      el.statUnique.textContent = new Set(history.map(h => h.code)).size;
+    }
+
+    // ============================================
+    // CONFIGURAÇÕES
+    // ============================================
+    function initSettingsUI() {
+      document.getElementById('settingApiUrl').value = localStorage.getItem('apiUrl') || '';
+      document.getElementById('settingCadastroId').value = localStorage.getItem('cadastroId') || DEFAULT_CONFIG.CADASTRO_ID;
+      document.getElementById('settingDadosId').value = localStorage.getItem('dadosId') || DEFAULT_CONFIG.DADOS_ID;
+      
+      document.getElementById('toggleSound').classList.toggle('active', settings.sound);
+      document.getElementById('toggleVibration').classList.toggle('active', settings.vibration);
+      document.getElementById('toggleDarkMode').classList.toggle('active', settings.darkMode);
+      document.getElementById('toggleDebug').classList.toggle('active', settings.debug);
+    }
+
+    function openSettings() { 
+      initSettingsUI();
+      el.settingsModal.classList.add('show'); 
+    }
+    
+    function closeSettings() { el.settingsModal.classList.remove('show'); }
+
+    function toggleSetting(setting) {
+      settings[setting] = !settings[setting];
+      localStorage.setItem(setting, settings[setting]);
+      document.getElementById('toggle' + setting.charAt(0).toUpperCase() + setting.slice(1)).classList.toggle('active', settings[setting]);
+      if (setting === 'darkMode') applyTheme();
+      if (setting === 'debug') el.debugPanel.classList.toggle('show', settings.debug);
+    }
+
+    function saveSettings() {
+      const apiUrl = document.getElementById('settingApiUrl').value.trim();
+      const cadastroId = document.getElementById('settingCadastroId').value.trim();
+      const dadosId = document.getElementById('settingDadosId').value.trim();
+      
+      localStorage.setItem('apiUrl', apiUrl);
+      localStorage.setItem('cadastroId', cadastroId || DEFAULT_CONFIG.CADASTRO_ID);
+      localStorage.setItem('dadosId', dadosId || DEFAULT_CONFIG.DADOS_ID);
+      
+      log(`Salvo: API=${apiUrl}, Cadastro=${cadastroId}, Dados=${dadosId}`, 'success');
+      
+      closeSettings();
+      showAlert('Salvo! Recarregando...', 'success');
+      setTimeout(() => location.reload(), 1000);
+    }
+
+    // ============================================
+    // AÇÕES
+    // ============================================
+    function clearFields() {
+      el.barrasInput.value = '';
+      el.qtdInput.value = '1';
+      isValid = false;
+      el.barrasInput.className = 'input-field';
+      el.validationMsg.className = 'validation-msg';
+      updateSaveButton();
+      el.barrasInput.focus();
+    }
+
+    function handleBarrasKeydown(e) {
+      if (e.key === 'Enter') { e.preventDefault(); validateBarras(); if (isValid) el.qtdInput.focus(); }
+    }
+
+    function handleQtdKeydown(e) {
+      if (e.key === 'Enter' && isValid && el.qtdInput.value) { e.preventDefault(); saveData(); }
+    }
+
+    // ============================================
+    // UTILITÁRIOS
+    // ============================================
+    let alertTimeout;
+    function showAlert(message, type) {
+      clearTimeout(alertTimeout);
+      el.alert.className = `alert alert-${type}`;
+      el.alertIcon.textContent = type === 'error' ? '⚠️' : type === 'success' ? '✓' : 'ℹ️';
+      el.alertMessage.textContent = message;
+      setTimeout(() => el.alert.classList.add('show'), 10);
+      alertTimeout = setTimeout(hideAlert, 2500);
+    }
+    function hideAlert() { el.alert.classList.remove('show'); }
+    function vibrate(pattern) { if (settings.vibration && navigator.vibrate) navigator.vibrate(pattern); }
+  </script>
+</body>
+</html>
