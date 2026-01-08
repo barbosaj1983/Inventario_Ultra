@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#059669">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Inventário">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Inventário Ultra">
+  <meta name="msapplication-TileColor" content="#059669">
+  
+  <title>Inventário Ultra Popular</title>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkludmVudMOhcmlvIFVsdHJhIFBvcHVsYXIiLAogICJzaG9ydF9uYW1lIjogIkludmVudMOhcmlvIiwKICAiZGVzY3JpcHRpb24iOiAiQXBwIGRlIGNvbnRhZ2VtIGRlIGludmVudMOhcmlvIHBhcmEgVWx0cmEgUG9wdWxhciBGYXJtw6FjaWEiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2Y4ZmFmYyIsCiAgInRoZW1lX2NvbG9yIjogIiMwNTk2NjkiLAogICJvcmllbnRhdGlvbiI6ICJwb3J0cmFpdCIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owaWFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaUlIWnBaWGRDYjNnOUlqQWdNQ0F4T1RJZ01Ua3lJajQ4Y21WamRDQjNhV1IwYUQwaU1Ua3lJaUJvWldsbmFIUTlJakU1TWlJZ1ptbHNiRDBpSXpBMU9UWTJPU0l2UGp4MFpYaDBJSGc5SWprMklpQjVQU0l4TURBaUlHWnZiblF0YzJsNlpUMGlOakFpSUdacGJHdzlJbmRvYVhSbElpQjBaWGgwTFdGdVkyaHZjajBpYldsa1pHeGxJaUJtYjI1MExXZGhiV2xzZVQwaVFYSnBZV3dpUGl0UVBDOTBaWGgwUGp3dmMzWm5QZz09IiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIiwKICAgICAgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIgogICAgfQogIF0KfQ==">
+  
+  <!-- Apple Touch Icon -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iIzA1OTY2OSIvPjx0ZXh0IHg9Ijk2IiB5PSIxMDAiIGZvbnQtc2l6ZT0iNjAiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiPitQPC90ZXh0Pjwvc3ZnPg==">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #1e293b;
+      overflow-x: hidden;
+    }
+    
+    html {
+      height: -webkit-fill-available;
+    }
+    
+    /* Install Banner */
+    .install-banner {
+      position: fixed;
+      bottom: 60px;
+      left: 10px;
+      right: 10px;
+      background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+      color: white;
+      padding: 16px 20px;
+      border-radius: 16px;
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 400;
+      box-shadow: 0 10px 40px rgba(30, 64, 175, 0.4);
+      animation: slideUp 0.4s ease;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .install-banner.show {
+      display: flex;
+    }
+    
+    .install-banner-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .install-banner-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    
+    .install-banner-text h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    
+    .install-banner-text p {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+    
+    .install-banner-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .btn-install {
+      flex: 1;
+      padding: 12px 16px;
+      background: white;
+      color: #1e40af;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    .btn-dismiss {
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      color: white;
+      padding: 16px 20px;
+      padding-top: max(16px, env(safe-area-inset-top));
+      box-shadow: 0 4px 20px rgba(5, 150, 105, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header-content {
+      max-width: 500px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .header h1 {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+    
+    .header-badge {
+      background: rgba(255,255,255,0.2);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    /* Logo Section */
+    .logo-section {
+      padding: 24px 20px 16px;
+      text-align: center;
+    }
+    
+    .logo-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      padding: 12px 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: white;
+    }
+    
+    .logo-text {
+      font-size: 24px;
+      font-weight: 700;
+      color: #059669;
+    }
+    
+    .logo-subtitle {
+      font-size: 10px;
+      color: #dc2626;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-top: -4px;
+    }
+    
+    /* Main Content */
+    .main-content {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 0 20px 140px;
+    }
+    
+    /* Form Card */
+    .form-card {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+    
+    /* Input Groups */
+    .input-group {
+      margin-bottom: 20px;
+    }
+    
+    .input-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+    
+    .input-wrapper {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .input-field {
+      flex: 1;
+      padding: 14px 16px;
+      font-size: 17px;
+      font-weight: 500;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      background: #f8fafc;
+      -webkit-appearance: none;
+    }
+    
+    .input-field:focus {
+      outline: none;
+      border-color: #059669;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1);
+    }
+    
+    .input-field.valid {
+      border-color: #059669;
+      background: #f0fdf4;
+    }
+    
+    .input-field.invalid {
+      border-color: #dc2626;
+      background: #fef2f2;
+    }
+    
+    .btn-clear {
+      padding: 14px 16px;
+      background: #f1f5f9;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-clear:hover, .btn-clear:active {
+      background: #e2e8f0;
+      color: #475569;
+    }
+    
+    .btn-clear:active {
+      transform: scale(0.95);
+    }
+    
+    /* Validation Message */
+    .validation-msg {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    
+    .validation-msg.show {
+      display: flex;
+    }
+    
+    .validation-msg.valid {
+      color: #059669;
+    }
+    
+    .validation-msg.invalid {
+      color: #dc2626;
+    }
+    
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    
+    .btn-scan {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px 24px;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    }
+    
+    .btn-scan:hover:not(:disabled), .btn-scan:active:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+    }
+    
+    .btn-scan:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    
+    .btn-scan:disabled {
+      background: #94a3b8;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+    
+    .btn-save {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px 24px;
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4);
+    }
+    
+    .btn-save:hover:not(:disabled), .btn-save:active:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(5, 150, 105, 0.5);
+    }
+    
+    .btn-save:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    
+    .btn-save:disabled {
+      background: #94a3b8;
+      box-shadow: none;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    
+    /* Loading State */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.3s ease;
+    }
+    
+    .loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+      color: white;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    
+    /* Alert */
+    .alert {
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      padding: 14px 20px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 200;
+      max-width: 90%;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    
+    .alert.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+    
+    .alert-error {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+    
+    .alert-success {
+      background: #f0fdf4;
+      color: #059669;
+      border: 1px solid #bbf7d0;
+    }
+    
+    .alert-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      opacity: 0.6;
+      margin-left: 8px;
+    }
+    
+    /* Scanner Modal */
+    .scanner-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .scanner-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .scanner-container {
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      width: 100%;
+      max-width: 400px;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+    
+    .scanner-overlay.show .scanner-container {
+      transform: scale(1);
+    }
+    
+    .scanner-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      background: #059669;
+      color: white;
+    }
+    
+    .scanner-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .scanner-close {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .scanner-close:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    
+    .scanner-viewport {
+      position: relative;
+      aspect-ratio: 4/3;
+      background: #000;
+      overflow: hidden;
+    }
+    
+    .scanner-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .scanner-frame {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70%;
+      height: 50%;
+      border: 3px solid rgba(5, 150, 105, 0.8);
+      border-radius: 12px;
+      box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+    }
+    
+    .scanner-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #059669, transparent);
+      animation: scanLine 2s ease-in-out infinite;
+    }
+    
+    @keyframes scanLine {
+      0%, 100% { top: 0; }
+      50% { top: calc(100% - 3px); }
+    }
+    
+    .scanner-error {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 40px;
+      text-align: center;
+      color: #dc2626;
+      background: #fef2f2;
+    }
+    
+    .scanner-instructions {
+      padding: 16px 20px;
+      text-align: center;
+      background: #f8fafc;
+    }
+    
+    .scanner-instructions p {
+      font-size: 14px;
+      color: #475569;
+    }
+    
+    .scanner-hint {
+      font-size: 12px !important;
+      color: #94a3b8 !important;
+      margin-top: 4px;
+    }
+    
+    .scanner-actions {
+      display: flex;
+      gap: 12px;
+      padding: 16px 20px;
+    }
+    
+    .btn-manual {
+      flex: 1;
+      padding: 12px 16px;
+      background: #059669;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .btn-manual:hover {
+      background: #047857;
+    }
+    
+    .btn-cancel {
+      flex: 1;
+      padding: 12px 16px;
+      background: #f1f5f9;
+      color: #64748b;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .btn-cancel:hover {
+      background: #e2e8f0;
+    }
+    
+    /* Stats Footer */
+    .stats-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 12px 20px;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+    }
+    
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #64748b;
+    }
+    
+    .stat-value {
+      font-weight: 700;
+      color: #059669;
+    }
+    
+    /* Hidden iframe for form submission */
+    .hidden-iframe {
+      display: none;
+    }
+    
+    /* Responsive */
+    @media (max-width: 400px) {
+      .header h1 {
+        font-size: 16px;
+      }
+      
+      .logo-text {
+        font-size: 20px;
+      }
+      
+      .form-card {
+        padding: 20px;
+      }
+      
+      .input-field {
+        font-size: 16px;
+        padding: 12px 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Carregando cadastro...</div>
+  </div>
+
+  <!-- Install Banner -->
+  <div class="install-banner" id="installBanner">
+    <div class="install-banner-content">
+      <div class="install-banner-icon">📦</div>
+      <div class="install-banner-text">
+        <h4>Instalar como App</h4>
+        <p>Adicione à tela inicial para acesso rápido</p>
+      </div>
+    </div>
+    <div class="install-banner-actions">
+      <button class="btn-install" onclick="installApp()">Instalar</button>
+      <button class="btn-dismiss" onclick="dismissInstall()">Depois</button>
+    </div>
+  </div>
+
+  <!-- Alert -->
+  <div class="alert" id="alert">
+    <span id="alertIcon">⚠️</span>
+    <span id="alertMessage"></span>
+    <button class="alert-close" onclick="hideAlert()">×</button>
+  </div>
+
+  <!-- Scanner Modal -->
+  <div class="scanner-overlay" id="scannerOverlay">
+    <div class="scanner-container">
+      <div class="scanner-header">
+        <h3>📷 Scanner de Código de Barras</h3>
+        <button class="scanner-close" onclick="closeScanner()">×</button>
+      </div>
+      
+      <div class="scanner-viewport">
+        <video id="scannerVideo" playsinline muted class="scanner-video"></video>
+        <div class="scanner-frame">
+          <div class="scanner-line"></div>
+        </div>
+      </div>
+      
+      <div class="scanner-instructions">
+        <p>Aponte a câmera para o código de barras</p>
+        <p class="scanner-hint">ou digite manualmente</p>
+      </div>
+      
+      <div class="scanner-actions">
+        <button class="btn-manual" onclick="manualInput()">⌨️ Digitar Código</button>
+        <button class="btn-cancel" onclick="closeScanner()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <h1>📦 Contagem de Inventário</h1>
+      <span class="header-badge" id="savedBadge">0 salvos</span>
+    </div>
+  </header>
+
+  <!-- Logo Section -->
+  <div class="logo-section">
+    <div class="logo-container">
+      <div class="logo-icon">✚</div>
+      <div>
+        <div class="logo-text">Ultra</div>
+        <div class="logo-subtitle">DROGARIAS • POPULAR</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="form-card">
+      <!-- Campo Barras -->
+      <div class="input-group">
+        <label class="input-label">
+          <span>🏷️</span>
+          Código de Barras
+        </label>
+        <div class="input-wrapper">
+          <input
+            type="text"
+            inputmode="numeric"
+            class="input-field"
+            id="barrasInput"
+            placeholder="Escaneie ou digite o código"
+            autocomplete="off"
+            oninput="validateBarras()"
+            onkeydown="handleBarrasKeydown(event)"
+          >
+          <button class="btn-clear" onclick="clearFields()">Clear</button>
+        </div>
+        <div class="validation-msg" id="validationMsg">
+          <span id="validationIcon">✓</span>
+          <span id="validationText">Código válido</span>
+        </div>
+      </div>
+
+      <!-- Campo Quantidade -->
+      <div class="input-group">
+        <label class="input-label">
+          <span>📊</span>
+          Quantidade
+        </label>
+        <div class="input-wrapper">
+          <input
+            type="number"
+            inputmode="numeric"
+            class="input-field"
+            id="qtdInput"
+            placeholder="Quantidade contada"
+            min="0"
+            autocomplete="off"
+            onfocus="handleQtdFocus()"
+            onkeydown="handleQtdKeydown(event)"
+            oninput="updateSaveButton()"
+          >
+        </div>
+      </div>
+
+      <!-- Botões de Ação -->
+      <div class="action-buttons">
+        <button class="btn-scan" id="btnScan" onclick="openScanner()">
+          <span>📷</span>
+          SCAN
+        </button>
+        
+        <button class="btn-save" id="btnSave" onclick="saveData()" disabled>
+          <span id="saveIcon">💾</span>
+          <span id="saveText">SALVAR</span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Stats Footer -->
+  <footer class="stats-footer">
+    <div class="stat-item">
+      <span>📦 Cadastro:</span>
+      <span class="stat-value" id="cadastroCount">Carregando...</span>
+    </div>
+    <div class="stat-item">
+      <span>✓ Salvos:</span>
+      <span class="stat-value" id="savedCount">0</span>
+    </div>
+  </footer>
+
+  <!-- Hidden iframe for form submission -->
+  <iframe class="hidden-iframe" id="formFrame" name="formFrame"></iframe>
+
+  <script>
+    // ============================================
+    // CONFIGURAÇÃO - ALTERE AQUI SUAS URLs
+    // ============================================
+    const CONFIG = {
+      GOOGLE_SHEETS_CSV: 'https://docs.google.com/spreadsheets/d/1VdZPW6awQJmV3gTQ_tncPjPtLHMPCLDNLSTglqezvu8/export?format=csv',
+      GOOGLE_FORMS_URL: 'https://docs.google.com/forms/d/1YUMbFoL-ayv9ulpTOAu3E6ClpT_9cI0YbhpV8TJ2vIE/formResponse',
+      ENTRY_BARRAS: 'entry.163691906',
+      ENTRY_QTD: 'entry.1238617229'
+    };
+
+    // ============================================
+    // ESTADO DA APLICAÇÃO
+    // ============================================
+    let cadastro = [];
+    let savedCount = 0;
+    let isValid = false;
+    let isSaving = false;
+    let cameraStream = null;
+    let deferredPrompt = null;
+
+    // ============================================
+    // ELEMENTOS DOM
+    // ============================================
+    const elements = {
+      loadingOverlay: document.getElementById('loadingOverlay'),
+      loadingText: document.getElementById('loadingText'),
+      alert: document.getElementById('alert'),
+      alertIcon: document.getElementById('alertIcon'),
+      alertMessage: document.getElementById('alertMessage'),
+      scannerOverlay: document.getElementById('scannerOverlay'),
+      scannerVideo: document.getElementById('scannerVideo'),
+      barrasInput: document.getElementById('barrasInput'),
+      qtdInput: document.getElementById('qtdInput'),
+      validationMsg: document.getElementById('validationMsg'),
+      validationIcon: document.getElementById('validationIcon'),
+      validationText: document.getElementById('validationText'),
+      btnScan: document.getElementById('btnScan'),
+      btnSave: document.getElementById('btnSave'),
+      saveIcon: document.getElementById('saveIcon'),
+      saveText: document.getElementById('saveText'),
+      savedBadge: document.getElementById('savedBadge'),
+      cadastroCount: document.getElementById('cadastroCount'),
+      savedCountEl: document.getElementById('savedCount'),
+      formFrame: document.getElementById('formFrame'),
+      installBanner: document.getElementById('installBanner')
+    };
+
+    // ============================================
+    // PWA INSTALL
+    // ============================================
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      setTimeout(() => {
+        elements.installBanner.classList.add('show');
+      }, 2000);
+    });
+
+    function installApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            showAlert('App instalado com sucesso!', 'success');
+          }
+          deferredPrompt = null;
+          elements.installBanner.classList.remove('show');
+        });
+      }
+    }
+
+    function dismissInstall() {
+      elements.installBanner.classList.remove('show');
+    }
+
+    // ============================================
+    // INICIALIZAÇÃO
+    // ============================================
+    document.addEventListener('DOMContentLoaded', loadCadastro);
+
+    async function loadCadastro() {
+      try {
+        elements.loadingText.textContent = 'Conectando ao servidor...';
+        
+        const response = await fetch(CONFIG.GOOGLE_SHEETS_CSV);
+        
+        if (!response.ok) throw new Error('Falha ao carregar dados');
+        
+        const csvText = await response.text();
+        elements.loadingText.textContent = 'Processando dados...';
+        
+        const lines = csvText.split('\n');
+        cadastro = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (line) {
+            const cols = line.split(',');
+            if (cols[0]) {
+              cadastro.push(cols[0].replace(/"/g, '').trim());
+            }
+          }
+        }
+        
+        elements.loadingText.textContent = `${cadastro.length} produtos carregados`;
+        elements.cadastroCount.textContent = `${cadastro.length} itens`;
+        
+        setTimeout(() => {
+          elements.loadingOverlay.classList.add('hidden');
+        }, 500);
+        
+      } catch (error) {
+        console.error('Erro ao carregar cadastro:', error);
+        elements.loadingText.textContent = 'Erro ao carregar. Usando modo offline.';
+        elements.cadastroCount.textContent = 'Modo offline';
+        cadastro = [];
+        
+        setTimeout(() => {
+          elements.loadingOverlay.classList.add('hidden');
+        }, 1000);
+      }
+    }
+
+    // ============================================
+    // VALIDAÇÃO
+    // ============================================
+    function validateBarras() {
+      const barras = elements.barrasInput.value.trim();
+      
+      if (!barras) {
+        isValid = false;
+        elements.barrasInput.classList.remove('valid', 'invalid');
+        elements.validationMsg.classList.remove('show', 'valid', 'invalid');
+        updateSaveButton();
+        return;
+      }
+
+      if (cadastro.length === 0) {
+        isValid = true;
+        elements.barrasInput.classList.remove('invalid');
+        elements.barrasInput.classList.add('valid');
+        elements.validationMsg.classList.add('show', 'valid');
+        elements.validationMsg.classList.remove('invalid');
+        elements.validationIcon.textContent = '✓';
+        elements.validationText.textContent = 'Modo offline - código aceito';
+        updateSaveButton();
+        return;
+      }
+
+      const found = cadastro.includes(barras);
+      isValid = found;
+      
+      elements.barrasInput.classList.remove('valid', 'invalid');
+      elements.validationMsg.classList.remove('valid', 'invalid');
+      
+      if (found) {
+        elements.barrasInput.classList.add('valid');
+        elements.validationMsg.classList.add('show', 'valid');
+        elements.validationIcon.textContent = '✓';
+        elements.validationText.textContent = 'Código válido';
+      } else {
+        elements.barrasInput.classList.add('invalid');
+        elements.validationMsg.classList.add('show', 'invalid');
+        elements.validationIcon.textContent = '✗';
+        elements.validationText.textContent = 'Código não encontrado';
+        showAlert('Código de barras não encontrado no cadastro', 'error');
+        vibrate(30);
+      }
+      
+      updateSaveButton();
+    }
+
+    function updateSaveButton() {
+      const barras = elements.barrasInput.value.trim();
+      const qtd = elements.qtdInput.value.trim();
+      const canSave = isValid && barras && qtd && !isSaving;
+      
+      elements.btnSave.disabled = !canSave;
+    }
+
+    // ============================================
+    // AÇÕES
+    // ============================================
+    function clearFields() {
+      elements.barrasInput.value = '';
+      elements.qtdInput.value = '';
+      isValid = false;
+      elements.barrasInput.classList.remove('valid', 'invalid');
+      elements.validationMsg.classList.remove('show', 'valid', 'invalid');
+      updateSaveButton();
+      elements.barrasInput.focus();
+    }
+
+    function handleQtdFocus() {
+      if (!elements.qtdInput.value) {
+        elements.qtdInput.value = '1';
+      }
+      updateSaveButton();
+    }
+
+    function handleBarrasKeydown(event) {
+      if (event.key === 'Enter' && isValid) {
+        event.preventDefault();
+        elements.qtdInput.value = '1';
+        elements.qtdInput.focus();
+        updateSaveButton();
+      }
+    }
+
+    function handleQtdKeydown(event) {
+      if (event.key === 'Enter' && isValid && elements.qtdInput.value) {
+        event.preventDefault();
+        saveData();
+      }
+    }
+
+    async function saveData() {
+      const barras = elements.barrasInput.value.trim();
+      const qtd = elements.qtdInput.value.trim();
+      
+      if (!barras || !qtd) {
+        showAlert('Atenção: todos os campos devem ser preenchidos', 'error');
+        return;
+      }
+
+      if (!isValid && cadastro.length > 0) {
+        showAlert('Código de barras não encontrado no cadastro', 'error');
+        return;
+      }
+
+      isSaving = true;
+      elements.saveIcon.textContent = '⏳';
+      elements.saveText.textContent = 'SALVANDO...';
+      elements.btnSave.disabled = true;
+
+      try {
+        const formUrl = `${CONFIG.GOOGLE_FORMS_URL}?${CONFIG.ENTRY_BARRAS}=${encodeURIComponent(barras)}&${CONFIG.ENTRY_QTD}=${encodeURIComponent(qtd)}&submit=Submit`;
+        
+        elements.formFrame.src = formUrl;
+        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        savedCount++;
+        elements.savedBadge.textContent = `${savedCount} salvos`;
+        elements.savedCountEl.textContent = savedCount;
+        
+        showAlert(`✓ Salvo com sucesso! (${savedCount} itens)`, 'success');
+        vibrate([50, 30, 50]);
+        
+        clearFields();
+        
+      } catch (error) {
+        console.error('Erro ao salvar:', error);
+        showAlert('Erro ao salvar. Tente novamente.', 'error');
+      } finally {
+        isSaving = false;
+        elements.saveIcon.textContent = '💾';
+        elements.saveText.textContent = 'SALVAR';
+        updateSaveButton();
+      }
+    }
+
+    // ============================================
+    // SCANNER
+    // ============================================
+    async function openScanner() {
+      elements.scannerOverlay.classList.add('show');
+      
+      try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+          video: { 
+            facingMode: 'environment',
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          }
+        });
+        
+        elements.scannerVideo.srcObject = cameraStream;
+        await elements.scannerVideo.play();
+        
+      } catch (error) {
+        console.error('Erro ao acessar câmera:', error);
+        showAlert('Não foi possível acessar a câmera', 'error');
+      }
+    }
+
+    function closeScanner() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+      }
+      elements.scannerVideo.srcObject = null;
+      elements.scannerOverlay.classList.remove('show');
+    }
+
+    function manualInput() {
+      const code = prompt('Digite o código de barras:');
+      if (code && code.trim()) {
+        closeScanner();
+        elements.barrasInput.value = code.trim();
+        validateBarras();
+        elements.qtdInput.value = '1';
+        elements.qtdInput.focus();
+        updateSaveButton();
+      }
+    }
+
+    // ============================================
+    // UTILITÁRIOS
+    // ============================================
+    let alertTimeout;
+    
+    function showAlert(message, type) {
+      clearTimeout(alertTimeout);
+      
+      elements.alert.className = `alert alert-${type}`;
+      elements.alertIcon.textContent = type === 'error' ? '⚠️' : '✓';
+      elements.alertMessage.textContent = message;
+      
+      setTimeout(() => {
+        elements.alert.classList.add('show');
+      }, 10);
+      
+      alertTimeout = setTimeout(hideAlert, 3000);
+    }
+
+    function hideAlert() {
+      elements.alert.classList.remove('show');
+    }
+
+    function vibrate(pattern) {
+      if (navigator.vibrate) {
+        navigator.vibrate(pattern);
+      }
+    }
+
+    // Service Worker Registration (for PWA)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        // Using inline service worker via data URL
+        const swCode = `
+          self.addEventListener('fetch', (event) => {
+            event.respondWith(
+              caches.match(event.request).then((response) => {
+                return response || fetch(event.request);
+              })
+            );
+          });
+        `;
+        const blob = new Blob([swCode], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+        
+        // Note: Service workers from blob URLs don't work in production
+        // This is just for demo purposes
+      });
+    }
+  </script>
+</body>
+</html>
