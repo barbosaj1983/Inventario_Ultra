@@ -39,25 +39,15 @@
       --border: var(--border-dark);
     }
     
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     
     body {
       min-height: 100vh;
-      min-height: -webkit-fill-available;
       background: linear-gradient(135deg, var(--bg) 0%, var(--border) 100%);
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       color: var(--text);
       overflow-x: hidden;
       transition: background 0.3s, color 0.3s;
-    }
-    
-    html {
-      height: -webkit-fill-available;
     }
 
     /* Header */
@@ -80,17 +70,9 @@
       justify-content: space-between;
     }
     
-    .header h1 {
-      font-size: 16px;
-      font-weight: 600;
-      letter-spacing: -0.5px;
-    }
+    .header h1 { font-size: 16px; font-weight: 600; }
     
-    .header-actions {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
     
     .header-badge {
       background: rgba(255,255,255,0.2);
@@ -109,23 +91,14 @@
       border-radius: 50%;
       font-size: 18px;
       cursor: pointer;
-      transition: background 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    
-    .btn-header:hover {
-      background: rgba(255,255,255,0.3);
-    }
 
     /* Logo Section */
-    .logo-section {
-      padding: 20px 20px 12px;
-      text-align: center;
-    }
+    .logo-section { padding: 20px 20px 12px; text-align: center; }
     
-    /* Logo com texto (padrão) */
     .logo-container {
       display: inline-flex;
       align-items: center;
@@ -135,18 +108,12 @@
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.2s;
       position: relative;
     }
     
-    .logo-container:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    }
-    
-    .logo-container.has-image {
-      padding: 8px;
-    }
+    .logo-container:hover { transform: translateY(-2px); }
+    .logo-container.has-image { padding: 8px; }
     
     .logo-edit-hint {
       position: absolute;
@@ -163,11 +130,8 @@
       white-space: nowrap;
     }
     
-    .logo-container:hover .logo-edit-hint {
-      opacity: 1;
-    }
+    .logo-container:hover .logo-edit-hint { opacity: 1; }
     
-    /* Logo imagem grande (quando tem imagem) */
     .logo-image-full {
       height: 60px;
       max-width: 200px;
@@ -175,7 +139,6 @@
       border-radius: 8px;
     }
     
-    /* Logo ícone padrão */
     .logo-icon {
       width: 40px;
       height: 40px;
@@ -187,45 +150,19 @@
       font-size: 20px;
       font-weight: bold;
       color: white;
-      flex-shrink: 0;
     }
     
-    .logo-text-container {
-      text-align: left;
-    }
+    .logo-text-container { text-align: left; }
+    .logo-text { font-size: 22px; font-weight: 700; color: var(--primary); line-height: 1; }
+    .logo-subtitle { font-size: 9px; color: var(--danger); font-weight: 600; letter-spacing: 0.5px; }
     
-    .logo-text {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--primary);
-      line-height: 1;
-    }
-    
-    .logo-subtitle {
-      font-size: 9px;
-      color: var(--danger);
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
-    
-    #logoInput {
-      display: none;
-    }
+    #logoInput { display: none; }
 
     /* Main Content */
-    .main-content {
-      max-width: 500px;
-      margin: 0 auto;
-      padding: 0 16px 160px;
-    }
+    .main-content { max-width: 500px; margin: 0 auto; padding: 0 16px 160px; }
 
     /* Stats Bar */
-    .stats-bar {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 12px;
-    }
+    .stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
     
     .stat-card {
       background: var(--card);
@@ -235,17 +172,8 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
     
-    .stat-card-value {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--primary);
-    }
-    
-    .stat-card-label {
-      font-size: 10px;
-      color: #64748b;
-      margin-top: 2px;
-    }
+    .stat-card-value { font-size: 20px; font-weight: 700; color: var(--primary); }
+    .stat-card-label { font-size: 10px; color: #64748b; margin-top: 2px; }
 
     /* Form Card */
     .form-card {
@@ -257,24 +185,9 @@
     }
 
     /* Input Groups */
-    .input-group {
-      margin-bottom: 16px;
-    }
-    
-    .input-label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #64748b;
-      margin-bottom: 6px;
-    }
-    
-    .input-wrapper {
-      display: flex;
-      gap: 8px;
-    }
+    .input-group { margin-bottom: 16px; }
+    .input-label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
+    .input-wrapper { display: flex; gap: 8px; }
     
     .input-field {
       flex: 1;
@@ -283,29 +196,15 @@
       font-weight: 500;
       border: 2px solid var(--border);
       border-radius: 10px;
-      transition: all 0.2s ease;
-      font-family: inherit;
+      transition: all 0.2s;
       background: var(--bg);
       color: var(--text);
       -webkit-appearance: none;
     }
     
-    .input-field:focus {
-      outline: none;
-      border-color: var(--primary);
-      background: var(--card);
-      box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
-    }
-    
-    .input-field.valid {
-      border-color: var(--success);
-      background: rgba(16, 185, 129, 0.1);
-    }
-    
-    .input-field.invalid {
-      border-color: var(--danger);
-      background: rgba(220, 38, 38, 0.1);
-    }
+    .input-field:focus { outline: none; border-color: var(--primary); background: var(--card); }
+    .input-field.valid { border-color: var(--success); background: rgba(16, 185, 129, 0.1); }
+    .input-field.invalid { border-color: var(--danger); background: rgba(220, 38, 38, 0.1); }
     
     .btn-clear {
       padding: 12px 14px;
@@ -316,20 +215,10 @@
       font-weight: 600;
       color: #64748b;
       cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    
-    .btn-clear:active {
-      transform: scale(0.95);
-      background: var(--border);
     }
 
     /* Quantity Controls */
-    .qty-wrapper {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
+    .qty-wrapper { display: flex; gap: 8px; align-items: center; }
     
     .qty-btn {
       width: 44px;
@@ -341,54 +230,19 @@
       font-weight: 600;
       color: var(--primary);
       cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
     
-    .qty-btn:active {
-      transform: scale(0.9);
-      background: var(--primary);
-      color: white;
-    }
-    
-    .qty-input {
-      width: 80px;
-      text-align: center;
-      font-size: 20px;
-      font-weight: 700;
-    }
+    .qty-btn:active { transform: scale(0.9); background: var(--primary); color: white; }
+    .qty-input { width: 80px; text-align: center; font-size: 20px; font-weight: 700; }
 
     /* Validation Message */
-    .validation-msg {
-      display: none;
-      align-items: center;
-      gap: 6px;
-      margin-top: 6px;
-      font-size: 12px;
-      font-weight: 500;
-    }
-    
-    .validation-msg.show {
-      display: flex;
-    }
-    
-    .validation-msg.valid {
-      color: var(--success);
-    }
-    
-    .validation-msg.invalid {
-      color: var(--danger);
-    }
+    .validation-msg { display: none; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; font-weight: 500; }
+    .validation-msg.show { display: flex; }
+    .validation-msg.valid { color: var(--success); }
+    .validation-msg.invalid { color: var(--danger); }
 
     /* Action Buttons */
-    .action-buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 20px;
-    }
+    .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
     
     .btn-scan {
       display: flex;
@@ -403,18 +257,7 @@
       font-size: 15px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
       box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-    }
-    
-    .btn-scan:active:not(:disabled) {
-      transform: scale(0.95);
-    }
-    
-    .btn-scan:disabled {
-      background: #94a3b8;
-      box-shadow: none;
-      cursor: not-allowed;
     }
     
     .btn-save {
@@ -430,46 +273,16 @@
       font-size: 15px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
       box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4);
     }
     
-    .btn-save:active:not(:disabled) {
-      transform: scale(0.95);
-    }
-    
-    .btn-save:disabled {
-      background: #94a3b8;
-      box-shadow: none;
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
+    .btn-save:disabled, .btn-scan:disabled { background: #94a3b8; box-shadow: none; cursor: not-allowed; }
 
     /* History Card */
-    .history-card {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-    
-    .history-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-    
-    .history-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #64748b;
-    }
-    
-    .history-actions {
-      display: flex;
-      gap: 8px;
-    }
+    .history-card { background: var(--card); border-radius: 16px; padding: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .history-title { font-size: 14px; font-weight: 600; color: #64748b; }
+    .history-actions { display: flex; gap: 8px; }
     
     .btn-history {
       padding: 6px 12px;
@@ -480,17 +293,9 @@
       font-weight: 600;
       color: #64748b;
       cursor: pointer;
-      transition: all 0.2s;
     }
     
-    .btn-history:hover {
-      background: var(--border);
-    }
-    
-    .history-list {
-      max-height: 250px;
-      overflow-y: auto;
-    }
+    .history-list { max-height: 250px; overflow-y: auto; }
     
     .history-item {
       display: flex;
@@ -503,62 +308,14 @@
       gap: 10px;
     }
     
-    .history-item:last-child {
-      margin-bottom: 0;
-    }
-    
-    .history-item-info {
-      flex: 1;
-      min-width: 0;
-    }
-    
-    .history-item-code {
-      font-weight: 600;
-      font-family: monospace;
-      font-size: 14px;
-      display: block;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    
-    .history-item-meta {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      margin-top: 2px;
-      flex-wrap: wrap;
-    }
-    
-    .history-item-qty {
-      background: var(--primary);
-      color: white;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-size: 10px;
-      font-weight: 600;
-    }
-    
-    .history-item-time {
-      color: #94a3b8;
-      font-size: 10px;
-    }
-    
-    .history-item-status {
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 8px;
-    }
-    
-    .history-item-status.synced {
-      background: rgba(16, 185, 129, 0.1);
-      color: var(--success);
-    }
-    
-    .history-item-status.pending {
-      background: rgba(245, 158, 11, 0.1);
-      color: var(--warning);
-    }
+    .history-item-info { flex: 1; min-width: 0; }
+    .history-item-code { font-weight: 600; font-family: monospace; font-size: 14px; display: block; }
+    .history-item-meta { display: flex; gap: 8px; align-items: center; margin-top: 2px; flex-wrap: wrap; }
+    .history-item-qty { background: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; }
+    .history-item-time { color: #94a3b8; font-size: 10px; }
+    .history-item-status { font-size: 10px; padding: 2px 6px; border-radius: 8px; }
+    .history-item-status.synced { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+    .history-item-status.pending { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
     
     .btn-delete {
       width: 32px;
@@ -569,33 +326,11 @@
       border-radius: 8px;
       font-size: 14px;
       cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
     }
     
-    .btn-delete:hover {
-      background: var(--danger);
-      color: white;
-    }
-    
-    .btn-delete:active {
-      transform: scale(0.9);
-    }
-    
-    .btn-delete.deleting {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-    
-    .history-empty {
-      text-align: center;
-      padding: 20px;
-      color: #94a3b8;
-      font-size: 13px;
-    }
+    .btn-delete:hover { background: var(--danger); color: white; }
+    .btn-delete.deleting { opacity: 0.5; pointer-events: none; }
+    .history-empty { text-align: center; padding: 20px; color: #94a3b8; font-size: 13px; }
 
     /* API Status */
     .api-status {
@@ -610,32 +345,13 @@
       cursor: pointer;
     }
     
-    .api-status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #94a3b8;
-    }
-    
-    .api-status-dot.connected {
-      background: var(--success);
-    }
-    
-    .api-status-dot.error {
-      background: var(--danger);
-    }
-    
-    .api-status-text {
-      color: #64748b;
-      flex: 1;
-    }
-    
-    .api-status-action {
-      color: var(--primary);
-      font-weight: 600;
-    }
+    .api-status-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
+    .api-status-dot.connected { background: var(--success); }
+    .api-status-dot.error { background: var(--danger); }
+    .api-status-text { color: #64748b; flex: 1; }
+    .api-status-action { color: var(--primary); font-weight: 600; }
 
-    /* Loading State */
+    /* Loading, Alert, Modals */
     .loading-overlay {
       position: fixed;
       inset: 0;
@@ -645,37 +361,14 @@
       align-items: center;
       justify-content: center;
       z-index: 1000;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.3s;
     }
     
-    .loading-overlay.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-    
-    .loading-spinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid rgba(255,255,255,0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 16px;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    .loading-text {
-      color: white;
-      font-size: 14px;
-      font-weight: 500;
-      text-align: center;
-      padding: 0 20px;
-    }
+    .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+    .loading-spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { color: white; font-size: 14px; font-weight: 500; }
 
-    /* Alert */
     .alert {
       position: fixed;
       top: 70px;
@@ -692,45 +385,17 @@
       max-width: 90%;
       box-shadow: 0 4px 20px rgba(0,0,0,0.15);
       opacity: 0;
-      transition: all 0.3s ease;
+      transition: all 0.3s;
       pointer-events: none;
     }
     
-    .alert.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-      pointer-events: auto;
-    }
-    
-    .alert-error {
-      background: #fef2f2;
-      color: var(--danger);
-      border: 1px solid #fecaca;
-    }
-    
-    .alert-success {
-      background: #f0fdf4;
-      color: var(--success);
-      border: 1px solid #bbf7d0;
-    }
-    
-    .alert-info {
-      background: #eff6ff;
-      color: #2563eb;
-      border: 1px solid #bfdbfe;
-    }
-    
-    .alert-close {
-      background: none;
-      border: none;
-      font-size: 18px;
-      cursor: pointer;
-      opacity: 0.6;
-      margin-left: 4px;
-    }
+    .alert.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+    .alert-error { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
+    .alert-success { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; }
+    .alert-info { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .alert-close { background: none; border: none; font-size: 18px; cursor: pointer; opacity: 0.6; margin-left: 4px; }
 
-    /* Confirm Dialog */
-    .confirm-overlay {
+    .confirm-overlay, .modal-overlay {
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.5);
@@ -744,12 +409,9 @@
       transition: opacity 0.3s;
     }
     
-    .confirm-overlay.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
+    .confirm-overlay.show, .modal-overlay.show { opacity: 1; pointer-events: auto; }
     
-    .confirm-dialog {
+    .confirm-dialog, .modal {
       background: var(--card);
       border-radius: 16px;
       padding: 24px;
@@ -760,463 +422,72 @@
       transition: transform 0.3s;
     }
     
-    .confirm-overlay.show .confirm-dialog {
-      transform: scale(1);
-    }
+    .confirm-overlay.show .confirm-dialog, .modal-overlay.show .modal { transform: scale(1); }
     
-    .confirm-icon {
-      font-size: 48px;
-      margin-bottom: 16px;
-    }
+    .confirm-icon { font-size: 48px; margin-bottom: 16px; }
+    .confirm-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .confirm-message { font-size: 14px; color: #64748b; margin-bottom: 16px; }
+    .confirm-code { font-family: monospace; background: var(--bg); padding: 8px 12px; border-radius: 8px; font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+    .confirm-status { font-size: 12px; padding: 8px; background: #fffbeb; color: #b45309; border-radius: 8px; margin-bottom: 16px; }
+    .confirm-actions { display: flex; gap: 10px; }
     
-    .confirm-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-    
-    .confirm-message {
-      font-size: 14px;
-      color: #64748b;
-      margin-bottom: 16px;
-    }
-    
-    .confirm-code {
-      font-family: monospace;
-      background: var(--bg);
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 16px;
-    }
-    
-    .confirm-status {
-      font-size: 12px;
-      padding: 8px;
-      background: #fffbeb;
-      color: #b45309;
-      border-radius: 8px;
-      margin-bottom: 16px;
-    }
-    
-    .confirm-actions {
-      display: flex;
-      gap: 10px;
-    }
-    
-    .btn-confirm {
-      flex: 1;
-      padding: 12px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: all 0.2s;
-    }
-    
-    .btn-confirm-cancel {
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-    
-    .btn-confirm-delete {
-      background: var(--danger);
-      color: white;
-    }
-    
-    .btn-confirm-delete:active {
-      transform: scale(0.95);
-    }
-    
-    .btn-confirm-delete:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    .btn-confirm { flex: 1; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+    .btn-confirm-cancel { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+    .btn-confirm-delete { background: var(--danger); color: white; }
+    .btn-confirm-delete:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* Scanner Modal */
-    .scanner-overlay {
-      position: fixed;
-      inset: 0;
-      background: #000;
-      z-index: 300;
-      display: flex;
-      flex-direction: column;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-    
-    .scanner-overlay.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    
-    .scanner-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px;
-      padding-top: max(12px, env(safe-area-inset-top));
-      background: rgba(0,0,0,0.8);
-      color: white;
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 10;
-    }
-    
-    .scanner-header h3 {
-      font-size: 15px;
-      font-weight: 600;
-    }
-    
-    .scanner-header-actions {
-      display: flex;
-      gap: 8px;
-    }
-    
-    .btn-scanner {
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      font-size: 20px;
-      cursor: pointer;
-      transition: background 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .btn-scanner:hover {
-      background: rgba(255,255,255,0.3);
-    }
-    
-    .btn-scanner.active {
-      background: var(--warning);
-    }
-    
-    #scanner-container {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    #scanner-container video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    
-    #scanner-container canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-    
-    .scanner-target {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 280px;
-      height: 150px;
-      border: 3px solid var(--primary);
-      border-radius: 12px;
-      box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
-      z-index: 5;
-    }
-    
-    .scanner-target::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, transparent, #00ff00, transparent);
-      animation: scanLine 1.5s ease-in-out infinite;
-    }
-    
-    @keyframes scanLine {
-      0%, 100% { top: 0; }
-      50% { top: calc(100% - 3px); }
-    }
-    
-    .scanner-footer {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 16px;
-      padding-bottom: max(16px, env(safe-area-inset-bottom));
-      background: rgba(0,0,0,0.8);
-      z-index: 10;
-    }
-    
-    .scanner-status {
-      text-align: center;
-      color: white;
-      margin-bottom: 12px;
-      font-size: 13px;
-    }
-    
-    .scanner-status.reading {
-      color: #4ade80;
-    }
-    
-    .scanner-actions {
-      display: flex;
-      gap: 10px;
-    }
-    
-    .btn-manual {
-      flex: 1;
-      padding: 12px 14px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    
-    .btn-cancel {
-      flex: 1;
-      padding: 12px 14px;
-      background: rgba(255,255,255,0.2);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-    }
+    /* Modal Settings */
+    .modal { max-width: 400px; max-height: 80vh; overflow-y: auto; text-align: left; padding: 0; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+    .modal-title { font-size: 16px; font-weight: 600; }
+    .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b; }
+    .modal-body { padding: 20px; }
+    .setting-group { margin-bottom: 16px; }
+    .setting-label { font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
+    .setting-input { width: 100%; padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 11px; font-family: monospace; background: var(--bg); color: var(--text); }
+    .setting-input:focus { outline: none; border-color: var(--primary); }
+    .setting-hint { font-size: 10px; color: #94a3b8; margin-top: 4px; }
+    .setting-toggle { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .toggle-label { font-size: 14px; font-weight: 500; }
+    .toggle-switch { width: 50px; height: 28px; background: var(--border); border-radius: 14px; position: relative; cursor: pointer; transition: background 0.3s; }
+    .toggle-switch.active { background: var(--primary); }
+    .toggle-switch::after { content: ''; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: transform 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .toggle-switch.active::after { transform: translateX(22px); }
+    .modal-footer { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
+    .btn-modal { flex: 1; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+    .btn-modal-primary { background: var(--primary); color: white; }
+    .btn-modal-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
 
-    /* Settings Modal */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 400;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s;
-    }
-    
-    .modal-overlay.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    
-    .modal {
-      background: var(--card);
-      border-radius: 16px;
-      width: 100%;
-      max-width: 400px;
-      max-height: 80vh;
-      overflow-y: auto;
-      transform: scale(0.9);
-      transition: transform 0.3s;
-    }
-    
-    .modal-overlay.show .modal {
-      transform: scale(1);
-    }
-    
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .modal-title {
-      font-size: 16px;
-      font-weight: 600;
-    }
-    
-    .modal-close {
-      background: none;
-      border: none;
-      font-size: 24px;
-      cursor: pointer;
-      color: #64748b;
-    }
-    
-    .modal-body {
-      padding: 20px;
-    }
-    
-    .setting-group {
-      margin-bottom: 16px;
-    }
-    
-    .setting-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: #64748b;
-      margin-bottom: 6px;
-    }
-    
-    .setting-input {
-      width: 100%;
-      padding: 10px 12px;
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      font-size: 11px;
-      font-family: monospace;
-      background: var(--bg);
-      color: var(--text);
-    }
-    
-    .setting-input:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-    
-    .setting-hint {
-      font-size: 10px;
-      color: #94a3b8;
-      margin-top: 4px;
-    }
-    
-    .setting-toggle {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .setting-toggle:last-child {
-      border-bottom: none;
-    }
-    
-    .toggle-label {
-      font-size: 14px;
-      font-weight: 500;
-    }
-    
-    .toggle-switch {
-      width: 50px;
-      height: 28px;
-      background: var(--border);
-      border-radius: 14px;
-      position: relative;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    
-    .toggle-switch.active {
-      background: var(--primary);
-    }
-    
-    .toggle-switch::after {
-      content: '';
-      position: absolute;
-      width: 22px;
-      height: 22px;
-      background: white;
-      border-radius: 50%;
-      top: 3px;
-      left: 3px;
-      transition: transform 0.3s;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    
-    .toggle-switch.active::after {
-      transform: translateX(22px);
-    }
-    
-    .modal-footer {
-      padding: 16px 20px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      gap: 10px;
-    }
-    
-    .btn-modal {
-      flex: 1;
-      padding: 12px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-    }
-    
-    .btn-modal-primary {
-      background: var(--primary);
-      color: white;
-    }
-    
-    .btn-modal-secondary {
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-    
+    /* Scanner */
+    .scanner-overlay { position: fixed; inset: 0; background: #000; z-index: 300; display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .scanner-overlay.show { opacity: 1; pointer-events: auto; }
+    .scanner-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; padding-top: max(12px, env(safe-area-inset-top)); background: rgba(0,0,0,0.8); color: white; position: absolute; top: 0; left: 0; right: 0; z-index: 10; }
+    .scanner-header h3 { font-size: 15px; font-weight: 600; }
+    .scanner-header-actions { display: flex; gap: 8px; }
+    .btn-scanner { background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .btn-scanner.active { background: var(--warning); }
+    #scanner-container { flex: 1; position: relative; overflow: hidden; }
+    #scanner-container video { width: 100%; height: 100%; object-fit: cover; }
+    #scanner-container canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    .scanner-target { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 280px; height: 150px; border: 3px solid var(--primary); border-radius: 12px; box-shadow: 0 0 0 9999px rgba(0,0,0,0.5); z-index: 5; }
+    .scanner-target::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, #00ff00, transparent); animation: scanLine 1.5s ease-in-out infinite; }
+    @keyframes scanLine { 0%, 100% { top: 0; } 50% { top: calc(100% - 3px); } }
+    .scanner-footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px; padding-bottom: max(16px, env(safe-area-inset-bottom)); background: rgba(0,0,0,0.8); z-index: 10; }
+    .scanner-status { text-align: center; color: white; margin-bottom: 12px; font-size: 13px; }
+    .scanner-status.reading { color: #4ade80; }
+    .scanner-actions { display: flex; gap: 10px; }
+    .btn-manual, .btn-cancel { flex: 1; padding: 12px 14px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .btn-manual { background: var(--primary); color: white; }
+    .btn-cancel { background: rgba(255,255,255,0.2); color: white; }
+
     /* Debug Panel */
-    .debug-panel {
-      background: #1e293b;
-      color: #94a3b8;
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 12px;
-      font-size: 10px;
-      font-family: monospace;
-      max-height: 150px;
-      overflow-y: auto;
-      display: none;
-    }
-    
-    .debug-panel.show {
-      display: block;
-    }
-    
+    .debug-panel { background: #1e293b; color: #94a3b8; padding: 12px; border-radius: 8px; margin-top: 12px; font-size: 10px; font-family: monospace; max-height: 150px; overflow-y: auto; display: none; }
+    .debug-panel.show { display: block; }
     .debug-panel .log-success { color: #4ade80; }
     .debug-panel .log-error { color: #f87171; }
     .debug-panel .log-info { color: #60a5fa; }
 
-    /* Hidden elements */
-    .hidden-iframe {
-      display: none;
-    }
-
-    /* Responsive */
-    @media (max-width: 380px) {
-      .header h1 {
-        font-size: 14px;
-      }
-      
-      .logo-text {
-        font-size: 18px;
-      }
-      
-      .form-card {
-        padding: 16px;
-      }
-      
-      .scanner-target {
-        width: 240px;
-        height: 120px;
-      }
-    }
+    .hidden-iframe { display: none; }
   </style>
 </head>
 <body>
@@ -1253,15 +524,11 @@
     <div class="scanner-header">
       <h3>📷 Scanner</h3>
       <div class="scanner-header-actions">
-        <button class="btn-scanner" id="btnFlash" onclick="toggleFlash()" title="Lanterna">🔦</button>
+        <button class="btn-scanner" id="btnFlash" onclick="toggleFlash()">🔦</button>
         <button class="btn-scanner" onclick="closeScanner()">✕</button>
       </div>
     </div>
-    
-    <div id="scanner-container">
-      <div class="scanner-target"></div>
-    </div>
-    
+    <div id="scanner-container"><div class="scanner-target"></div></div>
     <div class="scanner-footer">
       <div class="scanner-status" id="scannerStatus">Posicione o código de barras</div>
       <div class="scanner-actions">
@@ -1282,19 +549,16 @@
         <div class="setting-group">
           <div class="setting-label">🔗 URL do Google Apps Script (API)</div>
           <input type="text" class="setting-input" id="settingApiUrl" placeholder="https://script.google.com/macros/s/.../exec">
-          <div class="setting-hint">Necessário para DELETAR da planilha. Veja instruções no arquivo COMO_CONFIGURAR_API.md</div>
+          <div class="setting-hint">Necessário para salvar e deletar da planilha</div>
         </div>
-        
         <div class="setting-group">
           <div class="setting-label">📊 ID da Planilha (Cadastro CSV)</div>
           <input type="text" class="setting-input" id="settingSheetsId" placeholder="1VdZPW6...">
         </div>
-        
         <div class="setting-group">
-          <div class="setting-label">📝 URL completa do Google Forms</div>
+          <div class="setting-label">📝 URL do Google Forms (Backup)</div>
           <input type="text" class="setting-input" id="settingFormsUrl" placeholder="https://docs.google.com/forms/d/.../formResponse">
         </div>
-        
         <div class="setting-group">
           <div class="setting-label">🏷️ Entry IDs (Barras / Qtd)</div>
           <div style="display: flex; gap: 8px;">
@@ -1302,14 +566,13 @@
             <input type="text" class="setting-input" id="settingEntryQtd" placeholder="entry.1238617229" style="flex:1">
           </div>
         </div>
-        
         <div class="setting-toggle">
           <span class="toggle-label">🔊 Sons</span>
           <div class="toggle-switch" id="toggleSound" onclick="toggleSetting('sound')"></div>
         </div>
         <div class="setting-toggle">
           <span class="toggle-label">📳 Vibração</span>
-          <div class="toggle-switch active" id="toggleVibration" onclick="toggleSetting('vibration')"></div>
+          <div class="toggle-switch" id="toggleVibration" onclick="toggleSetting('vibration')"></div>
         </div>
         <div class="setting-toggle">
           <span class="toggle-label">🌙 Tema Escuro</span>
@@ -1333,7 +596,7 @@
       <h1>📦 Inventário</h1>
       <div class="header-actions">
         <span class="header-badge" id="savedBadge">0</span>
-        <button class="btn-header" onclick="openSettings()" title="Configurações">⚙️</button>
+        <button class="btn-header" onclick="openSettings()">⚙️</button>
       </div>
     </div>
   </header>
@@ -1341,9 +604,7 @@
   <!-- Logo Section -->
   <div class="logo-section">
     <div class="logo-container" id="logoContainer" onclick="document.getElementById('logoInput').click()">
-      <div id="logoDisplay">
-        <div class="logo-icon">✚</div>
-      </div>
+      <div id="logoDisplay"><div class="logo-icon">✚</div></div>
       <div class="logo-text-container" id="logoTextContainer">
         <div class="logo-text" id="companyName">Ultra</div>
         <div class="logo-subtitle" id="companySubtitle">DROGARIAS • POPULAR</div>
@@ -1355,47 +616,23 @@
 
   <!-- Main Content -->
   <main class="main-content">
-    <!-- Stats Bar -->
     <div class="stats-bar">
-      <div class="stat-card">
-        <div class="stat-card-value" id="statTotal">0</div>
-        <div class="stat-card-label">Total Itens</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-value" id="statUnique">0</div>
-        <div class="stat-card-label">Únicos</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-value" id="statCadastro">-</div>
-        <div class="stat-card-label">Cadastro</div>
-      </div>
+      <div class="stat-card"><div class="stat-card-value" id="statTotal">0</div><div class="stat-card-label">Total Itens</div></div>
+      <div class="stat-card"><div class="stat-card-value" id="statUnique">0</div><div class="stat-card-label">Únicos</div></div>
+      <div class="stat-card"><div class="stat-card-value" id="statCadastro">-</div><div class="stat-card-label">Cadastro</div></div>
     </div>
 
-    <!-- Form Card -->
     <div class="form-card">
-      <!-- API Status -->
       <div class="api-status" id="apiStatus" onclick="testApiConnection()">
         <div class="api-status-dot" id="apiStatusDot"></div>
         <span class="api-status-text" id="apiStatusText">Verificando API...</span>
         <span class="api-status-action">Testar</span>
       </div>
       
-      <!-- Campo Barras -->
       <div class="input-group">
-        <label class="input-label">
-          <span>🏷️</span> Código de Barras
-        </label>
+        <label class="input-label"><span>🏷️</span> Código de Barras</label>
         <div class="input-wrapper">
-          <input
-            type="text"
-            inputmode="numeric"
-            class="input-field"
-            id="barrasInput"
-            placeholder="Escaneie ou digite"
-            autocomplete="off"
-            oninput="validateBarras()"
-            onkeydown="handleBarrasKeydown(event)"
-          >
+          <input type="text" inputmode="numeric" class="input-field" id="barrasInput" placeholder="Escaneie ou digite" autocomplete="off" oninput="validateBarras()" onkeydown="handleBarrasKeydown(event)">
           <button class="btn-clear" onclick="clearFields()">✕</button>
         </div>
         <div class="validation-msg" id="validationMsg">
@@ -1404,44 +641,26 @@
         </div>
       </div>
 
-      <!-- Campo Quantidade -->
       <div class="input-group">
-        <label class="input-label">
-          <span>📊</span> Quantidade
-        </label>
+        <label class="input-label"><span>📊</span> Quantidade</label>
         <div class="qty-wrapper">
           <button class="qty-btn" onclick="adjustQty(-1)">−</button>
-          <input
-            type="number"
-            inputmode="numeric"
-            class="input-field qty-input"
-            id="qtdInput"
-            value="1"
-            min="1"
-            autocomplete="off"
-            oninput="updateSaveButton()"
-            onkeydown="handleQtdKeydown(event)"
-          >
+          <input type="number" inputmode="numeric" class="input-field qty-input" id="qtdInput" value="1" min="1" autocomplete="off" oninput="updateSaveButton()" onkeydown="handleQtdKeydown(event)">
           <button class="qty-btn" onclick="adjustQty(1)">+</button>
         </div>
       </div>
 
-      <!-- Botões de Ação -->
       <div class="action-buttons">
-        <button class="btn-scan" id="btnScan" onclick="openScanner()">
-          📷 SCAN
-        </button>
+        <button class="btn-scan" id="btnScan" onclick="openScanner()">📷 SCAN</button>
         <button class="btn-save" id="btnSave" onclick="saveData()" disabled>
           <span id="saveIcon">💾</span>
           <span id="saveText">SALVAR</span>
         </button>
       </div>
       
-      <!-- Debug Panel -->
       <div class="debug-panel" id="debugPanel"></div>
     </div>
 
-    <!-- History Card -->
     <div class="history-card">
       <div class="history-header">
         <span class="history-title">📋 Últimos Salvos</span>
@@ -1456,24 +675,38 @@
     </div>
   </main>
 
-  <!-- Hidden iframe -->
   <iframe class="hidden-iframe" id="formFrame" name="formFrame"></iframe>
 
   <script>
     // ============================================
-    // CONFIGURAÇÃO
+    // CONFIGURAÇÃO - VALORES PADRÃO
     // ============================================
+    const DEFAULT_CONFIG = {
+      API_URL: '',
+      GOOGLE_SHEETS_ID: '1VdZPW6awQJmV3gTQ_tncPjPtLHMPCLDNLSTglqezvu8',
+      GOOGLE_FORMS_URL: 'https://docs.google.com/forms/d/1YUMbFoL-ayv9ulpTOAu3E6ClpT_9cI0YbhpV8TJ2vIE/formResponse',
+      ENTRY_BARRAS: 'entry.163691906',
+      ENTRY_QTD: 'entry.1238617229'
+    };
+
+    // Carregar configurações do localStorage COM fallback para defaults
+    function getConfig(key) {
+      const saved = localStorage.getItem(key);
+      return (saved !== null && saved !== '') ? saved : DEFAULT_CONFIG[key] || '';
+    }
+
     let CONFIG = {
-      API_URL: localStorage.getItem('apiUrl') || '',
-      GOOGLE_SHEETS_ID: localStorage.getItem('sheetsId') || '1VdZPW6awQJmV3gTQ_tncPjPtLHMPCLDNLSTglqezvu8',
-      GOOGLE_FORMS_URL: localStorage.getItem('formsUrl') || 'https://docs.google.com/forms/d/1YUMbFoL-ayv9ulpTOAu3E6ClpT_9cI0YbhpV8TJ2vIE/formResponse',
-      ENTRY_BARRAS: localStorage.getItem('entryBarras') || 'entry.163691906',
-      ENTRY_QTD: localStorage.getItem('entryQtd') || 'entry.1238617229',
+      get API_URL() { return getConfig('apiUrl'); },
+      get GOOGLE_SHEETS_ID() { return getConfig('sheetsId') || DEFAULT_CONFIG.GOOGLE_SHEETS_ID; },
+      get GOOGLE_FORMS_URL() { return getConfig('formsUrl') || DEFAULT_CONFIG.GOOGLE_FORMS_URL; },
+      get ENTRY_BARRAS() { return getConfig('entryBarras') || DEFAULT_CONFIG.ENTRY_BARRAS; },
+      get ENTRY_QTD() { return getConfig('entryQtd') || DEFAULT_CONFIG.ENTRY_QTD; },
       
       get SHEETS_URLS() {
+        const id = this.GOOGLE_SHEETS_ID;
         return [
-          `https://docs.google.com/spreadsheets/d/${this.GOOGLE_SHEETS_ID}/export?format=csv`,
-          `https://corsproxy.io/?${encodeURIComponent(`https://docs.google.com/spreadsheets/d/${this.GOOGLE_SHEETS_ID}/export?format=csv`)}`
+          `https://docs.google.com/spreadsheets/d/${id}/export?format=csv`,
+          `https://corsproxy.io/?${encodeURIComponent(`https://docs.google.com/spreadsheets/d/${id}/export?format=csv`)}`
         ];
       }
     };
@@ -1492,11 +725,10 @@
     let history = JSON.parse(localStorage.getItem('history') || '[]');
     let isValid = false;
     let isSaving = false;
-    let scannerActive = false;
-    let flashOn = false;
-    let cameraTrack = null;
     let apiConnected = false;
     let deleteTarget = null;
+    let cameraTrack = null;
+    let flashOn = false;
 
     // ============================================
     // ELEMENTOS DOM
@@ -1545,7 +777,6 @@
     function log(message, type = 'info') {
       const time = new Date().toLocaleTimeString();
       console.log(`[${type.toUpperCase()}] ${message}`);
-      
       if (settings.debug) {
         el.debugPanel.classList.add('show');
         el.debugPanel.innerHTML += `<div class="log-${type}">[${time}] ${message}</div>`;
@@ -1560,14 +791,11 @@
       applyTheme();
       loadLogo();
       initSettingsUI();
+      if (settings.debug) el.debugPanel.classList.add('show');
       await checkApiStatus();
       await loadCadastro();
       renderHistory();
       updateStats();
-      
-      if (settings.debug) {
-        el.debugPanel.classList.add('show');
-      }
     });
 
     function applyTheme() {
@@ -1575,10 +803,12 @@
     }
 
     // ============================================
-    // API STATUS & TEST
+    // API STATUS
     // ============================================
     async function checkApiStatus() {
-      if (!CONFIG.API_URL) {
+      const apiUrl = CONFIG.API_URL;
+      
+      if (!apiUrl) {
         el.apiStatusDot.className = 'api-status-dot error';
         el.apiStatusText.textContent = 'API não configurada';
         apiConnected = false;
@@ -1587,28 +817,19 @@
       }
       
       el.apiStatusText.textContent = 'Verificando...';
-      log(`Testando API: ${CONFIG.API_URL}`);
+      log(`Testando API: ${apiUrl}`);
       
       try {
-        const response = await fetch(`${CONFIG.API_URL}?action=list`, { 
-          method: 'GET',
-          mode: 'cors'
-        });
-        
-        log(`Response status: ${response.status}`);
-        
-        const text = await response.text();
-        log(`Response: ${text.substring(0, 200)}`);
-        
-        const data = JSON.parse(text);
+        const response = await fetch(`${apiUrl}?action=test`);
+        const data = await response.json();
         
         if (data.success) {
           el.apiStatusDot.className = 'api-status-dot connected';
-          el.apiStatusText.textContent = `API OK (${data.data?.length || 0} registros)`;
+          el.apiStatusText.textContent = `API OK (${data.totalRows || 0} linhas)`;
           apiConnected = true;
-          log('API conectada com sucesso!', 'success');
+          log('API conectada!', 'success');
         } else {
-          throw new Error(data.error || 'Erro desconhecido');
+          throw new Error(data.error);
         }
       } catch (error) {
         el.apiStatusDot.className = 'api-status-dot error';
@@ -1621,12 +842,7 @@
     async function testApiConnection() {
       showAlert('Testando conexão...', 'info');
       await checkApiStatus();
-      
-      if (apiConnected) {
-        showAlert('API conectada com sucesso!', 'success');
-      } else {
-        showAlert('Falha na conexão com API', 'error');
-      }
+      showAlert(apiConnected ? 'API conectada!' : 'Falha na conexão', apiConnected ? 'success' : 'error');
     }
 
     // ============================================
@@ -1638,16 +854,13 @@
       const savedSubtitle = localStorage.getItem('companySubtitle');
       
       if (savedLogo) {
-        // Tem imagem - mostrar só a imagem
         el.logoDisplay.innerHTML = `<img src="${savedLogo}" class="logo-image-full" alt="Logo">`;
         el.logoTextContainer.style.display = 'none';
         el.logoContainer.classList.add('has-image');
       } else {
-        // Sem imagem - mostrar ícone + texto
         el.logoDisplay.innerHTML = `<div class="logo-icon">✚</div>`;
         el.logoTextContainer.style.display = 'block';
         el.logoContainer.classList.remove('has-image');
-        
         if (savedName) el.companyName.textContent = savedName;
         if (savedSubtitle) el.companySubtitle.textContent = savedSubtitle;
       }
@@ -1655,50 +868,24 @@
 
     function handleLogoUpload(event) {
       const file = event.target.files[0];
-      if (!file) return;
-      
-      if (!file.type.startsWith('image/')) {
-        showAlert('Selecione uma imagem', 'error');
-        return;
-      }
+      if (!file || !file.type.startsWith('image/')) return;
       
       const reader = new FileReader();
       reader.onload = (e) => {
-        const imageData = e.target.result;
-        
-        // Salvar imagem
-        localStorage.setItem('companyLogo', imageData);
-        
-        // Atualizar display - imagem ocupa tudo
-        el.logoDisplay.innerHTML = `<img src="${imageData}" class="logo-image-full" alt="Logo">`;
+        localStorage.setItem('companyLogo', e.target.result);
+        el.logoDisplay.innerHTML = `<img src="${e.target.result}" class="logo-image-full" alt="Logo">`;
         el.logoTextContainer.style.display = 'none';
         el.logoContainer.classList.add('has-image');
-        
         showAlert('Logo atualizada!', 'success');
         
-        // Opção para remover a logo
         setTimeout(() => {
-          if (confirm('Logo salva!\n\nDeseja REMOVER a logo e voltar ao texto?')) {
+          if (confirm('Logo salva!\n\nDeseja REMOVER a logo?')) {
             localStorage.removeItem('companyLogo');
             loadLogo();
-            
-            const newName = prompt('Nome da empresa:', el.companyName.textContent);
-            if (newName) {
-              el.companyName.textContent = newName;
-              localStorage.setItem('companyName', newName);
-            }
-            
-            const newSubtitle = prompt('Subtítulo:', el.companySubtitle.textContent);
-            if (newSubtitle !== null) {
-              el.companySubtitle.textContent = newSubtitle;
-              localStorage.setItem('companySubtitle', newSubtitle);
-            }
           }
         }, 500);
       };
       reader.readAsDataURL(file);
-      
-      // Limpar input para permitir selecionar mesma imagem
       event.target.value = '';
     }
 
@@ -1708,42 +895,29 @@
     async function loadCadastro() {
       el.loadingText.textContent = 'Carregando cadastro...';
       
-      for (let i = 0; i < CONFIG.SHEETS_URLS.length; i++) {
+      for (const url of CONFIG.SHEETS_URLS) {
         try {
-          log(`Tentativa ${i+1}: ${CONFIG.SHEETS_URLS[i].substring(0, 50)}...`);
-          const response = await fetch(CONFIG.SHEETS_URLS[i]);
+          log(`Tentando: ${url.substring(0, 50)}...`);
+          const response = await fetch(url);
           if (!response.ok) continue;
           
           const csvText = await response.text();
-          const lines = csvText.split('\n');
-          cadastro = [];
-          
-          for (let j = 1; j < lines.length; j++) {
-            const line = lines[j].trim();
-            if (line) {
-              const cols = line.split(',');
-              if (cols[0]) {
-                const barcode = cols[0].replace(/"/g, '').trim();
-                if (barcode && barcode !== 'BARRAS') cadastro.push(barcode);
-              }
-            }
-          }
+          cadastro = csvText.split('\n').slice(1)
+            .map(line => line.split(',')[0]?.replace(/"/g, '').trim())
+            .filter(code => code && code !== 'BARRAS');
           
           if (cadastro.length > 0) {
             el.statCadastro.textContent = cadastro.length;
             el.loadingText.textContent = `✓ ${cadastro.length} produtos`;
-            log(`Cadastro carregado: ${cadastro.length} itens`, 'success');
+            log(`Cadastro: ${cadastro.length} itens`, 'success');
             setTimeout(() => el.loadingOverlay.classList.add('hidden'), 500);
             return;
           }
-        } catch (e) {
-          log(`Falha tentativa ${i+1}: ${e.message}`, 'error');
-        }
+        } catch (e) { log(`Falha: ${e.message}`, 'error'); }
       }
       
       el.statCadastro.textContent = 'OFF';
       el.loadingText.textContent = 'Modo offline';
-      log('Cadastro não carregado - modo offline', 'error');
       setTimeout(() => el.loadingOverlay.classList.add('hidden'), 500);
     }
 
@@ -1755,39 +929,27 @@
       
       if (!barras) {
         isValid = false;
-        el.barrasInput.classList.remove('valid', 'invalid');
-        el.validationMsg.classList.remove('show', 'valid', 'invalid');
+        el.barrasInput.className = 'input-field';
+        el.validationMsg.className = 'validation-msg';
         updateSaveButton();
         return;
       }
 
       if (cadastro.length === 0) {
         isValid = true;
-        el.barrasInput.classList.add('valid');
-        el.barrasInput.classList.remove('invalid');
-        el.validationMsg.classList.add('show', 'valid');
+        el.barrasInput.className = 'input-field valid';
+        el.validationMsg.className = 'validation-msg show valid';
         el.validationIcon.textContent = '✓';
         el.validationText.textContent = 'Modo offline';
-        updateSaveButton();
-        return;
+      } else {
+        const found = cadastro.includes(barras);
+        isValid = found;
+        el.barrasInput.className = `input-field ${found ? 'valid' : 'invalid'}`;
+        el.validationMsg.className = `validation-msg show ${found ? 'valid' : 'invalid'}`;
+        el.validationIcon.textContent = found ? '✓' : '✗';
+        el.validationText.textContent = found ? 'Encontrado' : 'Não encontrado';
+        if (!found) { showAlert('Barras não Encontrado', 'error'); vibrate(30); }
       }
-
-      const found = cadastro.includes(barras);
-      isValid = found;
-      
-      el.barrasInput.classList.toggle('valid', found);
-      el.barrasInput.classList.toggle('invalid', !found);
-      el.validationMsg.classList.add('show');
-      el.validationMsg.classList.toggle('valid', found);
-      el.validationMsg.classList.toggle('invalid', !found);
-      el.validationIcon.textContent = found ? '✓' : '✗';
-      el.validationText.textContent = found ? 'Encontrado' : 'Não encontrado';
-      
-      if (!found) {
-        showAlert('Barras não Encontrado', 'error');
-        vibrate(30);
-      }
-      
       updateSaveButton();
     }
 
@@ -1796,9 +958,7 @@
     }
 
     function adjustQty(delta) {
-      let qty = parseInt(el.qtdInput.value) || 1;
-      qty = Math.max(1, qty + delta);
-      el.qtdInput.value = qty;
+      el.qtdInput.value = Math.max(1, (parseInt(el.qtdInput.value) || 1) + delta);
       vibrate(10);
       updateSaveButton();
     }
@@ -1811,83 +971,47 @@
       el.scannerStatus.textContent = 'Iniciando câmera...';
       
       Quagga.init({
-        inputStream: {
-          name: "Live",
-          type: "LiveStream",
-          target: document.querySelector('#scanner-container'),
-          constraints: {
-            facingMode: "environment",
-            width: { min: 1280, ideal: 1920 },
-            height: { min: 720, ideal: 1080 }
-          },
-          area: { top: "25%", right: "10%", left: "10%", bottom: "25%" }
-        },
+        inputStream: { name: "Live", type: "LiveStream", target: '#scanner-container', constraints: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } }, area: { top: "25%", right: "10%", left: "10%", bottom: "25%" } },
         locator: { patchSize: "medium", halfSample: false },
         numOfWorkers: navigator.hardwareConcurrency || 4,
-        frequency: 10,
-        decoder: {
-          readers: ["ean_reader", "ean_8_reader", "code_128_reader", "code_39_reader", "upc_reader"]
-        },
+        decoder: { readers: ["ean_reader", "ean_8_reader", "code_128_reader", "code_39_reader", "upc_reader"] },
         locate: true
-      }, function(err) {
-        if (err) {
-          el.scannerStatus.textContent = '❌ Erro na câmera';
-          log(`Erro câmera: ${err}`, 'error');
-          return;
-        }
-        el.scannerStatus.textContent = 'Posicione o código de barras';
-        scannerActive = true;
+      }, (err) => {
+        if (err) { el.scannerStatus.textContent = '❌ Erro na câmera'; return; }
+        el.scannerStatus.textContent = 'Posicione o código';
         Quagga.start();
-        
         const video = document.querySelector('#scanner-container video');
         if (video?.srcObject) cameraTrack = video.srcObject.getVideoTracks()[0];
       });
-
       Quagga.onDetected(onBarcodeDetected);
     }
 
     let lastCode = '', lastCodeTime = 0, codeBuffer = [];
-
     function onBarcodeDetected(result) {
       const code = result.codeResult.code;
-      const now = Date.now();
-      
-      if (code === lastCode && (now - lastCodeTime) < 2000) return;
-      
+      if (code === lastCode && Date.now() - lastCodeTime < 2000) return;
       codeBuffer.push(code);
       if (codeBuffer.length > 5) codeBuffer.shift();
-      
       if (codeBuffer.filter(c => c === code).length >= 2) {
-        lastCode = code;
-        lastCodeTime = now;
-        codeBuffer = [];
-        
+        lastCode = code; lastCodeTime = Date.now(); codeBuffer = [];
         vibrate([100, 50, 100]);
         closeScanner();
-        
         el.barrasInput.value = code;
         validateBarras();
-        if (isValid) {
-          el.qtdInput.value = '1';
-          el.qtdInput.focus();
-        }
+        if (isValid) { el.qtdInput.value = '1'; el.qtdInput.focus(); }
         updateSaveButton();
       }
     }
 
     function closeScanner() {
-      scannerActive = false;
-      codeBuffer = [];
-      flashOn = false;
+      codeBuffer = []; flashOn = false;
       el.btnFlash?.classList.remove('active');
       try { Quagga.offDetected(onBarcodeDetected); Quagga.stop(); } catch(e) {}
       el.scannerOverlay.classList.remove('show');
     }
 
     function toggleFlash() {
-      if (!cameraTrack) return;
-      const caps = cameraTrack.getCapabilities();
-      if (!caps.torch) { showAlert('Lanterna não disponível', 'info'); return; }
+      if (!cameraTrack?.getCapabilities()?.torch) { showAlert('Lanterna indisponível', 'info'); return; }
       flashOn = !flashOn;
       cameraTrack.applyConstraints({ advanced: [{ torch: flashOn }] });
       el.btnFlash.classList.toggle('active', flashOn);
@@ -1905,12 +1029,11 @@
     }
 
     // ============================================
-    // SALVAR
+    // SALVAR - AGORA USA API VIA GET
     // ============================================
     async function saveData() {
       const barras = el.barrasInput.value.trim();
       const qtd = el.qtdInput.value.trim();
-      
       if (!barras || !qtd || !isValid) return;
 
       isSaving = true;
@@ -1919,66 +1042,50 @@
       el.btnSave.disabled = true;
 
       const id = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-      const timestamp = new Date().toLocaleString('pt-BR');
-      
       log(`Salvando: ${barras} x${qtd} (ID: ${id})`);
       
+      let savedViaApi = false;
+      
       try {
-        let savedViaApi = false;
-        
-        // Tentar salvar via API primeiro
+        // Tentar salvar via API (usando GET para evitar CORS)
         if (apiConnected && CONFIG.API_URL) {
-          log('Tentando salvar via API...');
-          try {
-            const response = await fetch(CONFIG.API_URL, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ action: 'add', barras, qtd, id, timestamp })
-            });
-            const data = await response.json();
-            if (data.success) {
-              savedViaApi = true;
-              log('Salvo via API!', 'success');
-            } else {
-              log(`API erro: ${data.error}`, 'error');
-            }
-          } catch (apiError) {
-            log(`API falhou: ${apiError.message}`, 'error');
+          log('Salvando via API...');
+          const url = `${CONFIG.API_URL}?action=add&barras=${encodeURIComponent(barras)}&qtd=${encodeURIComponent(qtd)}&id=${encodeURIComponent(id)}`;
+          const response = await fetch(url);
+          const data = await response.json();
+          if (data.success) {
+            savedViaApi = true;
+            log('Salvo via API!', 'success');
+          } else {
+            log(`API erro: ${data.error}`, 'error');
           }
         }
         
-        // Fallback: salvar via Google Forms
+        // Fallback: Google Forms
         if (!savedViaApi) {
-          log('Salvando via Google Forms...');
-          const formUrl = `${CONFIG.GOOGLE_FORMS_URL}?${CONFIG.ENTRY_BARRAS}=${encodeURIComponent(barras)}&${CONFIG.ENTRY_QTD}=${encodeURIComponent(qtd)}`;
-          el.formFrame.src = formUrl;
+          log('Salvando via Forms...');
+          el.formFrame.src = `${CONFIG.GOOGLE_FORMS_URL}?${CONFIG.ENTRY_BARRAS}=${encodeURIComponent(barras)}&${CONFIG.ENTRY_QTD}=${encodeURIComponent(qtd)}`;
           await new Promise(r => setTimeout(r, 800));
           log('Salvo via Forms', 'success');
         }
         
-        // Adicionar ao histórico local
-        const item = {
-          id,
-          code: barras,
-          qty: parseInt(qtd),
+        // Histórico local
+        history.unshift({
+          id, code: barras, qty: parseInt(qtd),
           time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-          timestamp,
           synced: savedViaApi
-        };
-        
-        history.unshift(item);
+        });
         if (history.length > 100) history.pop();
         localStorage.setItem('history', JSON.stringify(history));
         
         updateStats();
         renderHistory();
-        
-        showAlert(`✓ Salvo!`, 'success');
+        showAlert('✓ Salvo!', 'success');
         vibrate([50, 30, 50]);
         clearFields();
         
       } catch (error) {
-        log(`Erro ao salvar: ${error.message}`, 'error');
+        log(`Erro: ${error.message}`, 'error');
         showAlert('Erro ao salvar', 'error');
       } finally {
         isSaving = false;
@@ -1989,7 +1096,7 @@
     }
 
     // ============================================
-    // DELETAR
+    // DELETAR - AGORA ENVIA BARRAS + QTD
     // ============================================
     function askDelete(index) {
       const item = history[index];
@@ -1999,15 +1106,15 @@
       el.confirmCode.textContent = `${item.code} (×${item.qty})`;
       
       if (!apiConnected || !CONFIG.API_URL) {
-        el.confirmStatus.textContent = '⚠️ API não configurada - só vai deletar do histórico local';
-        el.confirmStatus.style.display = 'block';
+        el.confirmStatus.textContent = '⚠️ API não configurada - só deleta do local';
+        el.confirmStatus.style.background = '#fffbeb';
+        el.confirmStatus.style.color = '#b45309';
       } else {
-        el.confirmStatus.textContent = '✓ Vai deletar da planilha e do histórico local';
+        el.confirmStatus.textContent = '✓ Vai deletar da planilha e do local';
         el.confirmStatus.style.background = '#f0fdf4';
         el.confirmStatus.style.color = '#047857';
-        el.confirmStatus.style.display = 'block';
       }
-      
+      el.confirmStatus.style.display = 'block';
       el.confirmOverlay.classList.add('show');
     }
 
@@ -2018,63 +1125,51 @@
 
     async function confirmDelete() {
       if (!deleteTarget) return;
-      
       const { index, item } = deleteTarget;
       
       el.btnConfirmDelete.disabled = true;
       el.btnConfirmDelete.textContent = 'Deletando...';
       
-      log(`Deletando item: ${item.code} (ID: ${item.id})`);
+      log(`Deletando: ${item.code} x${item.qty} (ID: ${item.id})`);
       
       try {
-        // Tentar deletar da API/Sheets
         if (apiConnected && CONFIG.API_URL) {
-          log('Tentando deletar via API...');
-          
-          // Primeiro tenta por ID
-          let url = `${CONFIG.API_URL}?action=delete&id=${item.id}`;
+          // Tenta por ID primeiro
+          let url = `${CONFIG.API_URL}?action=delete&id=${encodeURIComponent(item.id)}`;
           log(`GET: ${url}`);
+          let response = await fetch(url);
+          let data = await response.json();
+          log(`Response: ${JSON.stringify(data)}`);
           
-          let response = await fetch(url, { method: 'GET' });
-          let text = await response.text();
-          log(`Response: ${text}`);
-          
-          let data = JSON.parse(text);
-          
-          // Se não achou por ID, tenta por código de barras
+          // Se não achou por ID, tenta por Barras+Qtd (mais específico)
           if (!data.success) {
-            log('ID não encontrado, tentando por código de barras...');
-            url = `${CONFIG.API_URL}?action=delete&barras=${item.code}`;
+            log('ID não encontrado, tentando Barras+Qtd...');
+            url = `${CONFIG.API_URL}?action=delete&barras=${encodeURIComponent(item.code)}&qtd=${encodeURIComponent(item.qty)}`;
             log(`GET: ${url}`);
-            
-            response = await fetch(url, { method: 'GET' });
-            text = await response.text();
-            log(`Response: ${text}`);
-            
-            data = JSON.parse(text);
+            response = await fetch(url);
+            data = await response.json();
+            log(`Response: ${JSON.stringify(data)}`);
           }
           
           if (data.success) {
-            log(`Deletado da planilha! Linha: ${data.row}`, 'success');
-            showAlert('Deletado da planilha e do histórico!', 'success');
+            log(`Deletado! Linha ${data.row}`, 'success');
+            showAlert('Deletado da planilha!', 'success');
           } else {
-            log(`Não encontrado na planilha: ${data.error}`, 'error');
-            showAlert('Não encontrado na planilha - removido só do local', 'info');
+            log(`Não encontrado: ${data.error}`, 'error');
+            showAlert('Não encontrado na planilha', 'info');
           }
         } else {
-          log('API não disponível - só deletando local');
-          showAlert('Removido do histórico local', 'info');
+          showAlert('Removido do local', 'info');
         }
         
-        // Remover do histórico local
+        // Remove do histórico local
         history.splice(index, 1);
         localStorage.setItem('history', JSON.stringify(history));
-        
         renderHistory();
         updateStats();
         
       } catch (error) {
-        log(`Erro ao deletar: ${error.message}`, 'error');
+        log(`Erro: ${error.message}`, 'error');
         showAlert('Erro: ' + error.message, 'error');
       } finally {
         el.btnConfirmDelete.disabled = false;
@@ -2088,29 +1183,26 @@
     // ============================================
     function renderHistory() {
       if (history.length === 0) {
-        el.historyList.innerHTML = '<div class="history-empty">Nenhum item salvo ainda</div>';
+        el.historyList.innerHTML = '<div class="history-empty">Nenhum item salvo</div>';
         return;
       }
-      
-      el.historyList.innerHTML = history.slice(0, 15).map((item, index) => `
-        <div class="history-item" data-index="${index}">
+      el.historyList.innerHTML = history.slice(0, 15).map((item, i) => `
+        <div class="history-item">
           <div class="history-item-info">
             <span class="history-item-code">${item.code}</span>
             <div class="history-item-meta">
               <span class="history-item-qty">×${item.qty}</span>
               <span class="history-item-time">${item.time}</span>
-              <span class="history-item-status ${item.synced ? 'synced' : 'pending'}">
-                ${item.synced ? '✓ API' : '📝 Forms'}
-              </span>
+              <span class="history-item-status ${item.synced ? 'synced' : 'pending'}">${item.synced ? '✓ API' : '📝 Forms'}</span>
             </div>
           </div>
-          <button class="btn-delete" onclick="askDelete(${index})" title="Deletar">🗑️</button>
+          <button class="btn-delete" onclick="askDelete(${i})">🗑️</button>
         </div>
       `).join('');
     }
 
     function clearAllHistory() {
-      if (confirm('Limpar histórico LOCAL?\n(Não afeta a planilha)')) {
+      if (confirm('Limpar histórico LOCAL?')) {
         history = [];
         localStorage.setItem('history', '[]');
         renderHistory();
@@ -2120,43 +1212,31 @@
     }
 
     function exportHistory() {
-      if (history.length === 0) {
-        showAlert('Nenhum dado', 'info');
-        return;
-      }
-      
-      let csv = 'Codigo,Quantidade,Hora,ID,Sincronizado\n';
-      history.forEach(item => {
-        csv += `${item.code},${item.qty},${item.time},${item.id || ''},${item.synced ? 'Sim' : 'Nao'}\n`;
-      });
-      
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
+      if (!history.length) { showAlert('Nenhum dado', 'info'); return; }
+      const csv = 'Codigo,Quantidade,Hora,ID,Sync\n' + history.map(i => `${i.code},${i.qty},${i.time},${i.id||''},${i.synced?'Sim':'Nao'}`).join('\n');
       const a = document.createElement('a');
-      a.href = url;
+      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
       a.download = `inventario_${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
-      URL.revokeObjectURL(url);
-      
       showAlert('CSV exportado!', 'success');
     }
 
     function updateStats() {
-      const uniqueCodes = new Set(history.map(h => h.code));
       el.savedBadge.textContent = history.length;
-      el.statTotal.textContent = history.reduce((sum, item) => sum + item.qty, 0);
-      el.statUnique.textContent = uniqueCodes.size;
+      el.statTotal.textContent = history.reduce((s, i) => s + i.qty, 0);
+      el.statUnique.textContent = new Set(history.map(h => h.code)).size;
     }
 
     // ============================================
-    // CONFIGURAÇÕES
+    // CONFIGURAÇÕES - CORRIGIDO PARA NÃO PERDER VALORES
     // ============================================
     function initSettingsUI() {
-      document.getElementById('settingApiUrl').value = CONFIG.API_URL;
-      document.getElementById('settingSheetsId').value = CONFIG.GOOGLE_SHEETS_ID;
-      document.getElementById('settingFormsUrl').value = CONFIG.GOOGLE_FORMS_URL;
-      document.getElementById('settingEntryBarras').value = CONFIG.ENTRY_BARRAS;
-      document.getElementById('settingEntryQtd').value = CONFIG.ENTRY_QTD;
+      // Carregar valores ATUAIS (do localStorage ou default)
+      document.getElementById('settingApiUrl').value = localStorage.getItem('apiUrl') || '';
+      document.getElementById('settingSheetsId').value = localStorage.getItem('sheetsId') || DEFAULT_CONFIG.GOOGLE_SHEETS_ID;
+      document.getElementById('settingFormsUrl').value = localStorage.getItem('formsUrl') || DEFAULT_CONFIG.GOOGLE_FORMS_URL;
+      document.getElementById('settingEntryBarras').value = localStorage.getItem('entryBarras') || DEFAULT_CONFIG.ENTRY_BARRAS;
+      document.getElementById('settingEntryQtd').value = localStorage.getItem('entryQtd') || DEFAULT_CONFIG.ENTRY_QTD;
       
       document.getElementById('toggleSound').classList.toggle('active', settings.sound);
       document.getElementById('toggleVibration').classList.toggle('active', settings.vibration);
@@ -2164,31 +1244,37 @@
       document.getElementById('toggleDebug').classList.toggle('active', settings.debug);
     }
 
-    function openSettings() { el.settingsModal.classList.add('show'); }
+    function openSettings() { 
+      initSettingsUI(); // Recarregar valores ao abrir
+      el.settingsModal.classList.add('show'); 
+    }
+    
     function closeSettings() { el.settingsModal.classList.remove('show'); }
 
     function toggleSetting(setting) {
       settings[setting] = !settings[setting];
       localStorage.setItem(setting, settings[setting]);
-      document.getElementById('toggle' + setting.charAt(0).toUpperCase() + setting.slice(1))
-        .classList.toggle('active', settings[setting]);
-      
+      document.getElementById('toggle' + setting.charAt(0).toUpperCase() + setting.slice(1)).classList.toggle('active', settings[setting]);
       if (setting === 'darkMode') applyTheme();
       if (setting === 'debug') el.debugPanel.classList.toggle('show', settings.debug);
     }
 
     function saveSettings() {
-      CONFIG.API_URL = document.getElementById('settingApiUrl').value.trim();
-      CONFIG.GOOGLE_SHEETS_ID = document.getElementById('settingSheetsId').value.trim();
-      CONFIG.GOOGLE_FORMS_URL = document.getElementById('settingFormsUrl').value.trim();
-      CONFIG.ENTRY_BARRAS = document.getElementById('settingEntryBarras').value.trim();
-      CONFIG.ENTRY_QTD = document.getElementById('settingEntryQtd').value.trim();
+      // Pegar valores dos inputs
+      const apiUrl = document.getElementById('settingApiUrl').value.trim();
+      const sheetsId = document.getElementById('settingSheetsId').value.trim();
+      const formsUrl = document.getElementById('settingFormsUrl').value.trim();
+      const entryBarras = document.getElementById('settingEntryBarras').value.trim();
+      const entryQtd = document.getElementById('settingEntryQtd').value.trim();
       
-      localStorage.setItem('apiUrl', CONFIG.API_URL);
-      localStorage.setItem('sheetsId', CONFIG.GOOGLE_SHEETS_ID);
-      localStorage.setItem('formsUrl', CONFIG.GOOGLE_FORMS_URL);
-      localStorage.setItem('entryBarras', CONFIG.ENTRY_BARRAS);
-      localStorage.setItem('entryQtd', CONFIG.ENTRY_QTD);
+      // Salvar no localStorage (usar valor atual se input estiver vazio)
+      localStorage.setItem('apiUrl', apiUrl);
+      localStorage.setItem('sheetsId', sheetsId || DEFAULT_CONFIG.GOOGLE_SHEETS_ID);
+      localStorage.setItem('formsUrl', formsUrl || DEFAULT_CONFIG.GOOGLE_FORMS_URL);
+      localStorage.setItem('entryBarras', entryBarras || DEFAULT_CONFIG.ENTRY_BARRAS);
+      localStorage.setItem('entryQtd', entryQtd || DEFAULT_CONFIG.ENTRY_QTD);
+      
+      log(`Configurações salvas: API=${apiUrl}`, 'success');
       
       closeSettings();
       showAlert('Salvo! Recarregando...', 'success');
@@ -2202,32 +1288,24 @@
       el.barrasInput.value = '';
       el.qtdInput.value = '1';
       isValid = false;
-      el.barrasInput.classList.remove('valid', 'invalid');
-      el.validationMsg.classList.remove('show', 'valid', 'invalid');
+      el.barrasInput.className = 'input-field';
+      el.validationMsg.className = 'validation-msg';
       updateSaveButton();
       el.barrasInput.focus();
     }
 
     function handleBarrasKeydown(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        validateBarras();
-        if (isValid) el.qtdInput.focus();
-      }
+      if (e.key === 'Enter') { e.preventDefault(); validateBarras(); if (isValid) el.qtdInput.focus(); }
     }
 
     function handleQtdKeydown(e) {
-      if (e.key === 'Enter' && isValid && el.qtdInput.value) {
-        e.preventDefault();
-        saveData();
-      }
+      if (e.key === 'Enter' && isValid && el.qtdInput.value) { e.preventDefault(); saveData(); }
     }
 
     // ============================================
     // UTILITÁRIOS
     // ============================================
     let alertTimeout;
-    
     function showAlert(message, type) {
       clearTimeout(alertTimeout);
       el.alert.className = `alert alert-${type}`;
@@ -2236,12 +1314,8 @@
       setTimeout(() => el.alert.classList.add('show'), 10);
       alertTimeout = setTimeout(hideAlert, 2500);
     }
-
     function hideAlert() { el.alert.classList.remove('show'); }
-
-    function vibrate(pattern) {
-      if (settings.vibration && navigator.vibrate) navigator.vibrate(pattern);
-    }
+    function vibrate(pattern) { if (settings.vibration && navigator.vibrate) navigator.vibrate(pattern); }
   </script>
 </body>
 </html>
