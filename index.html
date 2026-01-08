@@ -125,6 +125,7 @@
       text-align: center;
     }
     
+    /* Logo com texto (padrão) */
     .logo-container {
       display: inline-flex;
       align-items: center;
@@ -143,6 +144,10 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.12);
     }
     
+    .logo-container.has-image {
+      padding: 8px;
+    }
+    
     .logo-edit-hint {
       position: absolute;
       bottom: -8px;
@@ -155,20 +160,22 @@
       border-radius: 10px;
       opacity: 0;
       transition: opacity 0.2s;
+      white-space: nowrap;
     }
     
     .logo-container:hover .logo-edit-hint {
       opacity: 1;
     }
     
-    .logo-image {
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
+    /* Logo imagem grande (quando tem imagem) */
+    .logo-image-full {
+      height: 60px;
+      max-width: 200px;
       object-fit: contain;
-      background: #f8fafc;
+      border-radius: 8px;
     }
     
+    /* Logo ícone padrão */
     .logo-icon {
       width: 40px;
       height: 40px;
@@ -180,6 +187,7 @@
       font-size: 20px;
       font-weight: bold;
       color: white;
+      flex-shrink: 0;
     }
     
     .logo-text-container {
@@ -519,6 +527,7 @@
       gap: 8px;
       align-items: center;
       margin-top: 2px;
+      flex-wrap: wrap;
     }
     
     .history-item-qty {
@@ -598,6 +607,7 @@
       border-radius: 8px;
       margin-bottom: 12px;
       font-size: 11px;
+      cursor: pointer;
     }
     
     .api-status-dot {
@@ -617,6 +627,12 @@
     
     .api-status-text {
       color: #64748b;
+      flex: 1;
+    }
+    
+    .api-status-action {
+      color: var(--primary);
+      font-weight: 600;
     }
 
     /* Loading State */
@@ -762,7 +778,7 @@
     .confirm-message {
       font-size: 14px;
       color: #64748b;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
     
     .confirm-code {
@@ -772,7 +788,16 @@
       border-radius: 8px;
       font-size: 16px;
       font-weight: 600;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
+    }
+    
+    .confirm-status {
+      font-size: 12px;
+      padding: 8px;
+      background: #fffbeb;
+      color: #b45309;
+      border-radius: 8px;
+      margin-bottom: 16px;
     }
     
     .confirm-actions {
@@ -804,6 +829,11 @@
     
     .btn-confirm-delete:active {
       transform: scale(0.95);
+    }
+    
+    .btn-confirm-delete:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     /* Scanner Modal */
@@ -1048,7 +1078,7 @@
       padding: 10px 12px;
       border: 2px solid var(--border);
       border-radius: 8px;
-      font-size: 12px;
+      font-size: 11px;
       font-family: monospace;
       background: var(--bg);
       color: var(--text);
@@ -1140,6 +1170,28 @@
       color: var(--text);
       border: 1px solid var(--border);
     }
+    
+    /* Debug Panel */
+    .debug-panel {
+      background: #1e293b;
+      color: #94a3b8;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 10px;
+      font-family: monospace;
+      max-height: 150px;
+      overflow-y: auto;
+      display: none;
+    }
+    
+    .debug-panel.show {
+      display: block;
+    }
+    
+    .debug-panel .log-success { color: #4ade80; }
+    .debug-panel .log-error { color: #f87171; }
+    .debug-panel .log-info { color: #60a5fa; }
 
     /* Hidden elements */
     .hidden-iframe {
@@ -1164,18 +1216,6 @@
         width: 240px;
         height: 120px;
       }
-      
-      .stats-bar {
-        gap: 6px;
-      }
-      
-      .stat-card {
-        padding: 10px 8px;
-      }
-      
-      .stat-card-value {
-        font-size: 18px;
-      }
     }
   </style>
 </head>
@@ -1198,11 +1238,12 @@
     <div class="confirm-dialog">
       <div class="confirm-icon">🗑️</div>
       <div class="confirm-title">Deletar Item?</div>
-      <div class="confirm-message">Isso irá remover do histórico e da planilha Google Sheets</div>
+      <div class="confirm-message">Isso irá remover do histórico e da planilha</div>
       <div class="confirm-code" id="confirmCode">7891234567890</div>
+      <div class="confirm-status" id="confirmStatus"></div>
       <div class="confirm-actions">
         <button class="btn-confirm btn-confirm-cancel" onclick="closeConfirm()">Cancelar</button>
-        <button class="btn-confirm btn-confirm-delete" onclick="confirmDelete()">Deletar</button>
+        <button class="btn-confirm btn-confirm-delete" id="btnConfirmDelete" onclick="confirmDelete()">Deletar</button>
       </div>
     </div>
   </div>
@@ -1239,23 +1280,23 @@
       </div>
       <div class="modal-body">
         <div class="setting-group">
-          <div class="setting-label">URL do Google Apps Script (API)</div>
+          <div class="setting-label">🔗 URL do Google Apps Script (API)</div>
           <input type="text" class="setting-input" id="settingApiUrl" placeholder="https://script.google.com/macros/s/.../exec">
-          <div class="setting-hint">Cole a URL do Web App publicado</div>
+          <div class="setting-hint">Necessário para DELETAR da planilha. Veja instruções no arquivo COMO_CONFIGURAR_API.md</div>
         </div>
         
         <div class="setting-group">
-          <div class="setting-label">ID da Planilha (CSV Cadastro)</div>
+          <div class="setting-label">📊 ID da Planilha (Cadastro CSV)</div>
           <input type="text" class="setting-input" id="settingSheetsId" placeholder="1VdZPW6...">
         </div>
         
         <div class="setting-group">
-          <div class="setting-label">URL do Google Forms (Backup)</div>
+          <div class="setting-label">📝 URL completa do Google Forms</div>
           <input type="text" class="setting-input" id="settingFormsUrl" placeholder="https://docs.google.com/forms/d/.../formResponse">
         </div>
         
         <div class="setting-group">
-          <div class="setting-label">Entry Barras / Entry Qtd</div>
+          <div class="setting-label">🏷️ Entry IDs (Barras / Qtd)</div>
           <div style="display: flex; gap: 8px;">
             <input type="text" class="setting-input" id="settingEntryBarras" placeholder="entry.163691906" style="flex:1">
             <input type="text" class="setting-input" id="settingEntryQtd" placeholder="entry.1238617229" style="flex:1">
@@ -1273,6 +1314,10 @@
         <div class="setting-toggle">
           <span class="toggle-label">🌙 Tema Escuro</span>
           <div class="toggle-switch" id="toggleDarkMode" onclick="toggleSetting('darkMode')"></div>
+        </div>
+        <div class="setting-toggle">
+          <span class="toggle-label">🐛 Modo Debug</span>
+          <div class="toggle-switch" id="toggleDebug" onclick="toggleSetting('debug')"></div>
         </div>
       </div>
       <div class="modal-footer">
@@ -1295,11 +1340,11 @@
 
   <!-- Logo Section -->
   <div class="logo-section">
-    <div class="logo-container" onclick="document.getElementById('logoInput').click()">
+    <div class="logo-container" id="logoContainer" onclick="document.getElementById('logoInput').click()">
       <div id="logoDisplay">
         <div class="logo-icon">✚</div>
       </div>
-      <div class="logo-text-container">
+      <div class="logo-text-container" id="logoTextContainer">
         <div class="logo-text" id="companyName">Ultra</div>
         <div class="logo-subtitle" id="companySubtitle">DROGARIAS • POPULAR</div>
       </div>
@@ -1329,9 +1374,10 @@
     <!-- Form Card -->
     <div class="form-card">
       <!-- API Status -->
-      <div class="api-status" id="apiStatus">
+      <div class="api-status" id="apiStatus" onclick="testApiConnection()">
         <div class="api-status-dot" id="apiStatusDot"></div>
         <span class="api-status-text" id="apiStatusText">Verificando API...</span>
+        <span class="api-status-action">Testar</span>
       </div>
       
       <!-- Campo Barras -->
@@ -1390,6 +1436,9 @@
           <span id="saveText">SALVAR</span>
         </button>
       </div>
+      
+      <!-- Debug Panel -->
+      <div class="debug-panel" id="debugPanel"></div>
     </div>
 
     <!-- History Card -->
@@ -1415,13 +1464,8 @@
     // CONFIGURAÇÃO
     // ============================================
     let CONFIG = {
-      // URL do Google Apps Script (para deletar)
       API_URL: localStorage.getItem('apiUrl') || '',
-      
-      // Para carregar cadastro
       GOOGLE_SHEETS_ID: localStorage.getItem('sheetsId') || '1VdZPW6awQJmV3gTQ_tncPjPtLHMPCLDNLSTglqezvu8',
-      
-      // Para salvar (backup via Forms)
       GOOGLE_FORMS_URL: localStorage.getItem('formsUrl') || 'https://docs.google.com/forms/d/1YUMbFoL-ayv9ulpTOAu3E6ClpT_9cI0YbhpV8TJ2vIE/formResponse',
       ENTRY_BARRAS: localStorage.getItem('entryBarras') || 'entry.163691906',
       ENTRY_QTD: localStorage.getItem('entryQtd') || 'entry.1238617229',
@@ -1434,11 +1478,11 @@
       }
     };
 
-    // Settings
     let settings = {
       sound: localStorage.getItem('sound') === 'true',
       vibration: localStorage.getItem('vibration') !== 'false',
-      darkMode: localStorage.getItem('darkMode') === 'true'
+      darkMode: localStorage.getItem('darkMode') === 'true',
+      debug: localStorage.getItem('debug') === 'true'
     };
 
     // ============================================
@@ -1482,13 +1526,32 @@
       settingsModal: document.getElementById('settingsModal'),
       confirmOverlay: document.getElementById('confirmOverlay'),
       confirmCode: document.getElementById('confirmCode'),
+      confirmStatus: document.getElementById('confirmStatus'),
+      btnConfirmDelete: document.getElementById('btnConfirmDelete'),
       btnFlash: document.getElementById('btnFlash'),
+      logoContainer: document.getElementById('logoContainer'),
       logoDisplay: document.getElementById('logoDisplay'),
+      logoTextContainer: document.getElementById('logoTextContainer'),
       companyName: document.getElementById('companyName'),
       companySubtitle: document.getElementById('companySubtitle'),
       apiStatusDot: document.getElementById('apiStatusDot'),
-      apiStatusText: document.getElementById('apiStatusText')
+      apiStatusText: document.getElementById('apiStatusText'),
+      debugPanel: document.getElementById('debugPanel')
     };
+
+    // ============================================
+    // DEBUG
+    // ============================================
+    function log(message, type = 'info') {
+      const time = new Date().toLocaleTimeString();
+      console.log(`[${type.toUpperCase()}] ${message}`);
+      
+      if (settings.debug) {
+        el.debugPanel.classList.add('show');
+        el.debugPanel.innerHTML += `<div class="log-${type}">[${time}] ${message}</div>`;
+        el.debugPanel.scrollTop = el.debugPanel.scrollHeight;
+      }
+    }
 
     // ============================================
     // INICIALIZAÇÃO
@@ -1501,6 +1564,10 @@
       await loadCadastro();
       renderHistory();
       updateStats();
+      
+      if (settings.debug) {
+        el.debugPanel.classList.add('show');
+      }
     });
 
     function applyTheme() {
@@ -1508,34 +1575,57 @@
     }
 
     // ============================================
-    // API STATUS
+    // API STATUS & TEST
     // ============================================
     async function checkApiStatus() {
       if (!CONFIG.API_URL) {
-        el.apiStatusDot.classList.remove('connected');
-        el.apiStatusDot.classList.add('error');
-        el.apiStatusText.textContent = 'API não configurada (só salva)';
+        el.apiStatusDot.className = 'api-status-dot error';
+        el.apiStatusText.textContent = 'API não configurada';
         apiConnected = false;
+        log('API URL não configurada', 'error');
         return;
       }
       
+      el.apiStatusText.textContent = 'Verificando...';
+      log(`Testando API: ${CONFIG.API_URL}`);
+      
       try {
-        const response = await fetch(`${CONFIG.API_URL}?action=list`, { method: 'GET' });
-        const data = await response.json();
+        const response = await fetch(`${CONFIG.API_URL}?action=list`, { 
+          method: 'GET',
+          mode: 'cors'
+        });
+        
+        log(`Response status: ${response.status}`);
+        
+        const text = await response.text();
+        log(`Response: ${text.substring(0, 200)}`);
+        
+        const data = JSON.parse(text);
         
         if (data.success) {
-          el.apiStatusDot.classList.remove('error');
-          el.apiStatusDot.classList.add('connected');
-          el.apiStatusText.textContent = 'API conectada ✓';
+          el.apiStatusDot.className = 'api-status-dot connected';
+          el.apiStatusText.textContent = `API OK (${data.data?.length || 0} registros)`;
           apiConnected = true;
+          log('API conectada com sucesso!', 'success');
         } else {
-          throw new Error(data.error);
+          throw new Error(data.error || 'Erro desconhecido');
         }
       } catch (error) {
-        el.apiStatusDot.classList.remove('connected');
-        el.apiStatusDot.classList.add('error');
-        el.apiStatusText.textContent = 'API offline (só salva)';
+        el.apiStatusDot.className = 'api-status-dot error';
+        el.apiStatusText.textContent = 'API offline';
         apiConnected = false;
+        log(`Erro API: ${error.message}`, 'error');
+      }
+    }
+
+    async function testApiConnection() {
+      showAlert('Testando conexão...', 'info');
+      await checkApiStatus();
+      
+      if (apiConnected) {
+        showAlert('API conectada com sucesso!', 'success');
+      } else {
+        showAlert('Falha na conexão com API', 'error');
       }
     }
 
@@ -1548,10 +1638,19 @@
       const savedSubtitle = localStorage.getItem('companySubtitle');
       
       if (savedLogo) {
-        el.logoDisplay.innerHTML = `<img src="${savedLogo}" class="logo-image" alt="Logo">`;
+        // Tem imagem - mostrar só a imagem
+        el.logoDisplay.innerHTML = `<img src="${savedLogo}" class="logo-image-full" alt="Logo">`;
+        el.logoTextContainer.style.display = 'none';
+        el.logoContainer.classList.add('has-image');
+      } else {
+        // Sem imagem - mostrar ícone + texto
+        el.logoDisplay.innerHTML = `<div class="logo-icon">✚</div>`;
+        el.logoTextContainer.style.display = 'block';
+        el.logoContainer.classList.remove('has-image');
+        
+        if (savedName) el.companyName.textContent = savedName;
+        if (savedSubtitle) el.companySubtitle.textContent = savedSubtitle;
       }
-      if (savedName) el.companyName.textContent = savedName;
-      if (savedSubtitle) el.companySubtitle.textContent = savedSubtitle;
     }
 
     function handleLogoUpload(event) {
@@ -1566,24 +1665,41 @@
       const reader = new FileReader();
       reader.onload = (e) => {
         const imageData = e.target.result;
+        
+        // Salvar imagem
         localStorage.setItem('companyLogo', imageData);
-        el.logoDisplay.innerHTML = `<img src="${imageData}" class="logo-image" alt="Logo">`;
         
-        const newName = prompt('Nome da empresa:', el.companyName.textContent);
-        if (newName) {
-          el.companyName.textContent = newName;
-          localStorage.setItem('companyName', newName);
-        }
-        
-        const newSubtitle = prompt('Subtítulo:', el.companySubtitle.textContent);
-        if (newSubtitle !== null) {
-          el.companySubtitle.textContent = newSubtitle;
-          localStorage.setItem('companySubtitle', newSubtitle);
-        }
+        // Atualizar display - imagem ocupa tudo
+        el.logoDisplay.innerHTML = `<img src="${imageData}" class="logo-image-full" alt="Logo">`;
+        el.logoTextContainer.style.display = 'none';
+        el.logoContainer.classList.add('has-image');
         
         showAlert('Logo atualizada!', 'success');
+        
+        // Opção para remover a logo
+        setTimeout(() => {
+          if (confirm('Logo salva!\n\nDeseja REMOVER a logo e voltar ao texto?')) {
+            localStorage.removeItem('companyLogo');
+            loadLogo();
+            
+            const newName = prompt('Nome da empresa:', el.companyName.textContent);
+            if (newName) {
+              el.companyName.textContent = newName;
+              localStorage.setItem('companyName', newName);
+            }
+            
+            const newSubtitle = prompt('Subtítulo:', el.companySubtitle.textContent);
+            if (newSubtitle !== null) {
+              el.companySubtitle.textContent = newSubtitle;
+              localStorage.setItem('companySubtitle', newSubtitle);
+            }
+          }
+        }, 500);
       };
       reader.readAsDataURL(file);
+      
+      // Limpar input para permitir selecionar mesma imagem
+      event.target.value = '';
     }
 
     // ============================================
@@ -1594,6 +1710,7 @@
       
       for (let i = 0; i < CONFIG.SHEETS_URLS.length; i++) {
         try {
+          log(`Tentativa ${i+1}: ${CONFIG.SHEETS_URLS[i].substring(0, 50)}...`);
           const response = await fetch(CONFIG.SHEETS_URLS[i]);
           if (!response.ok) continue;
           
@@ -1615,14 +1732,18 @@
           if (cadastro.length > 0) {
             el.statCadastro.textContent = cadastro.length;
             el.loadingText.textContent = `✓ ${cadastro.length} produtos`;
+            log(`Cadastro carregado: ${cadastro.length} itens`, 'success');
             setTimeout(() => el.loadingOverlay.classList.add('hidden'), 500);
             return;
           }
-        } catch (e) {}
+        } catch (e) {
+          log(`Falha tentativa ${i+1}: ${e.message}`, 'error');
+        }
       }
       
       el.statCadastro.textContent = 'OFF';
       el.loadingText.textContent = 'Modo offline';
+      log('Cadastro não carregado - modo offline', 'error');
       setTimeout(() => el.loadingOverlay.classList.add('hidden'), 500);
     }
 
@@ -1674,9 +1795,6 @@
       el.btnSave.disabled = !(isValid && el.barrasInput.value.trim() && el.qtdInput.value.trim() && !isSaving);
     }
 
-    // ============================================
-    // QUANTIDADE
-    // ============================================
     function adjustQty(delta) {
       let qty = parseInt(el.qtdInput.value) || 1;
       qty = Math.max(1, qty + delta);
@@ -1714,6 +1832,7 @@
       }, function(err) {
         if (err) {
           el.scannerStatus.textContent = '❌ Erro na câmera';
+          log(`Erro câmera: ${err}`, 'error');
           return;
         }
         el.scannerStatus.textContent = 'Posicione o código de barras';
@@ -1802,21 +1921,39 @@
       const id = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
       const timestamp = new Date().toLocaleString('pt-BR');
       
+      log(`Salvando: ${barras} x${qtd} (ID: ${id})`);
+      
       try {
+        let savedViaApi = false;
+        
         // Tentar salvar via API primeiro
         if (apiConnected && CONFIG.API_URL) {
-          const response = await fetch(CONFIG.API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'add', barras, qtd, id, timestamp })
-          });
-          const data = await response.json();
-          if (!data.success) throw new Error(data.error);
-        } else {
-          // Fallback: salvar via Google Forms
+          log('Tentando salvar via API...');
+          try {
+            const response = await fetch(CONFIG.API_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'add', barras, qtd, id, timestamp })
+            });
+            const data = await response.json();
+            if (data.success) {
+              savedViaApi = true;
+              log('Salvo via API!', 'success');
+            } else {
+              log(`API erro: ${data.error}`, 'error');
+            }
+          } catch (apiError) {
+            log(`API falhou: ${apiError.message}`, 'error');
+          }
+        }
+        
+        // Fallback: salvar via Google Forms
+        if (!savedViaApi) {
+          log('Salvando via Google Forms...');
           const formUrl = `${CONFIG.GOOGLE_FORMS_URL}?${CONFIG.ENTRY_BARRAS}=${encodeURIComponent(barras)}&${CONFIG.ENTRY_QTD}=${encodeURIComponent(qtd)}`;
           el.formFrame.src = formUrl;
           await new Promise(r => setTimeout(r, 800));
+          log('Salvo via Forms', 'success');
         }
         
         // Adicionar ao histórico local
@@ -1826,7 +1963,7 @@
           qty: parseInt(qtd),
           time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
           timestamp,
-          synced: apiConnected
+          synced: savedViaApi
         };
         
         history.unshift(item);
@@ -1841,7 +1978,8 @@
         clearFields();
         
       } catch (error) {
-        showAlert('Erro ao salvar: ' + error.message, 'error');
+        log(`Erro ao salvar: ${error.message}`, 'error');
+        showAlert('Erro ao salvar', 'error');
       } finally {
         isSaving = false;
         el.saveIcon.textContent = '💾';
@@ -1859,6 +1997,17 @@
       
       deleteTarget = { index, item };
       el.confirmCode.textContent = `${item.code} (×${item.qty})`;
+      
+      if (!apiConnected || !CONFIG.API_URL) {
+        el.confirmStatus.textContent = '⚠️ API não configurada - só vai deletar do histórico local';
+        el.confirmStatus.style.display = 'block';
+      } else {
+        el.confirmStatus.textContent = '✓ Vai deletar da planilha e do histórico local';
+        el.confirmStatus.style.background = '#f0fdf4';
+        el.confirmStatus.style.color = '#047857';
+        el.confirmStatus.style.display = 'block';
+      }
+      
       el.confirmOverlay.classList.add('show');
     }
 
@@ -1871,21 +2020,50 @@
       if (!deleteTarget) return;
       
       const { index, item } = deleteTarget;
-      const btn = document.querySelector(`[data-index="${index}"] .btn-delete`);
-      if (btn) btn.classList.add('deleting');
+      
+      el.btnConfirmDelete.disabled = true;
+      el.btnConfirmDelete.textContent = 'Deletando...';
+      
+      log(`Deletando item: ${item.code} (ID: ${item.id})`);
       
       try {
         // Tentar deletar da API/Sheets
-        if (apiConnected && CONFIG.API_URL && item.id) {
-          const response = await fetch(`${CONFIG.API_URL}?action=delete&id=${item.id}`, { method: 'GET' });
-          const data = await response.json();
+        if (apiConnected && CONFIG.API_URL) {
+          log('Tentando deletar via API...');
           
+          // Primeiro tenta por ID
+          let url = `${CONFIG.API_URL}?action=delete&id=${item.id}`;
+          log(`GET: ${url}`);
+          
+          let response = await fetch(url, { method: 'GET' });
+          let text = await response.text();
+          log(`Response: ${text}`);
+          
+          let data = JSON.parse(text);
+          
+          // Se não achou por ID, tenta por código de barras
           if (!data.success) {
-            // Tentar por código de barras
-            const response2 = await fetch(`${CONFIG.API_URL}?action=delete&barras=${item.code}`, { method: 'GET' });
-            const data2 = await response2.json();
-            if (!data2.success) throw new Error('Não encontrado na planilha');
+            log('ID não encontrado, tentando por código de barras...');
+            url = `${CONFIG.API_URL}?action=delete&barras=${item.code}`;
+            log(`GET: ${url}`);
+            
+            response = await fetch(url, { method: 'GET' });
+            text = await response.text();
+            log(`Response: ${text}`);
+            
+            data = JSON.parse(text);
           }
+          
+          if (data.success) {
+            log(`Deletado da planilha! Linha: ${data.row}`, 'success');
+            showAlert('Deletado da planilha e do histórico!', 'success');
+          } else {
+            log(`Não encontrado na planilha: ${data.error}`, 'error');
+            showAlert('Não encontrado na planilha - removido só do local', 'info');
+          }
+        } else {
+          log('API não disponível - só deletando local');
+          showAlert('Removido do histórico local', 'info');
         }
         
         // Remover do histórico local
@@ -1894,20 +2072,13 @@
         
         renderHistory();
         updateStats();
-        showAlert('Item deletado!', 'success');
         
       } catch (error) {
+        log(`Erro ao deletar: ${error.message}`, 'error');
         showAlert('Erro: ' + error.message, 'error');
-        
-        // Mesmo com erro, remover do local se usuário quiser
-        if (confirm('Não foi possível deletar da planilha. Remover apenas do histórico local?')) {
-          history.splice(index, 1);
-          localStorage.setItem('history', JSON.stringify(history));
-          renderHistory();
-          updateStats();
-        }
       } finally {
-        if (btn) btn.classList.remove('deleting');
+        el.btnConfirmDelete.disabled = false;
+        el.btnConfirmDelete.textContent = 'Deletar';
         closeConfirm();
       }
     }
@@ -1929,7 +2100,7 @@
               <span class="history-item-qty">×${item.qty}</span>
               <span class="history-item-time">${item.time}</span>
               <span class="history-item-status ${item.synced ? 'synced' : 'pending'}">
-                ${item.synced ? '✓ Sync' : '⏳ Local'}
+                ${item.synced ? '✓ API' : '📝 Forms'}
               </span>
             </div>
           </div>
@@ -1939,7 +2110,7 @@
     }
 
     function clearAllHistory() {
-      if (confirm('Limpar todo o histórico LOCAL?\n(Não afeta a planilha)')) {
+      if (confirm('Limpar histórico LOCAL?\n(Não afeta a planilha)')) {
         history = [];
         localStorage.setItem('history', '[]');
         renderHistory();
@@ -1954,9 +2125,9 @@
         return;
       }
       
-      let csv = 'Codigo,Quantidade,Hora,ID\n';
+      let csv = 'Codigo,Quantidade,Hora,ID,Sincronizado\n';
       history.forEach(item => {
-        csv += `${item.code},${item.qty},${item.time},${item.id || ''}\n`;
+        csv += `${item.code},${item.qty},${item.time},${item.id || ''},${item.synced ? 'Sim' : 'Nao'}\n`;
       });
       
       const blob = new Blob([csv], { type: 'text/csv' });
@@ -1990,6 +2161,7 @@
       document.getElementById('toggleSound').classList.toggle('active', settings.sound);
       document.getElementById('toggleVibration').classList.toggle('active', settings.vibration);
       document.getElementById('toggleDarkMode').classList.toggle('active', settings.darkMode);
+      document.getElementById('toggleDebug').classList.toggle('active', settings.debug);
     }
 
     function openSettings() { el.settingsModal.classList.add('show'); }
@@ -2000,7 +2172,9 @@
       localStorage.setItem(setting, settings[setting]);
       document.getElementById('toggle' + setting.charAt(0).toUpperCase() + setting.slice(1))
         .classList.toggle('active', settings[setting]);
+      
       if (setting === 'darkMode') applyTheme();
+      if (setting === 'debug') el.debugPanel.classList.toggle('show', settings.debug);
     }
 
     function saveSettings() {
