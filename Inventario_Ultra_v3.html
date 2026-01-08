@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#059669">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Inventário Ultra Popular</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- QuaggaJS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+  
+  <style>
+    :root {
+      --primary: #059669;
+      --primary-dark: #047857;
+      --danger: #dc2626;
+      --danger-light: #ef4444;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --bg: #f8fafc;
+      --bg-dark: #0f172a;
+      --card: #ffffff;
+      --card-dark: #1e293b;
+      --text: #1e293b;
+      --text-dark: #f1f5f9;
+      --border: #e2e8f0;
+      --border-dark: #334155;
+    }
+    
+    [data-theme="dark"] {
+      --bg: var(--bg-dark);
+      --card: var(--card-dark);
+      --text: var(--text-dark);
+      --border: var(--border-dark);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      background: linear-gradient(135deg, var(--bg) 0%, var(--border) 100%);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+    
+    html {
+      height: -webkit-fill-available;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 12px 20px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      box-shadow: 0 4px 20px rgba(5, 150, 105, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header-content {
+      max-width: 500px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .header h1 {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .header-badge {
+      background: rgba(255,255,255,0.2);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    
+    .btn-header {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .btn-header:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    /* Logo Section */
+    .logo-section {
+      padding: 20px 20px 12px;
+      text-align: center;
+    }
+    
+    .logo-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--card);
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    
+    .logo-container:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+    
+    .logo-container:active {
+      transform: scale(0.98);
+    }
+    
+    .logo-edit-hint {
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: white;
+      font-size: 9px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    
+    .logo-container:hover .logo-edit-hint {
+      opacity: 1;
+    }
+    
+    .logo-image {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      object-fit: contain;
+      background: #f8fafc;
+    }
+    
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+    }
+    
+    .logo-text-container {
+      text-align: left;
+    }
+    
+    .logo-text {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+    }
+    
+    .logo-subtitle {
+      font-size: 9px;
+      color: var(--danger);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    
+    #logoInput {
+      display: none;
+    }
+
+    /* Main Content */
+    .main-content {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 0 16px 160px;
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .stat-card {
+      background: var(--card);
+      padding: 12px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    
+    .stat-card-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .stat-card-label {
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* Form Card */
+    .form-card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      margin-bottom: 12px;
+    }
+
+    /* Input Groups */
+    .input-group {
+      margin-bottom: 16px;
+    }
+    
+    .input-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+    
+    .input-wrapper {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .input-field {
+      flex: 1;
+      padding: 12px 14px;
+      font-size: 16px;
+      font-weight: 500;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-appearance: none;
+    }
+    
+    .input-field:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: var(--card);
+      box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+    }
+    
+    .input-field.valid {
+      border-color: var(--success);
+      background: rgba(16, 185, 129, 0.1);
+    }
+    
+    .input-field.invalid {
+      border-color: var(--danger);
+      background: rgba(220, 38, 38, 0.1);
+    }
+    
+    .btn-clear {
+      padding: 12px 14px;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-clear:active {
+      transform: scale(0.95);
+      background: var(--border);
+    }
+
+    /* Quantity Controls */
+    .qty-wrapper {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .qty-btn {
+      width: 44px;
+      height: 44px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--primary);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .qty-btn:active {
+      transform: scale(0.9);
+      background: var(--primary);
+      color: white;
+    }
+    
+    .qty-input {
+      width: 80px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    /* Validation Message */
+    .validation-msg {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .validation-msg.show {
+      display: flex;
+    }
+    
+    .validation-msg.valid {
+      color: var(--success);
+    }
+    
+    .validation-msg.invalid {
+      color: var(--danger);
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .btn-scan {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, var(--danger-light) 0%, var(--danger) 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    }
+    
+    .btn-scan:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+    
+    .btn-scan:disabled {
+      background: #94a3b8;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+    
+    .btn-save {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4);
+    }
+    
+    .btn-save:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+    
+    .btn-save:disabled {
+      background: #94a3b8;
+      box-shadow: none;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    /* History Card */
+    .history-card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    
+    .history-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #64748b;
+    }
+    
+    .history-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn-history {
+      padding: 6px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-history:hover {
+      background: var(--border);
+    }
+    
+    .history-list {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    .history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: var(--bg);
+      border-radius: 8px;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+    
+    .history-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .history-item-code {
+      font-weight: 600;
+      font-family: monospace;
+    }
+    
+    .history-item-qty {
+      background: var(--primary);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    
+    .history-item-time {
+      color: #94a3b8;
+      font-size: 11px;
+    }
+    
+    .history-empty {
+      text-align: center;
+      padding: 20px;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    /* Loading State */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.3s ease;
+    }
+    
+    .loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 16px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    /* Alert */
+    .alert {
+      position: fixed;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      padding: 12px 16px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 200;
+      max-width: 90%;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    
+    .alert.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+    
+    .alert-error {
+      background: #fef2f2;
+      color: var(--danger);
+      border: 1px solid #fecaca;
+    }
+    
+    .alert-success {
+      background: #f0fdf4;
+      color: var(--success);
+      border: 1px solid #bbf7d0;
+    }
+    
+    .alert-info {
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+    }
+    
+    .alert-close {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      opacity: 0.6;
+      margin-left: 4px;
+    }
+
+    /* Scanner Modal */
+    .scanner-overlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .scanner-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .scanner-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      background: rgba(0,0,0,0.8);
+      color: white;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+    }
+    
+    .scanner-header h3 {
+      font-size: 15px;
+      font-weight: 600;
+    }
+    
+    .scanner-header-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn-scanner {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .btn-scanner:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    
+    .btn-scanner.active {
+      background: var(--warning);
+    }
+    
+    #scanner-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    #scanner-container video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    #scanner-container canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .scanner-target {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 280px;
+      height: 150px;
+      border: 3px solid var(--primary);
+      border-radius: 12px;
+      box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+      z-index: 5;
+    }
+    
+    .scanner-target::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #00ff00, transparent);
+      animation: scanLine 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes scanLine {
+      0%, 100% { top: 0; }
+      50% { top: calc(100% - 3px); }
+    }
+    
+    .scanner-footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px;
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      background: rgba(0,0,0,0.8);
+      z-index: 10;
+    }
+    
+    .scanner-status {
+      text-align: center;
+      color: white;
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+    
+    .scanner-status.reading {
+      color: #4ade80;
+    }
+    
+    .scanner-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .btn-manual {
+      flex: 1;
+      padding: 12px 14px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    .btn-cancel {
+      flex: 1;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Settings Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 400;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .modal {
+      background: var(--card);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 400px;
+      max-height: 80vh;
+      overflow-y: auto;
+      transform: scale(0.9);
+      transition: transform 0.3s;
+    }
+    
+    .modal-overlay.show .modal {
+      transform: scale(1);
+    }
+    
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #64748b;
+    }
+    
+    .modal-body {
+      padding: 20px;
+    }
+    
+    .setting-group {
+      margin-bottom: 16px;
+    }
+    
+    .setting-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+    
+    .setting-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: monospace;
+      background: var(--bg);
+      color: var(--text);
+    }
+    
+    .setting-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    
+    .setting-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .setting-toggle:last-child {
+      border-bottom: none;
+    }
+    
+    .toggle-label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .toggle-switch {
+      width: 50px;
+      height: 28px;
+      background: var(--border);
+      border-radius: 14px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .toggle-switch.active {
+      background: var(--primary);
+    }
+    
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.3s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .toggle-switch.active::after {
+      transform: translateX(22px);
+    }
+    
+    .modal-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+    }
+    
+    .btn-modal {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+    }
+    
+    .btn-modal-primary {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn-modal-secondary {
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    /* Hidden elements */
+    .hidden-iframe {
+      display: none;
+    }
+    
+    /* Audio elements */
+    .audio-elements {
+      display: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 380px) {
+      .header h1 {
+        font-size: 14px;
+      }
+      
+      .logo-text {
+        font-size: 18px;
+      }
+      
+      .form-card {
+        padding: 16px;
+      }
+      
+      .scanner-target {
+        width: 240px;
+        height: 120px;
+      }
+      
+      .stats-bar {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+      }
+      
+      .stat-card {
+        padding: 10px 8px;
+      }
+      
+      .stat-card-value {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Carregando cadastro...</div>
+  </div>
+
+  <!-- Alert -->
+  <div class="alert" id="alert">
+    <span id="alertIcon">⚠️</span>
+    <span id="alertMessage"></span>
+    <button class="alert-close" onclick="hideAlert()">×</button>
+  </div>
+
+  <!-- Scanner Modal -->
+  <div class="scanner-overlay" id="scannerOverlay">
+    <div class="scanner-header">
+      <h3>📷 Scanner</h3>
+      <div class="scanner-header-actions">
+        <button class="btn-scanner" id="btnFlash" onclick="toggleFlash()" title="Lanterna">🔦</button>
+        <button class="btn-scanner" onclick="closeScanner()">✕</button>
+      </div>
+    </div>
+    
+    <div id="scanner-container">
+      <div class="scanner-target"></div>
+    </div>
+    
+    <div class="scanner-footer">
+      <div class="scanner-status" id="scannerStatus">Posicione o código de barras</div>
+      <div class="scanner-actions">
+        <button class="btn-manual" onclick="manualInput()">⌨️ Digitar</button>
+        <button class="btn-cancel" onclick="closeScanner()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">⚙️ Configurações</span>
+        <button class="modal-close" onclick="closeSettings()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-group">
+          <div class="setting-label">ID da Planilha Google Sheets</div>
+          <input type="text" class="setting-input" id="settingSheetsId" placeholder="1VdZPW6...">
+        </div>
+        <div class="setting-group">
+          <div class="setting-label">ID do Google Forms</div>
+          <input type="text" class="setting-input" id="settingFormsId" placeholder="1YUMbFoL...">
+        </div>
+        <div class="setting-group">
+          <div class="setting-label">Entry Barras</div>
+          <input type="text" class="setting-input" id="settingEntryBarras" placeholder="entry.163691906">
+        </div>
+        <div class="setting-group">
+          <div class="setting-label">Entry Quantidade</div>
+          <input type="text" class="setting-input" id="settingEntryQtd" placeholder="entry.1238617229">
+        </div>
+        
+        <div class="setting-toggle">
+          <span class="toggle-label">🔊 Sons</span>
+          <div class="toggle-switch" id="toggleSound" onclick="toggleSetting('sound')"></div>
+        </div>
+        <div class="setting-toggle">
+          <span class="toggle-label">📳 Vibração</span>
+          <div class="toggle-switch active" id="toggleVibration" onclick="toggleSetting('vibration')"></div>
+        </div>
+        <div class="setting-toggle">
+          <span class="toggle-label">🌙 Tema Escuro</span>
+          <div class="toggle-switch" id="toggleDarkMode" onclick="toggleSetting('darkMode')"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal btn-modal-secondary" onclick="closeSettings()">Cancelar</button>
+        <button class="btn-modal btn-modal-primary" onclick="saveSettings()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <h1>📦 Inventário</h1>
+      <div class="header-actions">
+        <span class="header-badge" id="savedBadge">0</span>
+        <button class="btn-header" onclick="openSettings()" title="Configurações">⚙️</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Logo Section - Clicável para upload -->
+  <div class="logo-section">
+    <div class="logo-container" onclick="document.getElementById('logoInput').click()">
+      <div id="logoDisplay">
+        <div class="logo-icon">✚</div>
+      </div>
+      <div class="logo-text-container">
+        <div class="logo-text" id="companyName">Ultra</div>
+        <div class="logo-subtitle" id="companySubtitle">DROGARIAS • POPULAR</div>
+      </div>
+      <span class="logo-edit-hint">📷 Trocar logo</span>
+    </div>
+    <input type="file" id="logoInput" accept="image/*" onchange="handleLogoUpload(event)">
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-card-value" id="statTotal">0</div>
+        <div class="stat-card-label">Total Itens</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value" id="statUnique">0</div>
+        <div class="stat-card-label">Únicos</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value" id="statCadastro">-</div>
+        <div class="stat-card-label">Cadastro</div>
+      </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-card">
+      <!-- Campo Barras -->
+      <div class="input-group">
+        <label class="input-label">
+          <span>🏷️</span> Código de Barras
+        </label>
+        <div class="input-wrapper">
+          <input
+            type="text"
+            inputmode="numeric"
+            class="input-field"
+            id="barrasInput"
+            placeholder="Escaneie ou digite"
+            autocomplete="off"
+            oninput="validateBarras()"
+            onkeydown="handleBarrasKeydown(event)"
+          >
+          <button class="btn-clear" onclick="clearFields()">✕</button>
+        </div>
+        <div class="validation-msg" id="validationMsg">
+          <span id="validationIcon">✓</span>
+          <span id="validationText">Código válido</span>
+        </div>
+      </div>
+
+      <!-- Campo Quantidade -->
+      <div class="input-group">
+        <label class="input-label">
+          <span>📊</span> Quantidade
+        </label>
+        <div class="qty-wrapper">
+          <button class="qty-btn" onclick="adjustQty(-1)">−</button>
+          <input
+            type="number"
+            inputmode="numeric"
+            class="input-field qty-input"
+            id="qtdInput"
+            value="1"
+            min="1"
+            autocomplete="off"
+            oninput="updateSaveButton()"
+            onkeydown="handleQtdKeydown(event)"
+          >
+          <button class="qty-btn" onclick="adjustQty(1)">+</button>
+        </div>
+      </div>
+
+      <!-- Botões de Ação -->
+      <div class="action-buttons">
+        <button class="btn-scan" id="btnScan" onclick="openScanner()">
+          📷 SCAN
+        </button>
+        <button class="btn-save" id="btnSave" onclick="saveData()" disabled>
+          <span id="saveIcon">💾</span>
+          <span id="saveText">SALVAR</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- History Card -->
+    <div class="history-card">
+      <div class="history-header">
+        <span class="history-title">📋 Últimos Salvos</span>
+        <div class="history-actions">
+          <button class="btn-history" onclick="exportHistory()">📥 Exportar</button>
+          <button class="btn-history" onclick="clearHistory()">🗑️ Limpar</button>
+        </div>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="history-empty">Nenhum item salvo ainda</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Hidden iframe -->
+  <iframe class="hidden-iframe" id="formFrame" name="formFrame"></iframe>
+
+  <!-- Audio Elements -->
+  <div class="audio-elements">
+    <audio id="audioSuccess" preload="auto">
+      <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Onp6ciHhxeIGJjo+JfnVxdX2EioyKhH13dHZ7gYWHh4WBfHl4en6ChIWEgX57eXl7foCCgoF/fHp5ent+gIGBgH58e3p7fH5/gIB/fnx7ent8fX5/f39+fXx7e3x8fX5+fn59fHt7e3x8fX19fX18fHt7e3t8fHx8fHx8e3t7e3t7e3x8fHx8fHt7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7ewA=" type="audio/wav">
+    </audio>
+    <audio id="audioError" preload="auto">
+      <source src="data:audio/wav;base64,UklGRl9vT19teleVBQAAABAAIAAgACAAAQAEAAwAEAATABUAFgAWABUAEwAQAAwACAAEAAEA" type="audio/wav">
+    </audio>
+  </div>
+
+  <script>
+    // ============================================
+    // CONFIGURAÇÃO
+    // ============================================
+    let CONFIG = {
+      GOOGLE_SHEETS_ID: localStorage.getItem('sheetsId') || '1VdZPW6awQJmV3gTQ_tncPjPtLHMPCLDNLSTglqezvu8',
+      GOOGLE_FORMS_ID: localStorage.getItem('formsId') || '1YUMbFoL-ayv9ulpTOAu3E6ClpT_9cI0YbhpV8TJ2vIE',
+      ENTRY_BARRAS: localStorage.getItem('entryBarras') || 'entry.163691906',
+      ENTRY_QTD: localStorage.getItem('entryQtd') || 'entry.1238617229',
+      
+      get SHEETS_URLS() {
+        return [
+          `https://docs.google.com/spreadsheets/d/${this.GOOGLE_SHEETS_ID}/export?format=csv`,
+          `https://corsproxy.io/?${encodeURIComponent(`https://docs.google.com/spreadsheets/d/${this.GOOGLE_SHEETS_ID}/export?format=csv`)}`,
+          `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://docs.google.com/spreadsheets/d/${this.GOOGLE_SHEETS_ID}/export?format=csv`)}`
+        ];
+      },
+      
+      get FORMS_URL() {
+        return `https://docs.google.com/forms/d/${this.GOOGLE_FORMS_ID}/formResponse`;
+      }
+    };
+
+    // Settings
+    let settings = {
+      sound: localStorage.getItem('sound') === 'true',
+      vibration: localStorage.getItem('vibration') !== 'false',
+      darkMode: localStorage.getItem('darkMode') === 'true'
+    };
+
+    // ============================================
+    // ESTADO
+    // ============================================
+    let cadastro = [];
+    let savedCount = 0;
+    let uniqueCodes = new Set();
+    let history = JSON.parse(localStorage.getItem('history') || '[]');
+    let isValid = false;
+    let isSaving = false;
+    let scannerActive = false;
+    let flashOn = false;
+    let cameraTrack = null;
+
+    // ============================================
+    // ELEMENTOS DOM
+    // ============================================
+    const el = {
+      loadingOverlay: document.getElementById('loadingOverlay'),
+      loadingText: document.getElementById('loadingText'),
+      alert: document.getElementById('alert'),
+      alertIcon: document.getElementById('alertIcon'),
+      alertMessage: document.getElementById('alertMessage'),
+      scannerOverlay: document.getElementById('scannerOverlay'),
+      scannerStatus: document.getElementById('scannerStatus'),
+      barrasInput: document.getElementById('barrasInput'),
+      qtdInput: document.getElementById('qtdInput'),
+      validationMsg: document.getElementById('validationMsg'),
+      validationIcon: document.getElementById('validationIcon'),
+      validationText: document.getElementById('validationText'),
+      btnSave: document.getElementById('btnSave'),
+      saveIcon: document.getElementById('saveIcon'),
+      saveText: document.getElementById('saveText'),
+      savedBadge: document.getElementById('savedBadge'),
+      formFrame: document.getElementById('formFrame'),
+      historyList: document.getElementById('historyList'),
+      statTotal: document.getElementById('statTotal'),
+      statUnique: document.getElementById('statUnique'),
+      statCadastro: document.getElementById('statCadastro'),
+      settingsModal: document.getElementById('settingsModal'),
+      btnFlash: document.getElementById('btnFlash'),
+      logoDisplay: document.getElementById('logoDisplay'),
+      companyName: document.getElementById('companyName'),
+      companySubtitle: document.getElementById('companySubtitle')
+    };
+
+    // ============================================
+    // INICIALIZAÇÃO
+    // ============================================
+    document.addEventListener('DOMContentLoaded', () => {
+      applyTheme();
+      loadLogo();
+      loadCadastro();
+      renderHistory();
+      updateStats();
+      initSettingsUI();
+    });
+
+    function applyTheme() {
+      document.body.setAttribute('data-theme', settings.darkMode ? 'dark' : 'light');
+    }
+
+    // ============================================
+    // LOGO UPLOAD
+    // ============================================
+    function loadLogo() {
+      const savedLogo = localStorage.getItem('companyLogo');
+      const savedName = localStorage.getItem('companyName');
+      const savedSubtitle = localStorage.getItem('companySubtitle');
+      
+      if (savedLogo) {
+        el.logoDisplay.innerHTML = `<img src="${savedLogo}" class="logo-image" alt="Logo">`;
+      }
+      if (savedName) {
+        el.companyName.textContent = savedName;
+      }
+      if (savedSubtitle) {
+        el.companySubtitle.textContent = savedSubtitle;
+      }
+    }
+
+    function handleLogoUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      if (!file.type.startsWith('image/')) {
+        showAlert('Por favor, selecione uma imagem', 'error');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageData = e.target.result;
+        
+        // Salvar no localStorage
+        localStorage.setItem('companyLogo', imageData);
+        
+        // Atualizar display
+        el.logoDisplay.innerHTML = `<img src="${imageData}" class="logo-image" alt="Logo">`;
+        
+        // Perguntar se quer alterar o nome
+        const newName = prompt('Nome da empresa:', el.companyName.textContent);
+        if (newName) {
+          el.companyName.textContent = newName;
+          localStorage.setItem('companyName', newName);
+        }
+        
+        const newSubtitle = prompt('Subtítulo (opcional):', el.companySubtitle.textContent);
+        if (newSubtitle !== null) {
+          el.companySubtitle.textContent = newSubtitle;
+          localStorage.setItem('companySubtitle', newSubtitle);
+        }
+        
+        showAlert('Logo atualizada com sucesso!', 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ============================================
+    // CARREGAR CADASTRO
+    // ============================================
+    async function loadCadastro() {
+      for (let i = 0; i < CONFIG.SHEETS_URLS.length; i++) {
+        const url = CONFIG.SHEETS_URLS[i];
+        el.loadingText.textContent = `Tentativa ${i + 1} de ${CONFIG.SHEETS_URLS.length}...`;
+        
+        try {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          
+          const csvText = await response.text();
+          if (!csvText || csvText.length < 10) throw new Error('CSV inválido');
+          
+          const lines = csvText.split('\n');
+          cadastro = [];
+          
+          for (let j = 1; j < lines.length; j++) {
+            const line = lines[j].trim();
+            if (line) {
+              let cols = line.split(',');
+              if (cols[0]) {
+                const barcode = cols[0].replace(/"/g, '').trim();
+                if (barcode && barcode !== 'BARRAS' && barcode.length > 0) {
+                  cadastro.push(barcode);
+                }
+              }
+            }
+          }
+          
+          if (cadastro.length > 0) {
+            el.loadingText.textContent = `✓ ${cadastro.length} produtos`;
+            el.statCadastro.textContent = cadastro.length;
+            
+            setTimeout(() => el.loadingOverlay.classList.add('hidden'), 600);
+            return;
+          }
+        } catch (error) {
+          console.error(`Tentativa ${i + 1} falhou:`, error);
+        }
+      }
+      
+      el.loadingText.textContent = '⚠️ Modo offline';
+      el.statCadastro.textContent = 'OFF';
+      cadastro = [];
+      
+      setTimeout(() => {
+        el.loadingOverlay.classList.add('hidden');
+        showAlert('Modo offline: validação desativada', 'info');
+      }, 1000);
+    }
+
+    // ============================================
+    // VALIDAÇÃO
+    // ============================================
+    function validateBarras() {
+      const barras = el.barrasInput.value.trim();
+      
+      if (!barras) {
+        isValid = false;
+        el.barrasInput.classList.remove('valid', 'invalid');
+        el.validationMsg.classList.remove('show', 'valid', 'invalid');
+        updateSaveButton();
+        return;
+      }
+
+      if (cadastro.length === 0) {
+        isValid = true;
+        el.barrasInput.classList.remove('invalid');
+        el.barrasInput.classList.add('valid');
+        el.validationMsg.classList.add('show', 'valid');
+        el.validationMsg.classList.remove('invalid');
+        el.validationIcon.textContent = '✓';
+        el.validationText.textContent = 'Modo offline';
+        updateSaveButton();
+        return;
+      }
+
+      const found = cadastro.includes(barras);
+      isValid = found;
+      
+      el.barrasInput.classList.remove('valid', 'invalid');
+      el.validationMsg.classList.remove('valid', 'invalid');
+      
+      if (found) {
+        el.barrasInput.classList.add('valid');
+        el.validationMsg.classList.add('show', 'valid');
+        el.validationIcon.textContent = '✓';
+        el.validationText.textContent = 'Encontrado';
+        playSound('success');
+      } else {
+        el.barrasInput.classList.add('invalid');
+        el.validationMsg.classList.add('show', 'invalid');
+        el.validationIcon.textContent = '✗';
+        el.validationText.textContent = 'Não encontrado';
+        showAlert('Barras não Encontrado', 'error');
+        playSound('error');
+        vibrate(30);
+      }
+      
+      updateSaveButton();
+    }
+
+    function updateSaveButton() {
+      const barras = el.barrasInput.value.trim();
+      const qtd = el.qtdInput.value.trim();
+      el.btnSave.disabled = !(isValid && barras && qtd && !isSaving);
+    }
+
+    // ============================================
+    // QUANTIDADE
+    // ============================================
+    function adjustQty(delta) {
+      let qty = parseInt(el.qtdInput.value) || 1;
+      qty = Math.max(1, qty + delta);
+      el.qtdInput.value = qty;
+      vibrate(10);
+      updateSaveButton();
+    }
+
+    // ============================================
+    // SCANNER
+    // ============================================
+    function openScanner() {
+      el.scannerOverlay.classList.add('show');
+      el.scannerStatus.textContent = 'Iniciando câmera...';
+      
+      Quagga.init({
+        inputStream: {
+          name: "Live",
+          type: "LiveStream",
+          target: document.querySelector('#scanner-container'),
+          constraints: {
+            facingMode: "environment",
+            width: { min: 1280, ideal: 1920, max: 2560 },
+            height: { min: 720, ideal: 1080, max: 1440 }
+          },
+          area: { top: "25%", right: "10%", left: "10%", bottom: "25%" }
+        },
+        locator: { patchSize: "medium", halfSample: false },
+        numOfWorkers: navigator.hardwareConcurrency || 4,
+        frequency: 10,
+        decoder: {
+          readers: ["ean_reader", "ean_8_reader", "code_128_reader", "code_39_reader", "upc_reader", "upc_e_reader"]
+        },
+        locate: true
+      }, function(err) {
+        if (err) {
+          el.scannerStatus.textContent = '❌ Erro na câmera';
+          showAlert('Não foi possível acessar a câmera', 'error');
+          return;
+        }
+        
+        el.scannerStatus.textContent = 'Posicione o código de barras';
+        scannerActive = true;
+        Quagga.start();
+        
+        // Guardar track para flash
+        const video = document.querySelector('#scanner-container video');
+        if (video && video.srcObject) {
+          cameraTrack = video.srcObject.getVideoTracks()[0];
+        }
+      });
+
+      Quagga.onDetected(onBarcodeDetected);
+      
+      Quagga.onProcessed(function(result) {
+        if (result && result.codeResult && result.codeResult.code) {
+          el.scannerStatus.textContent = '🔍 Lendo...';
+          el.scannerStatus.classList.add('reading');
+        }
+      });
+    }
+
+    let lastCode = '';
+    let lastCodeTime = 0;
+    let codeBuffer = [];
+
+    function onBarcodeDetected(result) {
+      const code = result.codeResult.code;
+      const now = Date.now();
+      
+      if (code === lastCode && (now - lastCodeTime) < 2000) return;
+      
+      codeBuffer.push(code);
+      if (codeBuffer.length > 5) codeBuffer.shift();
+      
+      const sameCodeCount = codeBuffer.filter(c => c === code).length;
+      
+      if (sameCodeCount >= 2) {
+        lastCode = code;
+        lastCodeTime = now;
+        codeBuffer = [];
+        
+        vibrate([100, 50, 100]);
+        playSound('success');
+        
+        closeScanner();
+        
+        el.barrasInput.value = code;
+        validateBarras();
+        
+        if (isValid) {
+          el.qtdInput.value = '1';
+          setTimeout(() => el.qtdInput.focus(), 100);
+        }
+        
+        updateSaveButton();
+      }
+    }
+
+    function closeScanner() {
+      scannerActive = false;
+      codeBuffer = [];
+      flashOn = false;
+      el.btnFlash.classList.remove('active');
+      
+      try {
+        Quagga.offDetected(onBarcodeDetected);
+        Quagga.stop();
+      } catch (e) {}
+      
+      el.scannerOverlay.classList.remove('show');
+    }
+
+    function toggleFlash() {
+      if (!cameraTrack) return;
+      
+      const capabilities = cameraTrack.getCapabilities();
+      if (!capabilities.torch) {
+        showAlert('Lanterna não disponível', 'info');
+        return;
+      }
+      
+      flashOn = !flashOn;
+      cameraTrack.applyConstraints({ advanced: [{ torch: flashOn }] });
+      el.btnFlash.classList.toggle('active', flashOn);
+    }
+
+    function manualInput() {
+      closeScanner();
+      const code = prompt('Digite o código de barras:');
+      if (code && code.trim()) {
+        el.barrasInput.value = code.trim();
+        validateBarras();
+        if (isValid) {
+          el.qtdInput.value = '1';
+          el.qtdInput.focus();
+        }
+        updateSaveButton();
+      }
+    }
+
+    // ============================================
+    // SALVAR
+    // ============================================
+    async function saveData() {
+      const barras = el.barrasInput.value.trim();
+      const qtd = el.qtdInput.value.trim();
+      
+      if (!barras || !qtd) {
+        showAlert('Preencha todos os campos', 'error');
+        return;
+      }
+
+      if (!isValid && cadastro.length > 0) {
+        showAlert('Código não encontrado', 'error');
+        return;
+      }
+
+      isSaving = true;
+      el.saveIcon.textContent = '⏳';
+      el.saveText.textContent = 'SALVANDO...';
+      el.btnSave.disabled = true;
+
+      try {
+        const formUrl = `${CONFIG.FORMS_URL}?${CONFIG.ENTRY_BARRAS}=${encodeURIComponent(barras)}&${CONFIG.ENTRY_QTD}=${encodeURIComponent(qtd)}&submit=Submit`;
+        el.formFrame.src = formUrl;
+        
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Atualizar contadores
+        savedCount++;
+        uniqueCodes.add(barras);
+        
+        // Adicionar ao histórico
+        const item = {
+          code: barras,
+          qty: parseInt(qtd),
+          time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+        };
+        history.unshift(item);
+        if (history.length > 50) history.pop();
+        localStorage.setItem('history', JSON.stringify(history));
+        
+        updateStats();
+        renderHistory();
+        
+        showAlert(`✓ Salvo! (${savedCount})`, 'success');
+        playSound('success');
+        vibrate([50, 30, 50]);
+        
+        clearFields();
+        
+      } catch (error) {
+        showAlert('Erro ao salvar', 'error');
+        playSound('error');
+      } finally {
+        isSaving = false;
+        el.saveIcon.textContent = '💾';
+        el.saveText.textContent = 'SALVAR';
+        updateSaveButton();
+      }
+    }
+
+    // ============================================
+    // HISTÓRICO
+    // ============================================
+    function renderHistory() {
+      if (history.length === 0) {
+        el.historyList.innerHTML = '<div class="history-empty">Nenhum item salvo ainda</div>';
+        return;
+      }
+      
+      el.historyList.innerHTML = history.slice(0, 10).map(item => `
+        <div class="history-item">
+          <span class="history-item-code">${item.code}</span>
+          <span class="history-item-qty">×${item.qty}</span>
+          <span class="history-item-time">${item.time}</span>
+        </div>
+      `).join('');
+    }
+
+    function clearHistory() {
+      if (confirm('Limpar todo o histórico?')) {
+        history = [];
+        savedCount = 0;
+        uniqueCodes.clear();
+        localStorage.setItem('history', '[]');
+        renderHistory();
+        updateStats();
+        showAlert('Histórico limpo', 'info');
+      }
+    }
+
+    function exportHistory() {
+      if (history.length === 0) {
+        showAlert('Nenhum dado para exportar', 'info');
+        return;
+      }
+      
+      let csv = 'Codigo,Quantidade,Hora\n';
+      history.forEach(item => {
+        csv += `${item.code},${item.qty},${item.time}\n`;
+      });
+      
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `inventario_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      showAlert('CSV exportado!', 'success');
+    }
+
+    function updateStats() {
+      el.savedBadge.textContent = savedCount;
+      el.statTotal.textContent = history.reduce((sum, item) => sum + item.qty, 0);
+      el.statUnique.textContent = uniqueCodes.size;
+    }
+
+    // ============================================
+    // CONFIGURAÇÕES
+    // ============================================
+    function initSettingsUI() {
+      document.getElementById('settingSheetsId').value = CONFIG.GOOGLE_SHEETS_ID;
+      document.getElementById('settingFormsId').value = CONFIG.GOOGLE_FORMS_ID;
+      document.getElementById('settingEntryBarras').value = CONFIG.ENTRY_BARRAS;
+      document.getElementById('settingEntryQtd').value = CONFIG.ENTRY_QTD;
+      
+      document.getElementById('toggleSound').classList.toggle('active', settings.sound);
+      document.getElementById('toggleVibration').classList.toggle('active', settings.vibration);
+      document.getElementById('toggleDarkMode').classList.toggle('active', settings.darkMode);
+    }
+
+    function openSettings() {
+      el.settingsModal.classList.add('show');
+    }
+
+    function closeSettings() {
+      el.settingsModal.classList.remove('show');
+    }
+
+    function toggleSetting(setting) {
+      settings[setting] = !settings[setting];
+      localStorage.setItem(setting, settings[setting]);
+      
+      const toggle = document.getElementById('toggle' + setting.charAt(0).toUpperCase() + setting.slice(1));
+      toggle.classList.toggle('active', settings[setting]);
+      
+      if (setting === 'darkMode') {
+        applyTheme();
+      }
+    }
+
+    function saveSettings() {
+      CONFIG.GOOGLE_SHEETS_ID = document.getElementById('settingSheetsId').value.trim();
+      CONFIG.GOOGLE_FORMS_ID = document.getElementById('settingFormsId').value.trim();
+      CONFIG.ENTRY_BARRAS = document.getElementById('settingEntryBarras').value.trim();
+      CONFIG.ENTRY_QTD = document.getElementById('settingEntryQtd').value.trim();
+      
+      localStorage.setItem('sheetsId', CONFIG.GOOGLE_SHEETS_ID);
+      localStorage.setItem('formsId', CONFIG.GOOGLE_FORMS_ID);
+      localStorage.setItem('entryBarras', CONFIG.ENTRY_BARRAS);
+      localStorage.setItem('entryQtd', CONFIG.ENTRY_QTD);
+      
+      closeSettings();
+      showAlert('Configurações salvas! Recarregando...', 'success');
+      
+      setTimeout(() => location.reload(), 1000);
+    }
+
+    // ============================================
+    // AÇÕES
+    // ============================================
+    function clearFields() {
+      el.barrasInput.value = '';
+      el.qtdInput.value = '1';
+      isValid = false;
+      el.barrasInput.classList.remove('valid', 'invalid');
+      el.validationMsg.classList.remove('show', 'valid', 'invalid');
+      updateSaveButton();
+      el.barrasInput.focus();
+    }
+
+    function handleBarrasKeydown(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        validateBarras();
+        if (isValid) el.qtdInput.focus();
+        updateSaveButton();
+      }
+    }
+
+    function handleQtdKeydown(event) {
+      if (event.key === 'Enter' && isValid && el.qtdInput.value) {
+        event.preventDefault();
+        saveData();
+      }
+    }
+
+    // ============================================
+    // UTILITÁRIOS
+    // ============================================
+    let alertTimeout;
+    
+    function showAlert(message, type) {
+      clearTimeout(alertTimeout);
+      el.alert.className = `alert alert-${type}`;
+      el.alertIcon.textContent = type === 'error' ? '⚠️' : type === 'success' ? '✓' : 'ℹ️';
+      el.alertMessage.textContent = message;
+      setTimeout(() => el.alert.classList.add('show'), 10);
+      alertTimeout = setTimeout(hideAlert, 2500);
+    }
+
+    function hideAlert() {
+      el.alert.classList.remove('show');
+    }
+
+    function vibrate(pattern) {
+      if (settings.vibration && navigator.vibrate) {
+        navigator.vibrate(pattern);
+      }
+    }
+
+    function playSound(type) {
+      if (!settings.sound) return;
+      
+      try {
+        const audio = new AudioContext();
+        const oscillator = audio.createOscillator();
+        const gain = audio.createGain();
+        
+        oscillator.connect(gain);
+        gain.connect(audio.destination);
+        
+        if (type === 'success') {
+          oscillator.frequency.value = 880;
+          gain.gain.value = 0.1;
+        } else {
+          oscillator.frequency.value = 220;
+          gain.gain.value = 0.15;
+        }
+        
+        oscillator.start();
+        oscillator.stop(audio.currentTime + 0.1);
+      } catch (e) {}
+    }
+  </script>
+</body>
+</html>
