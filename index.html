@@ -6,21 +6,13 @@
   <meta name="theme-color" content="#059669">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Inventário">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="application-name" content="Inventário Ultra">
-  <meta name="msapplication-TileColor" content="#059669">
-  
   <title>Inventário Ultra Popular</title>
-  
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkludmVudMOhcmlvIFVsdHJhIFBvcHVsYXIiLAogICJzaG9ydF9uYW1lIjogIkludmVudMOhcmlvIiwKICAiZGVzY3JpcHRpb24iOiAiQXBwIGRlIGNvbnRhZ2VtIGRlIGludmVudMOhcmlvIHBhcmEgVWx0cmEgUG9wdWxhciBGYXJtw6FjaWEiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2Y4ZmFmYyIsCiAgInRoZW1lX2NvbG9yIjogIiMwNTk2NjkiLAogICJvcmllbnRhdGlvbiI6ICJwb3J0cmFpdCIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owaWFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaUlIWnBaWGRDYjNnOUlqQWdNQ0F4T1RJZ01Ua3lJajQ4Y21WamRDQjNhV1IwYUQwaU1Ua3lJaUJvWldsbmFIUTlJakU1TWlJZ1ptbHNiRDBpSXpBMU9UWTJPU0l2UGp4MFpYaDBJSGc5SWprMklpQjVQU0l4TURBaUlHWnZiblF0YzJsNlpUMGlOakFpSUdacGJHdzlJbmRvYVhSbElpQjBaWGgwTFdGdVkyaHZjajBpYldsa1pHeGxJaUJtYjI1MExXZGhiV2xzZVQwaVFYSnBZV3dpUGl0UVBDOTBaWGgwUGp3dmMzWm5QZz09IiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIiwKICAgICAgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIgogICAgfQogIF0KfQ==">
-  
-  <!-- Apple Touch Icon -->
-  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iIzA1OTY2OSIvPjx0ZXh0IHg9Ijk2IiB5PSIxMDAiIGZvbnQtc2l6ZT0iNjAiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiPitQPC90ZXh0Pjwvc3ZnPg==">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- QuaggaJS - Biblioteca de leitura de código de barras -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
   
   <style>
     * {
@@ -41,95 +33,6 @@
     
     html {
       height: -webkit-fill-available;
-    }
-    
-    /* Install Banner */
-    .install-banner {
-      position: fixed;
-      bottom: 60px;
-      left: 10px;
-      right: 10px;
-      background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
-      color: white;
-      padding: 16px 20px;
-      border-radius: 16px;
-      display: none;
-      flex-direction: column;
-      gap: 12px;
-      z-index: 400;
-      box-shadow: 0 10px 40px rgba(30, 64, 175, 0.4);
-      animation: slideUp 0.4s ease;
-    }
-    
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
-    .install-banner.show {
-      display: flex;
-    }
-    
-    .install-banner-content {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    
-    .install-banner-icon {
-      width: 48px;
-      height: 48px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-    }
-    
-    .install-banner-text h4 {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-    
-    .install-banner-text p {
-      font-size: 13px;
-      opacity: 0.9;
-    }
-    
-    .install-banner-actions {
-      display: flex;
-      gap: 10px;
-    }
-    
-    .btn-install {
-      flex: 1;
-      padding: 12px 16px;
-      background: white;
-      color: #1e40af;
-      border: none;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    
-    .btn-dismiss {
-      padding: 12px 16px;
-      background: rgba(255,255,255,0.2);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
     }
     
     /* Header */
@@ -427,6 +330,8 @@
       color: white;
       font-size: 16px;
       font-weight: 500;
+      text-align: center;
+      padding: 0 20px;
     }
     
     /* Alert */
@@ -468,6 +373,12 @@
       border: 1px solid #bbf7d0;
     }
     
+    .alert-info {
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+    }
+    
     .alert-close {
       background: none;
       border: none;
@@ -477,16 +388,14 @@
       margin-left: 8px;
     }
     
-    /* Scanner Modal */
+    /* Scanner Modal - MELHORADO */
     .scanner-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.9);
+      background: #000;
       z-index: 300;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      flex-direction: column;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s ease;
@@ -497,27 +406,19 @@
       pointer-events: auto;
     }
     
-    .scanner-container {
-      background: white;
-      border-radius: 20px;
-      overflow: hidden;
-      width: 100%;
-      max-width: 400px;
-      transform: scale(0.9);
-      transition: transform 0.3s ease;
-    }
-    
-    .scanner-overlay.show .scanner-container {
-      transform: scale(1);
-    }
-    
     .scanner-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 16px 20px;
-      background: #059669;
+      padding-top: max(16px, env(safe-area-inset-top));
+      background: rgba(0,0,0,0.8);
       color: white;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
     }
     
     .scanner-header h3 {
@@ -529,10 +430,10 @@
       background: rgba(255,255,255,0.2);
       border: none;
       color: white;
-      width: 32px;
-      height: 32px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      font-size: 20px;
+      font-size: 24px;
       cursor: pointer;
       transition: background 0.2s;
     }
@@ -541,39 +442,49 @@
       background: rgba(255,255,255,0.3);
     }
     
-    .scanner-viewport {
+    /* Container do scanner QuaggaJS */
+    #scanner-container {
+      flex: 1;
       position: relative;
-      aspect-ratio: 4/3;
-      background: #000;
       overflow: hidden;
     }
     
-    .scanner-video {
+    #scanner-container video {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
     
-    .scanner-frame {
+    #scanner-container canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .scanner-target {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 70%;
-      height: 50%;
-      border: 3px solid rgba(5, 150, 105, 0.8);
+      width: 280px;
+      height: 150px;
+      border: 3px solid #059669;
       border-radius: 12px;
       box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+      z-index: 5;
     }
     
-    .scanner-line {
+    .scanner-target::before {
+      content: '';
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
       height: 3px;
-      background: linear-gradient(90deg, transparent, #059669, transparent);
-      animation: scanLine 2s ease-in-out infinite;
+      background: linear-gradient(90deg, transparent, #00ff00, transparent);
+      animation: scanLine 1.5s ease-in-out infinite;
     }
     
     @keyframes scanLine {
@@ -581,48 +492,41 @@
       50% { top: calc(100% - 3px); }
     }
     
-    .scanner-error {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      padding: 40px;
-      text-align: center;
-      color: #dc2626;
-      background: #fef2f2;
+    .scanner-footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 20px;
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+      background: rgba(0,0,0,0.8);
+      z-index: 10;
     }
     
-    .scanner-instructions {
-      padding: 16px 20px;
+    .scanner-status {
       text-align: center;
-      background: #f8fafc;
-    }
-    
-    .scanner-instructions p {
+      color: white;
+      margin-bottom: 16px;
       font-size: 14px;
-      color: #475569;
     }
     
-    .scanner-hint {
-      font-size: 12px !important;
-      color: #94a3b8 !important;
-      margin-top: 4px;
+    .scanner-status.reading {
+      color: #4ade80;
     }
     
     .scanner-actions {
       display: flex;
       gap: 12px;
-      padding: 16px 20px;
     }
     
     .btn-manual {
       flex: 1;
-      padding: 12px 16px;
+      padding: 14px 16px;
       background: #059669;
       color: white;
       border: none;
-      border-radius: 10px;
-      font-size: 14px;
+      border-radius: 12px;
+      font-size: 15px;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s;
@@ -634,19 +538,19 @@
     
     .btn-cancel {
       flex: 1;
-      padding: 12px 16px;
-      background: #f1f5f9;
-      color: #64748b;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.2);
+      color: white;
       border: none;
-      border-radius: 10px;
-      font-size: 14px;
+      border-radius: 12px;
+      font-size: 15px;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s;
     }
     
     .btn-cancel:hover {
-      background: #e2e8f0;
+      background: rgba(255,255,255,0.3);
     }
     
     /* Stats Footer */
@@ -677,7 +581,41 @@
       color: #059669;
     }
     
-    /* Hidden iframe for form submission */
+    .stat-value.error {
+      color: #dc2626;
+    }
+    
+    /* Debug Panel */
+    .debug-panel {
+      background: #1e293b;
+      color: #94a3b8;
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin-top: 16px;
+      font-size: 12px;
+      font-family: monospace;
+      max-height: 150px;
+      overflow-y: auto;
+      display: none;
+    }
+    
+    .debug-panel.show {
+      display: block;
+    }
+    
+    .debug-panel .success {
+      color: #4ade80;
+    }
+    
+    .debug-panel .error {
+      color: #f87171;
+    }
+    
+    .debug-panel .info {
+      color: #60a5fa;
+    }
+    
+    /* Hidden iframe */
     .hidden-iframe {
       display: none;
     }
@@ -700,6 +638,11 @@
         font-size: 16px;
         padding: 12px 14px;
       }
+      
+      .scanner-target {
+        width: 240px;
+        height: 120px;
+      }
     }
   </style>
 </head>
@@ -710,21 +653,6 @@
     <div class="loading-text" id="loadingText">Carregando cadastro...</div>
   </div>
 
-  <!-- Install Banner -->
-  <div class="install-banner" id="installBanner">
-    <div class="install-banner-content">
-      <div class="install-banner-icon">📦</div>
-      <div class="install-banner-text">
-        <h4>Instalar como App</h4>
-        <p>Adicione à tela inicial para acesso rápido</p>
-      </div>
-    </div>
-    <div class="install-banner-actions">
-      <button class="btn-install" onclick="installApp()">Instalar</button>
-      <button class="btn-dismiss" onclick="dismissInstall()">Depois</button>
-    </div>
-  </div>
-
   <!-- Alert -->
   <div class="alert" id="alert">
     <span id="alertIcon">⚠️</span>
@@ -732,28 +660,23 @@
     <button class="alert-close" onclick="hideAlert()">×</button>
   </div>
 
-  <!-- Scanner Modal -->
+  <!-- Scanner Modal - MELHORADO -->
   <div class="scanner-overlay" id="scannerOverlay">
-    <div class="scanner-container">
-      <div class="scanner-header">
-        <h3>📷 Scanner de Código de Barras</h3>
-        <button class="scanner-close" onclick="closeScanner()">×</button>
+    <div class="scanner-header">
+      <h3>📷 Scanner de Código de Barras</h3>
+      <button class="scanner-close" onclick="closeScanner()">×</button>
+    </div>
+    
+    <div id="scanner-container">
+      <div class="scanner-target"></div>
+    </div>
+    
+    <div class="scanner-footer">
+      <div class="scanner-status" id="scannerStatus">
+        Posicione o código de barras na área verde
       </div>
-      
-      <div class="scanner-viewport">
-        <video id="scannerVideo" playsinline muted class="scanner-video"></video>
-        <div class="scanner-frame">
-          <div class="scanner-line"></div>
-        </div>
-      </div>
-      
-      <div class="scanner-instructions">
-        <p>Aponte a câmera para o código de barras</p>
-        <p class="scanner-hint">ou digite manualmente</p>
-      </div>
-      
       <div class="scanner-actions">
-        <button class="btn-manual" onclick="manualInput()">⌨️ Digitar Código</button>
+        <button class="btn-manual" onclick="manualInput()">⌨️ Digitar</button>
         <button class="btn-cancel" onclick="closeScanner()">Cancelar</button>
       </div>
     </div>
@@ -840,6 +763,9 @@
           <span id="saveText">SALVAR</span>
         </button>
       </div>
+      
+      <!-- Debug Panel (clique 5x no logo para ativar) -->
+      <div class="debug-panel" id="debugPanel"></div>
     </div>
   </main>
 
@@ -860,24 +786,40 @@
 
   <script>
     // ============================================
-    // CONFIGURAÇÃO - ALTERE AQUI SUAS URLs
+    // CONFIGURAÇÃO
     // ============================================
     const CONFIG = {
-      GOOGLE_SHEETS_CSV: 'https://docs.google.com/spreadsheets/d/1VdZPW6awQJmV3gTQ_tncPjPtLHMPCLDNLSTglqezvu8/export?format=csv',
+      // URL da planilha - usando proxy CORS para garantir acesso
+      GOOGLE_SHEETS_ID: '1VdZPW6awQJmV3gTQ_tncPjPtLHMPCLDNLSTglqezvu8',
+      
+      // URLs alternativas para tentar carregar
+      get SHEETS_URLS() {
+        return [
+          // Direto do Google
+          `https://docs.google.com/spreadsheets/d/${this.GOOGLE_SHEETS_ID}/export?format=csv`,
+          // Via proxy CORS (corsproxy.io)
+          `https://corsproxy.io/?${encodeURIComponent(`https://docs.google.com/spreadsheets/d/${this.GOOGLE_SHEETS_ID}/export?format=csv`)}`,
+          // Via allorigins
+          `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://docs.google.com/spreadsheets/d/${this.GOOGLE_SHEETS_ID}/export?format=csv`)}`
+        ];
+      },
+      
+      // Google Forms
       GOOGLE_FORMS_URL: 'https://docs.google.com/forms/d/1YUMbFoL-ayv9ulpTOAu3E6ClpT_9cI0YbhpV8TJ2vIE/formResponse',
       ENTRY_BARRAS: 'entry.163691906',
       ENTRY_QTD: 'entry.1238617229'
     };
 
     // ============================================
-    // ESTADO DA APLICAÇÃO
+    // ESTADO
     // ============================================
     let cadastro = [];
     let savedCount = 0;
     let isValid = false;
     let isSaving = false;
-    let cameraStream = null;
-    let deferredPrompt = null;
+    let scannerActive = false;
+    let debugMode = false;
+    let logoClicks = 0;
 
     // ============================================
     // ELEMENTOS DOM
@@ -889,7 +831,7 @@
       alertIcon: document.getElementById('alertIcon'),
       alertMessage: document.getElementById('alertMessage'),
       scannerOverlay: document.getElementById('scannerOverlay'),
-      scannerVideo: document.getElementById('scannerVideo'),
+      scannerStatus: document.getElementById('scannerStatus'),
       barrasInput: document.getElementById('barrasInput'),
       qtdInput: document.getElementById('qtdInput'),
       validationMsg: document.getElementById('validationMsg'),
@@ -903,83 +845,115 @@
       cadastroCount: document.getElementById('cadastroCount'),
       savedCountEl: document.getElementById('savedCount'),
       formFrame: document.getElementById('formFrame'),
-      installBanner: document.getElementById('installBanner')
+      debugPanel: document.getElementById('debugPanel')
     };
 
     // ============================================
-    // PWA INSTALL
+    // DEBUG
     // ============================================
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      setTimeout(() => {
-        elements.installBanner.classList.add('show');
-      }, 2000);
+    function log(message, type = 'info') {
+      console.log(`[${type.toUpperCase()}]`, message);
+      if (debugMode) {
+        const time = new Date().toLocaleTimeString();
+        elements.debugPanel.innerHTML += `<div class="${type}">[${time}] ${message}</div>`;
+        elements.debugPanel.scrollTop = elements.debugPanel.scrollHeight;
+      }
+    }
+
+    // Ativar debug clicando 5x no logo
+    document.querySelector('.logo-container').addEventListener('click', () => {
+      logoClicks++;
+      if (logoClicks >= 5) {
+        debugMode = !debugMode;
+        elements.debugPanel.classList.toggle('show', debugMode);
+        showAlert(debugMode ? 'Modo debug ativado' : 'Modo debug desativado', 'info');
+        logoClicks = 0;
+      }
+      setTimeout(() => { logoClicks = 0; }, 2000);
     });
 
-    function installApp() {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            showAlert('App instalado com sucesso!', 'success');
-          }
-          deferredPrompt = null;
-          elements.installBanner.classList.remove('show');
-        });
-      }
-    }
-
-    function dismissInstall() {
-      elements.installBanner.classList.remove('show');
-    }
-
     // ============================================
-    // INICIALIZAÇÃO
+    // CARREGAR CADASTRO
     // ============================================
-    document.addEventListener('DOMContentLoaded', loadCadastro);
-
     async function loadCadastro() {
-      try {
-        elements.loadingText.textContent = 'Conectando ao servidor...';
+      log('Iniciando carregamento do cadastro...');
+      
+      for (let i = 0; i < CONFIG.SHEETS_URLS.length; i++) {
+        const url = CONFIG.SHEETS_URLS[i];
+        log(`Tentativa ${i + 1}: ${url.substring(0, 50)}...`);
+        elements.loadingText.textContent = `Tentativa ${i + 1} de ${CONFIG.SHEETS_URLS.length}...`;
         
-        const response = await fetch(CONFIG.GOOGLE_SHEETS_CSV);
-        
-        if (!response.ok) throw new Error('Falha ao carregar dados');
-        
-        const csvText = await response.text();
-        elements.loadingText.textContent = 'Processando dados...';
-        
-        const lines = csvText.split('\n');
-        cadastro = [];
-        
-        for (let i = 1; i < lines.length; i++) {
-          const line = lines[i].trim();
-          if (line) {
-            const cols = line.split(',');
-            if (cols[0]) {
-              cadastro.push(cols[0].replace(/"/g, '').trim());
+        try {
+          const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+              'Accept': 'text/csv,text/plain,*/*'
+            }
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+          
+          const csvText = await response.text();
+          log(`Recebido ${csvText.length} bytes`, 'success');
+          
+          // Verificar se é CSV válido
+          if (!csvText || csvText.length < 10) {
+            throw new Error('CSV vazio ou inválido');
+          }
+          
+          // Parse CSV
+          const lines = csvText.split('\n');
+          cadastro = [];
+          
+          log(`Processando ${lines.length} linhas...`);
+          
+          for (let j = 1; j < lines.length; j++) {
+            const line = lines[j].trim();
+            if (line) {
+              // Suporta CSV com ou sem aspas
+              let cols = line.split(',');
+              if (cols[0]) {
+                const barcode = cols[0].replace(/"/g, '').trim();
+                if (barcode && barcode !== 'BARRAS' && barcode.length > 0) {
+                  cadastro.push(barcode);
+                }
+              }
             }
           }
+          
+          log(`Cadastro carregado: ${cadastro.length} códigos`, 'success');
+          
+          if (cadastro.length > 0) {
+            elements.loadingText.textContent = `✓ ${cadastro.length} produtos carregados`;
+            elements.cadastroCount.textContent = `${cadastro.length} itens`;
+            
+            setTimeout(() => {
+              elements.loadingOverlay.classList.add('hidden');
+            }, 800);
+            
+            return; // Sucesso, sair do loop
+          } else {
+            throw new Error('Nenhum código encontrado no CSV');
+          }
+          
+        } catch (error) {
+          log(`Falha: ${error.message}`, 'error');
         }
-        
-        elements.loadingText.textContent = `${cadastro.length} produtos carregados`;
-        elements.cadastroCount.textContent = `${cadastro.length} itens`;
-        
-        setTimeout(() => {
-          elements.loadingOverlay.classList.add('hidden');
-        }, 500);
-        
-      } catch (error) {
-        console.error('Erro ao carregar cadastro:', error);
-        elements.loadingText.textContent = 'Erro ao carregar. Usando modo offline.';
-        elements.cadastroCount.textContent = 'Modo offline';
-        cadastro = [];
-        
-        setTimeout(() => {
-          elements.loadingOverlay.classList.add('hidden');
-        }, 1000);
       }
+      
+      // Todas as tentativas falharam
+      log('Todas as tentativas falharam. Modo offline.', 'error');
+      elements.loadingText.textContent = '⚠️ Erro ao carregar cadastro\nUsando modo offline';
+      elements.cadastroCount.textContent = 'Offline';
+      elements.cadastroCount.classList.add('error');
+      cadastro = [];
+      
+      setTimeout(() => {
+        elements.loadingOverlay.classList.add('hidden');
+        showAlert('Modo offline: validação desativada', 'info');
+      }, 1500);
     }
 
     // ============================================
@@ -987,6 +961,8 @@
     // ============================================
     function validateBarras() {
       const barras = elements.barrasInput.value.trim();
+      
+      log(`Validando: "${barras}" (cadastro tem ${cadastro.length} itens)`);
       
       if (!barras) {
         isValid = false;
@@ -996,7 +972,9 @@
         return;
       }
 
+      // Modo offline - aceita qualquer código
       if (cadastro.length === 0) {
+        log('Modo offline - aceitando código', 'info');
         isValid = true;
         elements.barrasInput.classList.remove('invalid');
         elements.barrasInput.classList.add('valid');
@@ -1008,7 +986,10 @@
         return;
       }
 
+      // Buscar no cadastro
       const found = cadastro.includes(barras);
+      log(`Busca: ${found ? 'ENCONTRADO' : 'NÃO ENCONTRADO'}`, found ? 'success' : 'error');
+      
       isValid = found;
       
       elements.barrasInput.classList.remove('valid', 'invalid');
@@ -1018,13 +999,13 @@
         elements.barrasInput.classList.add('valid');
         elements.validationMsg.classList.add('show', 'valid');
         elements.validationIcon.textContent = '✓';
-        elements.validationText.textContent = 'Código válido';
+        elements.validationText.textContent = 'Código encontrado no cadastro';
       } else {
         elements.barrasInput.classList.add('invalid');
         elements.validationMsg.classList.add('show', 'invalid');
         elements.validationIcon.textContent = '✗';
-        elements.validationText.textContent = 'Código não encontrado';
-        showAlert('Código de barras não encontrado no cadastro', 'error');
+        elements.validationText.textContent = 'Barras não encontrado';
+        showAlert('Barras não Encontrado', 'error');
         vibrate(30);
       }
       
@@ -1037,6 +1018,170 @@
       const canSave = isValid && barras && qtd && !isSaving;
       
       elements.btnSave.disabled = !canSave;
+    }
+
+    // ============================================
+    // SCANNER COM QUAGGAJS
+    // ============================================
+    function openScanner() {
+      log('Abrindo scanner...');
+      elements.scannerOverlay.classList.add('show');
+      elements.scannerStatus.textContent = 'Iniciando câmera...';
+      elements.scannerStatus.classList.remove('reading');
+      
+      // Configuração do QuaggaJS com ALTA RESOLUÇÃO
+      Quagga.init({
+        inputStream: {
+          name: "Live",
+          type: "LiveStream",
+          target: document.querySelector('#scanner-container'),
+          constraints: {
+            facingMode: "environment",
+            width: { min: 1280, ideal: 1920, max: 2560 },
+            height: { min: 720, ideal: 1080, max: 1440 },
+            aspectRatio: { ideal: 1.7777777778 }
+          },
+          area: {
+            top: "20%",
+            right: "10%",
+            left: "10%",
+            bottom: "20%"
+          }
+        },
+        locator: {
+          patchSize: "medium",
+          halfSample: false
+        },
+        numOfWorkers: navigator.hardwareConcurrency || 4,
+        frequency: 10,
+        decoder: {
+          readers: [
+            "ean_reader",
+            "ean_8_reader",
+            "code_128_reader",
+            "code_39_reader",
+            "upc_reader",
+            "upc_e_reader",
+            "codabar_reader",
+            "i2of5_reader"
+          ],
+          multiple: false
+        },
+        locate: true
+      }, function(err) {
+        if (err) {
+          log(`Erro ao iniciar câmera: ${err}`, 'error');
+          elements.scannerStatus.textContent = '❌ Erro ao acessar câmera';
+          showAlert('Não foi possível acessar a câmera. Verifique as permissões.', 'error');
+          return;
+        }
+        
+        log('Câmera iniciada com sucesso', 'success');
+        elements.scannerStatus.textContent = 'Posicione o código de barras na área verde';
+        scannerActive = true;
+        Quagga.start();
+      });
+
+      // Evento de detecção
+      Quagga.onDetected(onBarcodeDetected);
+      
+      // Feedback visual durante processamento
+      Quagga.onProcessed(function(result) {
+        const drawingCtx = Quagga.canvas.ctx.overlay;
+        const drawingCanvas = Quagga.canvas.dom.overlay;
+
+        if (result) {
+          if (result.boxes) {
+            drawingCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+            result.boxes.filter(box => box !== result.box).forEach(box => {
+              Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, { color: "rgba(0, 255, 0, 0.3)", lineWidth: 2 });
+            });
+          }
+
+          if (result.box) {
+            Quagga.ImageDebug.drawPath(result.box, { x: 0, y: 1 }, drawingCtx, { color: "#00FF00", lineWidth: 3 });
+          }
+
+          if (result.codeResult && result.codeResult.code) {
+            elements.scannerStatus.textContent = '🔍 Lendo...';
+            elements.scannerStatus.classList.add('reading');
+          }
+        }
+      });
+    }
+
+    // Buffer para evitar leituras duplicadas
+    let lastCode = '';
+    let lastCodeTime = 0;
+    let codeBuffer = [];
+
+    function onBarcodeDetected(result) {
+      const code = result.codeResult.code;
+      const now = Date.now();
+      
+      log(`Código detectado: ${code}`);
+      
+      // Evitar leituras duplicadas em 2 segundos
+      if (code === lastCode && (now - lastCodeTime) < 2000) {
+        return;
+      }
+      
+      // Buffer de confirmação (precisa ler 3x o mesmo código)
+      codeBuffer.push(code);
+      if (codeBuffer.length > 5) codeBuffer.shift();
+      
+      const sameCodeCount = codeBuffer.filter(c => c === code).length;
+      
+      if (sameCodeCount >= 2) {
+        lastCode = code;
+        lastCodeTime = now;
+        codeBuffer = [];
+        
+        // Sucesso!
+        log(`Código confirmado: ${code}`, 'success');
+        vibrate([100, 50, 100]);
+        
+        closeScanner();
+        
+        elements.barrasInput.value = code;
+        validateBarras();
+        
+        if (isValid) {
+          elements.qtdInput.value = '1';
+          setTimeout(() => elements.qtdInput.focus(), 100);
+        }
+        
+        updateSaveButton();
+      }
+    }
+
+    function closeScanner() {
+      log('Fechando scanner...');
+      scannerActive = false;
+      codeBuffer = [];
+      
+      try {
+        Quagga.offDetected(onBarcodeDetected);
+        Quagga.stop();
+      } catch (e) {
+        log(`Erro ao parar scanner: ${e}`, 'error');
+      }
+      
+      elements.scannerOverlay.classList.remove('show');
+    }
+
+    function manualInput() {
+      closeScanner();
+      const code = prompt('Digite o código de barras:');
+      if (code && code.trim()) {
+        elements.barrasInput.value = code.trim();
+        validateBarras();
+        if (isValid) {
+          elements.qtdInput.value = '1';
+          elements.qtdInput.focus();
+        }
+        updateSaveButton();
+      }
     }
 
     // ============================================
@@ -1060,10 +1205,13 @@
     }
 
     function handleBarrasKeydown(event) {
-      if (event.key === 'Enter' && isValid) {
+      if (event.key === 'Enter') {
         event.preventDefault();
-        elements.qtdInput.value = '1';
-        elements.qtdInput.focus();
+        validateBarras();
+        if (isValid) {
+          elements.qtdInput.value = '1';
+          elements.qtdInput.focus();
+        }
         updateSaveButton();
       }
     }
@@ -1078,6 +1226,8 @@
     async function saveData() {
       const barras = elements.barrasInput.value.trim();
       const qtd = elements.qtdInput.value.trim();
+      
+      log(`Salvando: Barras=${barras}, Qtd=${qtd}`);
       
       if (!barras || !qtd) {
         showAlert('Atenção: todos os campos devem ser preenchidos', 'error');
@@ -1097,6 +1247,8 @@
       try {
         const formUrl = `${CONFIG.GOOGLE_FORMS_URL}?${CONFIG.ENTRY_BARRAS}=${encodeURIComponent(barras)}&${CONFIG.ENTRY_QTD}=${encodeURIComponent(qtd)}&submit=Submit`;
         
+        log(`Enviando para: ${formUrl.substring(0, 80)}...`);
+        
         elements.formFrame.src = formUrl;
         
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -1105,63 +1257,19 @@
         elements.savedBadge.textContent = `${savedCount} salvos`;
         elements.savedCountEl.textContent = savedCount;
         
+        log(`Salvo com sucesso! Total: ${savedCount}`, 'success');
         showAlert(`✓ Salvo com sucesso! (${savedCount} itens)`, 'success');
         vibrate([50, 30, 50]);
         
         clearFields();
         
       } catch (error) {
-        console.error('Erro ao salvar:', error);
+        log(`Erro ao salvar: ${error}`, 'error');
         showAlert('Erro ao salvar. Tente novamente.', 'error');
       } finally {
         isSaving = false;
         elements.saveIcon.textContent = '💾';
         elements.saveText.textContent = 'SALVAR';
-        updateSaveButton();
-      }
-    }
-
-    // ============================================
-    // SCANNER
-    // ============================================
-    async function openScanner() {
-      elements.scannerOverlay.classList.add('show');
-      
-      try {
-        cameraStream = await navigator.mediaDevices.getUserMedia({
-          video: { 
-            facingMode: 'environment',
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
-          }
-        });
-        
-        elements.scannerVideo.srcObject = cameraStream;
-        await elements.scannerVideo.play();
-        
-      } catch (error) {
-        console.error('Erro ao acessar câmera:', error);
-        showAlert('Não foi possível acessar a câmera', 'error');
-      }
-    }
-
-    function closeScanner() {
-      if (cameraStream) {
-        cameraStream.getTracks().forEach(track => track.stop());
-        cameraStream = null;
-      }
-      elements.scannerVideo.srcObject = null;
-      elements.scannerOverlay.classList.remove('show');
-    }
-
-    function manualInput() {
-      const code = prompt('Digite o código de barras:');
-      if (code && code.trim()) {
-        closeScanner();
-        elements.barrasInput.value = code.trim();
-        validateBarras();
-        elements.qtdInput.value = '1';
-        elements.qtdInput.focus();
         updateSaveButton();
       }
     }
@@ -1175,7 +1283,7 @@
       clearTimeout(alertTimeout);
       
       elements.alert.className = `alert alert-${type}`;
-      elements.alertIcon.textContent = type === 'error' ? '⚠️' : '✓';
+      elements.alertIcon.textContent = type === 'error' ? '⚠️' : type === 'success' ? '✓' : 'ℹ️';
       elements.alertMessage.textContent = message;
       
       setTimeout(() => {
@@ -1195,26 +1303,10 @@
       }
     }
 
-    // Service Worker Registration (for PWA)
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        // Using inline service worker via data URL
-        const swCode = `
-          self.addEventListener('fetch', (event) => {
-            event.respondWith(
-              caches.match(event.request).then((response) => {
-                return response || fetch(event.request);
-              })
-            );
-          });
-        `;
-        const blob = new Blob([swCode], { type: 'application/javascript' });
-        const swUrl = URL.createObjectURL(blob);
-        
-        // Note: Service workers from blob URLs don't work in production
-        // This is just for demo purposes
-      });
-    }
+    // ============================================
+    // INICIALIZAÇÃO
+    // ============================================
+    document.addEventListener('DOMContentLoaded', loadCadastro);
   </script>
 </body>
 </html>
