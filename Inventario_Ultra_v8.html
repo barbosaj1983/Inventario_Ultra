@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#059669">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Inventário Ultra Popular</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #059669;
+      --primary-dark: #047857;
+      --danger: #dc2626;
+      --danger-light: #ef4444;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --bg: #f8fafc;
+      --bg-dark: #0f172a;
+      --card: #ffffff;
+      --card-dark: #1e293b;
+      --text: #1e293b;
+      --text-dark: #f1f5f9;
+      --border: #e2e8f0;
+      --border-dark: #334155;
+    }
+
+    [data-theme="dark"] {
+      --bg: var(--bg-dark);
+      --card: var(--card-dark);
+      --text: var(--text-dark);
+      --border: var(--border-dark);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--bg) 0%, var(--border) 100%);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 12px 20px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      box-shadow: 0 4px 20px rgba(5, 150, 105, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content { max-width: 500px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .header h1 { font-size: 16px; font-weight: 600; }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    .header-badge { background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+    .btn-header { background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+    .logo-section { padding: 20px 20px 12px; text-align: center; }
+    .logo-container { display: inline-flex; align-items: center; gap: 10px; background: var(--card); padding: 12px 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer; transition: transform 0.2s; position: relative; }
+    .logo-container:hover { transform: translateY(-2px); }
+    .logo-container.has-image { padding: 8px; }
+    .logo-edit-hint { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; font-size: 9px; padding: 2px 8px; border-radius: 10px; opacity: 0; transition: opacity 0.2s; white-space: nowrap; }
+    .logo-container:hover .logo-edit-hint { opacity: 1; }
+    .logo-image-full { height: 60px; max-width: 200px; object-fit: contain; border-radius: 8px; }
+    .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; color: white; }
+    .logo-text-container { text-align: left; }
+    .logo-text { font-size: 22px; font-weight: 700; color: var(--primary); line-height: 1; }
+    .logo-subtitle { font-size: 9px; color: var(--danger); font-weight: 600; letter-spacing: 0.5px; }
+    #logoInput { display: none; }
+
+    .main-content { max-width: 500px; margin: 0 auto; padding: 0 16px 160px; }
+
+    .stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+    .stat-card { background: var(--card); padding: 12px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .stat-card-value { font-size: 20px; font-weight: 700; color: var(--primary); }
+    .stat-card-label { font-size: 10px; color: #64748b; margin-top: 2px; }
+
+    .form-card { background: var(--card); border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 12px; }
+
+    .input-group { margin-bottom: 16px; }
+    .input-label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
+    .input-wrapper { display: flex; gap: 8px; }
+    .input-field { flex: 1; padding: 12px 14px; font-size: 16px; font-weight: 500; border: 2px solid var(--border); border-radius: 10px; transition: all 0.2s; background: var(--bg); color: var(--text); -webkit-appearance: none; }
+    .input-field:focus { outline: none; border-color: var(--primary); background: var(--card); }
+    .input-field.valid { border-color: var(--success); background: rgba(16, 185, 129, 0.1); }
+    .input-field.invalid { border-color: var(--danger); background: rgba(220, 38, 38, 0.1); }
+    .btn-clear { padding: 12px 14px; background: var(--bg); border: 2px solid var(--border); border-radius: 10px; font-size: 12px; font-weight: 600; color: #64748b; cursor: pointer; }
+
+    .qty-wrapper { display: flex; gap: 8px; align-items: center; }
+    .qty-btn { width: 44px; height: 44px; border: 2px solid var(--border); border-radius: 10px; background: var(--bg); font-size: 20px; font-weight: 600; color: var(--primary); cursor: pointer; }
+    .qty-btn:active { transform: scale(0.9); background: var(--primary); color: white; }
+    .qty-input { width: 80px; text-align: center; font-size: 20px; font-weight: 700; }
+
+    .validation-msg { display: none; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; font-weight: 500; }
+    .validation-msg.show { display: flex; }
+    .validation-msg.valid { color: var(--success); }
+    .validation-msg.invalid { color: var(--danger); }
+
+    .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+    .btn-scan { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 20px; background: linear-gradient(135deg, var(--danger-light) 0%, var(--danger) 100%); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
+    .btn-save { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 20px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4); }
+    .btn-save:disabled, .btn-scan:disabled { background: #94a3b8; box-shadow: none; cursor: not-allowed; }
+
+    .history-card { background: var(--card); border-radius: 16px; padding: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .history-title { font-size: 14px; font-weight: 600; color: #64748b; }
+    .history-actions { display: flex; gap: 8px; }
+    .btn-history { padding: 6px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; font-size: 11px; font-weight: 600; color: #64748b; cursor: pointer; }
+    .history-list { max-height: 250px; overflow-y: auto; }
+    .history-item { display: flex; align-items: center; padding: 10px 12px; background: var(--bg); border-radius: 8px; margin-bottom: 6px; font-size: 13px; gap: 10px; }
+    .history-item-info { flex: 1; min-width: 0; }
+    .history-item-code { font-weight: 600; font-family: monospace; font-size: 14px; display: block; }
+    .history-item-meta { display: flex; gap: 8px; align-items: center; margin-top: 2px; flex-wrap: wrap; }
+    .history-item-qty { background: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; }
+    .history-item-time { color: #94a3b8; font-size: 10px; }
+    .history-item-status { font-size: 10px; padding: 2px 6px; border-radius: 8px; }
+    .history-item-status.synced { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+    .history-item-status.pending { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+    .history-item-status.uncertain { background: rgba(220, 38, 38, 0.1); color: var(--danger); }
+    .local-history-note { margin: 8px 2px 0; color: #64748b; font-size: 10px; }
+    .btn-delete { width: 32px; height: 32px; border: none; background: rgba(220, 38, 38, 0.1); color: var(--danger); border-radius: 8px; font-size: 14px; cursor: pointer; }
+    .btn-delete:hover { background: var(--danger); color: white; }
+    .history-empty { text-align: center; padding: 20px; color: #94a3b8; font-size: 13px; }
+
+    .api-status { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: var(--bg); border-radius: 8px; margin-bottom: 12px; font-size: 11px; cursor: pointer; }
+    .api-status-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
+    .api-status-dot.connected { background: var(--success); }
+    .api-status-dot.error { background: var(--danger); }
+    .api-status-text { color: #64748b; flex: 1; }
+    .api-status-action { color: var(--primary); font-weight: 600; }
+
+    .loading-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; transition: opacity 0.3s; }
+    .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+    .loading-spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { color: white; font-size: 14px; font-weight: 500; }
+
+    .alert { position: fixed; top: 70px; left: 50%; transform: translateX(-50%) translateY(-20px); padding: 12px 16px; border-radius: 10px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; z-index: 200; max-width: 90%; box-shadow: 0 4px 20px rgba(0,0,0,0.15); opacity: 0; transition: all 0.3s; pointer-events: none; }
+    .alert.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+    .alert-error { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
+    .alert-success { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; }
+    .alert-info { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .alert-close { background: none; border: none; font-size: 18px; cursor: pointer; opacity: 0.6; margin-left: 4px; }
+
+    .confirm-overlay, .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .confirm-overlay.show, .modal-overlay.show { opacity: 1; pointer-events: auto; }
+    .confirm-dialog, .modal { background: var(--card); border-radius: 16px; padding: 24px; width: 100%; max-width: 320px; text-align: center; transform: scale(0.9); transition: transform 0.3s; }
+    .confirm-overlay.show .confirm-dialog, .modal-overlay.show .modal { transform: scale(1); }
+    .confirm-icon { font-size: 48px; margin-bottom: 16px; }
+    .confirm-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .confirm-message { font-size: 14px; color: #64748b; margin-bottom: 16px; }
+    .confirm-code { font-family: monospace; background: var(--bg); padding: 8px 12px; border-radius: 8px; font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+    .confirm-status { font-size: 12px; padding: 8px; background: #fffbeb; color: #b45309; border-radius: 8px; margin-bottom: 16px; }
+    .confirm-actions { display: flex; gap: 10px; }
+    .btn-confirm { flex: 1; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+    .btn-confirm-cancel { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+    .btn-confirm-delete { background: var(--danger); color: white; }
+    .btn-confirm-delete:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .modal { max-width: 400px; max-height: 80vh; overflow-y: auto; text-align: left; padding: 0; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+    .modal-title { font-size: 16px; font-weight: 600; }
+    .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b; }
+    .modal-body { padding: 20px; }
+    .setting-group { margin-bottom: 16px; }
+    .setting-label { font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+    .setting-label-badge { background: var(--primary); color: white; font-size: 9px; padding: 2px 6px; border-radius: 4px; }
+    .setting-input { width: 100%; padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 11px; font-family: monospace; background: var(--bg); color: var(--text); }
+    .setting-input:focus { outline: none; border-color: var(--primary); }
+    .setting-hint { font-size: 10px; color: #94a3b8; margin-top: 4px; }
+    .setting-toggle { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .toggle-label { font-size: 14px; font-weight: 500; }
+    .toggle-switch { width: 50px; height: 28px; background: var(--border); border-radius: 14px; position: relative; cursor: pointer; transition: background 0.3s; }
+    .toggle-switch.active { background: var(--primary); }
+    .toggle-switch::after { content: ''; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: transform 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .toggle-switch.active::after { transform: translateX(22px); }
+    .modal-footer { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
+    .btn-modal { flex: 1; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+    .btn-modal-primary { background: var(--primary); color: white; }
+    .btn-modal-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+
+    .scanner-overlay { position: fixed; inset: 0; background: #000; z-index: 300; display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .scanner-overlay.show { opacity: 1; pointer-events: auto; }
+    .scanner-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; padding-top: max(12px, env(safe-area-inset-top)); background: rgba(0,0,0,0.8); color: white; position: absolute; top: 0; left: 0; right: 0; z-index: 10; }
+    .scanner-header h3 { font-size: 15px; font-weight: 600; }
+    .scanner-header-actions { display: flex; gap: 8px; }
+    .btn-scanner { background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .btn-scanner.active { background: var(--warning); }
+    #scanner-container { flex: 1; position: relative; overflow: hidden; }
+    #scanner-container video { width: 100%; height: 100%; object-fit: cover; }
+    #scanner-container canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    .scanner-target { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 280px; height: 150px; border: 3px solid var(--primary); border-radius: 12px; box-shadow: 0 0 0 9999px rgba(0,0,0,0.5); z-index: 5; }
+    .scanner-target::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, #00ff00, transparent); animation: scanLine 1.5s ease-in-out infinite; }
+    @keyframes scanLine { 0%, 100% { top: 0; } 50% { top: calc(100% - 3px); } }
+    .scanner-footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px; padding-bottom: max(16px, env(safe-area-inset-bottom)); background: rgba(0,0,0,0.8); z-index: 10; }
+    .scanner-status { text-align: center; color: white; margin-bottom: 12px; font-size: 13px; }
+    .scanner-actions { display: flex; gap: 10px; }
+    .btn-manual, .btn-cancel { flex: 1; padding: 12px 14px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .btn-manual { background: var(--primary); color: white; }
+    .btn-cancel { background: rgba(255,255,255,0.2); color: white; }
+
+    .debug-panel { background: #1e293b; color: #94a3b8; padding: 12px; border-radius: 8px; margin-top: 12px; font-size: 10px; font-family: monospace; max-height: 150px; overflow-y: auto; display: none; }
+    .debug-panel.show { display: block; }
+    .debug-panel .log-success { color: #4ade80; }
+    .debug-panel .log-error { color: #f87171; }
+    .debug-panel .log-info { color: #60a5fa; }
+
+    .hidden-iframe { display: none; }
+  </style>
+</head>
+<body>
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Carregando...</div>
+  </div>
+
+  <div class="alert" id="alert">
+    <span id="alertIcon">⚠️</span>
+    <span id="alertMessage"></span>
+    <button class="alert-close" onclick="hideAlert()">×</button>
+  </div>
+
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-dialog">
+      <div class="confirm-icon">🗑️</div>
+      <div class="confirm-title">Deletar Item?</div>
+      <div class="confirm-message">Remove do histórico e da planilha</div>
+      <div class="confirm-code" id="confirmCode"></div>
+      <div class="confirm-status" id="confirmStatus"></div>
+      <div class="confirm-actions">
+        <button class="btn-confirm btn-confirm-cancel" onclick="closeConfirm()">Cancelar</button>
+        <button class="btn-confirm btn-confirm-delete" id="btnConfirmDelete" onclick="confirmDelete()">Deletar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="scanner-overlay" id="scannerOverlay">
+    <div class="scanner-header">
+      <h3>📷 Scanner</h3>
+      <div class="scanner-header-actions">
+        <button class="btn-scanner" id="btnFlash" onclick="toggleFlash()">🔦</button>
+        <button class="btn-scanner" onclick="closeScanner()">✕</button>
+      </div>
+    </div>
+    <div id="scanner-container"><div class="scanner-target"></div></div>
+    <div class="scanner-footer">
+      <div class="scanner-status" id="scannerStatus">Posicione o código de barras</div>
+      <div class="scanner-actions">
+        <button class="btn-manual" onclick="manualInput()">⌨️ Digitar</button>
+        <button class="btn-cancel" onclick="closeScanner()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">⚙️ Configurações</span>
+        <button class="modal-close" onclick="closeSettings()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-group">
+          <div class="setting-label">
+            🔗 URL do Apps Script (API)
+            <span class="setting-label-badge">SALVAR/DELETAR</span>
+          </div>
+          <input type="text" class="setting-input" id="settingApiUrl" placeholder="https://script.google.com/macros/s/.../exec">
+          <div class="setting-hint">Para salvar e deletar da planilha de dados</div>
+        </div>
+
+        <div class="setting-group">
+          <div class="setting-label">
+            📋 ID Planilha CADASTRO
+            <span class="setting-label-badge">VALIDAÇÃO</span>
+          </div>
+          <input type="text" class="setting-input" id="settingCadastroId" placeholder="1VdZPW6...">
+          <div class="setting-hint">BaseAlpha7 - para validar códigos de barras</div>
+        </div>
+
+        <div class="setting-group">
+          <div class="setting-label">
+            📊 ID Planilha DADOS
+            <span class="setting-label-badge">INVENTÁRIO</span>
+          </div>
+          <input type="text" class="setting-input" id="settingDadosId" placeholder="1ROSdUmw...">
+          <div class="setting-hint">Onde os dados são salvos (mesma do Apps Script)</div>
+        </div>
+
+        <div class="setting-toggle">
+          <span class="toggle-label">🔊 Sons</span>
+          <div class="toggle-switch" id="toggleSound" onclick="toggleSetting('sound')"></div>
+        </div>
+        <div class="setting-toggle">
+          <span class="toggle-label">📳 Vibração</span>
+          <div class="toggle-switch" id="toggleVibration" onclick="toggleSetting('vibration')"></div>
+        </div>
+        <div class="setting-toggle">
+          <span class="toggle-label">🌙 Tema Escuro</span>
+          <div class="toggle-switch" id="toggleDarkMode" onclick="toggleSetting('darkMode')"></div>
+        </div>
+        <div class="setting-toggle">
+          <span class="toggle-label">🐛 Modo Debug</span>
+          <div class="toggle-switch" id="toggleDebug" onclick="toggleSetting('debug')"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal btn-modal-secondary" onclick="closeSettings()">Cancelar</button>
+        <button class="btn-modal btn-modal-primary" onclick="saveSettings()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="header">
+    <div class="header-content">
+      <h1>📦 Inventário</h1>
+      <div class="header-actions">
+        <span class="header-badge" id="savedBadge">0</span>
+        <button class="btn-header" onclick="openSettings()">⚙️</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="logo-section">
+    <div class="logo-container" id="logoContainer" onclick="document.getElementById('logoInput').click()">
+      <div id="logoDisplay"><div class="logo-icon">✚</div></div>
+      <div class="logo-text-container" id="logoTextContainer">
+        <div class="logo-text" id="companyName">Ultra</div>
+        <div class="logo-subtitle" id="companySubtitle">DROGARIAS • POPULAR</div>
+      </div>
+      <span class="logo-edit-hint">📷 Trocar logo</span>
+    </div>
+    <input type="file" id="logoInput" accept="image/*" onchange="handleLogoUpload(event)">
+  </div>
+
+  <main class="main-content">
+    <div class="stats-bar">
+      <div class="stat-card"><div class="stat-card-value" id="statTotal">0</div><div class="stat-card-label">Total Itens</div></div>
+      <div class="stat-card"><div class="stat-card-value" id="statUnique">0</div><div class="stat-card-label">Únicos</div></div>
+      <div class="stat-card"><div class="stat-card-value" id="statCadastro">-</div><div class="stat-card-label">Cadastro</div></div>
+    </div>
+
+    <div class="form-card">
+      <div class="api-status" id="apiStatus" onclick="testApiConnection()">
+        <div class="api-status-dot" id="apiStatusDot"></div>
+        <span class="api-status-text" id="apiStatusText">Verificando...</span>
+        <span class="api-status-action">Testar</span>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label"><span>🏷️</span> Código de Barras</label>
+        <div class="input-wrapper">
+          <input type="text" inputmode="numeric" class="input-field" id="barrasInput" placeholder="Escaneie ou digite" autocomplete="off" oninput="validateBarras()" onkeydown="handleBarrasKeydown(event)">
+          <button class="btn-clear" onclick="clearFields()">✕</button>
+        </div>
+        <div class="validation-msg" id="validationMsg">
+          <span id="validationIcon">✓</span>
+          <span id="validationText"></span>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label"><span>📊</span> Quantidade</label>
+        <div class="qty-wrapper">
+          <button class="qty-btn" onclick="adjustQty(-1)">−</button>
+          <input type="number" inputmode="numeric" class="input-field qty-input" id="qtdInput" value="1" step="1" autocomplete="off" oninput="updateSaveButton()" onkeydown="handleQtdKeydown(event)">
+          <button class="qty-btn" onclick="adjustQty(1)">+</button>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn-scan" onclick="openScanner()">📷 SCAN</button>
+        <button class="btn-save" id="btnSave" onclick="saveData()" disabled>
+          <span id="saveIcon">💾</span>
+          <span id="saveText">SALVAR</span>
+        </button>
+      </div>
+
+      <div class="debug-panel" id="debugPanel"></div>
+    </div>
+
+    <div class="history-card">
+      <div class="history-header">
+        <span class="history-title">📋 Histórico local deste aparelho</span>
+        <div class="history-actions">
+          <button class="btn-history" onclick="exportHistory()">📥 CSV</button>
+          <button class="btn-history" onclick="clearAllHistory()">🗑️</button>
+        </div>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="history-empty">Nenhum item salvo</div>
+      </div>
+      <div class="local-history-note">Os totais acima consideram somente os registros armazenados neste aparelho.</div>
+    </div>
+  </main>
+
+  <iframe class="hidden-iframe" id="formFrame" name="formFrame"></iframe>
+
+  <script>
+    // ============================================
+    // CONFIGURAÇÃO - IDs SEPARADOS
+    // ============================================
+    const DEFAULT_CONFIG = {
+      API_URL: '',
+      // Planilha de CADASTRO (BaseAlpha7) - para validar códigos
+      CADASTRO_ID: '1VdZPW6awQJmV3gTQ_tncPjPtLHMPCLDNLSTglqezvu8',
+      // Planilha de DADOS - onde salva/deleta (Apps Script)
+      DADOS_ID: '1ROSdUmwBl2P9EwCPCGKe-Qh6eyBOzoYMX8h9vC-nph4'
+    };
+
+    function safeStorageGet(key) {
+      try { return localStorage.getItem(key); } catch (error) { return null; }
+    }
+
+    function safeStorageSet(key, value) {
+      localStorage.setItem(key, value);
+    }
+
+    function safeStorageRemove(key) {
+      localStorage.removeItem(key);
+    }
+
+    function getConfig(key) {
+      const saved = safeStorageGet(key);
+      return (saved !== null && saved !== '') ? saved : DEFAULT_CONFIG[key] || '';
+    }
+
+    const CONFIG = {
+      get API_URL() { return getConfig('apiUrl'); },
+      get CADASTRO_ID() { return getConfig('cadastroId') || DEFAULT_CONFIG.CADASTRO_ID; },
+      get DADOS_ID() { return getConfig('dadosId') || DEFAULT_CONFIG.DADOS_ID; },
+
+      // URLs para carregar cadastro (validação)
+      get CADASTRO_URLS() {
+        const id = this.CADASTRO_ID;
+        return [
+          `https://docs.google.com/spreadsheets/d/${id}/export?format=csv`,
+          `https://corsproxy.io/?${encodeURIComponent(`https://docs.google.com/spreadsheets/d/${id}/export?format=csv`)}`
+        ];
+      }
+    };
+
+    function normalizeHistoryItem(item) {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) return null;
+      const quantityText = typeof item.qty === 'string' ? item.qty : null;
+      const qty = typeof item.qty === 'number' ? item.qty : quantityText && /^-?\d+$/.test(quantityText) ? Number(quantityText) : NaN;
+      if (!Number.isSafeInteger(qty) || typeof item.code !== 'string') return null;
+      if (item.syncStatus && !['pending', 'confirmed', 'uncertain'].includes(item.syncStatus)) return null;
+      return {
+        ...item,
+        id: typeof item.id === 'string' && item.id ? item.id : createId(),
+        remoteId: typeof item.remoteId === 'string' && item.remoteId ? item.remoteId : typeof item.id === 'string' && item.id ? item.id : null,
+        qty,
+        syncStatus: item.syncStatus || (item.synced === true ? 'confirmed' : 'pending'),
+        synced: item.syncStatus ? item.syncStatus === 'confirmed' : item.synced === true
+      };
+    }
+
+    function createId() {
+      return typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+    }
+
+    let history = [];
+    let historyStorageSnapshot = null;
+    let historyLoadBlocked = false;
+    let cadastro = [];
+    let cadastroState = 'unavailable';
+    let isValid = false;
+    let isSaving = false;
+    let isDeleting = false;
+    let apiConnected = false;
+    let deleteTarget = null;
+    let cameraTrack = null;
+    let flashOn = false;
+    let scannerSession = 0;
+    let scannerActive = false;
+    let scannerStarting = false;
+    let cadastroLoadPromise = null;
+
+    function loadHistory() {
+      let stored;
+      try {
+        stored = localStorage.getItem('history');
+        historyStorageSnapshot = stored;
+        const parsed = stored ? JSON.parse(stored) : [];
+        if (!Array.isArray(parsed)) throw new Error('Formato de histórico inválido');
+        const normalized = parsed.map(normalizeHistoryItem);
+        if (normalized.some(item => !item)) throw new Error('Registro de histórico inválido');
+        history = normalized;
+      } catch (error) {
+        historyLoadBlocked = true;
+        try {
+          const raw = stored ?? localStorage.getItem('history');
+          if (raw !== null) localStorage.setItem(`history.corrupt.${Date.now()}`, raw);
+          history = [];
+          historyStorageSnapshot = raw ?? null;
+          historyLoadBlocked = false;
+          showAlert('Histórico inválido preservado para recuperação; registros novos estão separados.', 'error');
+        } catch (archiveError) {
+          history = [];
+          showAlert('Não foi possível ler ou preservar o histórico. Novos registros foram bloqueados.', 'error');
+        }
+      }
+    }
+
+    function persistHistory(nextHistory, failureMessage = 'Não foi possível atualizar o histórico deste aparelho.') {
+      try {
+        if (historyLoadBlocked) throw new Error('Histórico anterior não foi preservado');
+        const current = localStorage.getItem('history');
+        if (current !== historyStorageSnapshot) throw new Error('O histórico mudou em outra aba');
+        const serialized = JSON.stringify(nextHistory);
+        localStorage.setItem('history', serialized);
+        history = nextHistory;
+        historyStorageSnapshot = serialized;
+        return true;
+      } catch (error) {
+        showAlert(error.message === 'O histórico mudou em outra aba' ? 'Histórico alterado em outra aba; recarregue antes de continuar.' : failureMessage, 'error');
+        return false;
+      }
+    }
+
+    const settings = {
+      sound: safeStorageGet('sound') === 'true',
+      vibration: safeStorageGet('vibration') !== 'false',
+      darkMode: safeStorageGet('darkMode') === 'true',
+      debug: safeStorageGet('debug') === 'true'
+    };
+
+    // ============================================
+    // ELEMENTOS DOM
+    // ============================================
+    const el = {
+      loadingOverlay: document.getElementById('loadingOverlay'),
+      loadingText: document.getElementById('loadingText'),
+      alert: document.getElementById('alert'),
+      alertIcon: document.getElementById('alertIcon'),
+      alertMessage: document.getElementById('alertMessage'),
+      scannerOverlay: document.getElementById('scannerOverlay'),
+      scannerStatus: document.getElementById('scannerStatus'),
+      barrasInput: document.getElementById('barrasInput'),
+      qtdInput: document.getElementById('qtdInput'),
+      validationMsg: document.getElementById('validationMsg'),
+      validationIcon: document.getElementById('validationIcon'),
+      validationText: document.getElementById('validationText'),
+      btnSave: document.getElementById('btnSave'),
+      saveIcon: document.getElementById('saveIcon'),
+      saveText: document.getElementById('saveText'),
+      savedBadge: document.getElementById('savedBadge'),
+      formFrame: document.getElementById('formFrame'),
+      historyList: document.getElementById('historyList'),
+      statTotal: document.getElementById('statTotal'),
+      statUnique: document.getElementById('statUnique'),
+      statCadastro: document.getElementById('statCadastro'),
+      settingsModal: document.getElementById('settingsModal'),
+      confirmOverlay: document.getElementById('confirmOverlay'),
+      confirmCode: document.getElementById('confirmCode'),
+      confirmStatus: document.getElementById('confirmStatus'),
+      btnConfirmDelete: document.getElementById('btnConfirmDelete'),
+      btnFlash: document.getElementById('btnFlash'),
+      logoContainer: document.getElementById('logoContainer'),
+      logoDisplay: document.getElementById('logoDisplay'),
+      logoTextContainer: document.getElementById('logoTextContainer'),
+      companyName: document.getElementById('companyName'),
+      companySubtitle: document.getElementById('companySubtitle'),
+      apiStatusDot: document.getElementById('apiStatusDot'),
+      apiStatusText: document.getElementById('apiStatusText'),
+      debugPanel: document.getElementById('debugPanel')
+    };
+
+    let alertTimeout;
+    loadHistory();
+
+    // ============================================
+    // DEBUG
+    // ============================================
+    function log(message, type = 'info') {
+      const time = new Date().toLocaleTimeString();
+      const line = `[${time}] ${String(message).replace(/https?:\/\/\S+/g, '[URL ocultada]')}`;
+      if (settings.debug) {
+        el.debugPanel.classList.add('show');
+        const entry = document.createElement('div');
+        entry.className = `log-${type}`;
+        entry.textContent = line;
+        el.debugPanel.appendChild(entry);
+        el.debugPanel.scrollTop = el.debugPanel.scrollHeight;
+      }
+    }
+
+    // ============================================
+    // INICIALIZAÇÃO
+    // ============================================
+    document.addEventListener('DOMContentLoaded', async () => {
+      applyTheme();
+      loadLogo();
+      initSettingsUI();
+      if (settings.debug) el.debugPanel.classList.add('show');
+      renderHistory();
+      updateStats();
+      await Promise.allSettled([checkApiStatus(), loadCadastro()]);
+    });
+
+    window.addEventListener('storage', event => {
+      if (event.key === 'history' && event.newValue !== historyStorageSnapshot) {
+        showAlert('Outra aba alterou o histórico. Recarregue para evitar sobrescrever registros.', 'error');
+      }
+    });
+
+    function applyTheme() {
+      document.body.setAttribute('data-theme', settings.darkMode ? 'dark' : 'light');
+    }
+
+    // ============================================
+    // API STATUS
+    // ============================================
+    async function checkApiStatus() {
+      const apiUrl = CONFIG.API_URL;
+      if (!apiUrl) {
+        el.apiStatusDot.className = 'api-status-dot error';
+        el.apiStatusText.textContent = 'API não configurada';
+        apiConnected = false;
+        return;
+      }
+      el.apiStatusText.textContent = 'Verificando...';
+      try {
+        const response = await fetch(`${apiUrl}?action=test`);
+        if (!response.ok) throw new Error('HTTP inválido');
+        const data = await response.json();
+        if (data.success !== true) throw new Error('Resposta inválida');
+        el.apiStatusDot.className = 'api-status-dot connected';
+        el.apiStatusText.textContent = `API OK (${Number(data.totalRows) || 0} linhas)`;
+        apiConnected = true;
+      } catch (error) {
+        el.apiStatusDot.className = 'api-status-dot error';
+        el.apiStatusText.textContent = 'API offline';
+        apiConnected = false;
+      }
+    }
+
+    async function testApiConnection() {
+      showAlert('Testando conexão...', 'info');
+      await checkApiStatus();
+      showAlert(apiConnected ? 'API conectada.' : 'Falha na conexão com a API.', apiConnected ? 'success' : 'error');
+    }
+
+    // ============================================
+    // LOGO UPLOAD
+    // ============================================
+    function loadLogo() {
+      const savedLogo = safeStorageGet('companyLogo');
+      const savedName = safeStorageGet('companyName');
+      const savedSubtitle = safeStorageGet('companySubtitle');
+      const validLogo = savedLogo && savedLogo.length <= 262144 && /^data:image\/(png|jpeg|webp|gif);base64,/i.test(savedLogo);
+      el.logoDisplay.replaceChildren();
+      if (validLogo) {
+        const image = document.createElement('img');
+        image.src = savedLogo;
+        image.className = 'logo-image-full';
+        image.alt = 'Logo';
+        el.logoDisplay.appendChild(image);
+        el.logoTextContainer.style.display = 'none';
+        el.logoContainer.classList.add('has-image');
+      } else {
+        const icon = document.createElement('div');
+        icon.className = 'logo-icon';
+        icon.textContent = '✚';
+        el.logoDisplay.appendChild(icon);
+        el.logoTextContainer.style.display = 'block';
+        el.logoContainer.classList.remove('has-image');
+      }
+      if (savedName) el.companyName.textContent = savedName;
+      if (savedSubtitle) el.companySubtitle.textContent = savedSubtitle;
+      if (savedLogo && !validLogo) showAlert('Logo antiga inválida ou grande demais; dados preservados no armazenamento.', 'error');
+    }
+
+    async function handleLogoUpload(event) {
+      const file = event.target.files?.[0];
+      event.target.value = '';
+      if (!file || !file.type.startsWith('image/')) return;
+      if (file.size > 2 * 1024 * 1024) { showAlert('Imagem excede 2 MB; escolha um arquivo menor.', 'error'); return; }
+      try {
+        const source = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(new Error('Falha ao ler imagem'));
+          reader.readAsDataURL(file);
+        });
+        const image = new Image();
+        image.src = source;
+        await image.decode();
+        const scale = Math.min(1, 600 / Math.max(image.width, image.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(image.width * scale));
+        canvas.height = Math.max(1, Math.round(image.height * scale));
+        canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+        const compressed = canvas.toDataURL('image/jpeg', 0.8);
+        if (compressed.length > 262144) throw new Error('Imagem compactada excede o limite local');
+        safeStorageSet('companyLogo', compressed);
+        loadLogo();
+        showAlert('Logo salva neste aparelho.', 'success');
+        if (confirm('Logo salva. Deseja removê-la?')) {
+          safeStorageRemove('companyLogo');
+          loadLogo();
+        }
+      } catch (error) {
+        showAlert('Não foi possível salvar a logo; armazenamento inalterado.', 'error');
+      }
+    }
+
+    // ============================================
+    // CARREGAR CADASTRO (BaseAlpha7)
+    // ============================================
+    function parseCsv(text) {
+      const rows = [];
+      let row = [];
+      let field = '';
+      let quoted = false;
+      let afterQuote = false;
+      const finishField = () => { row.push(field); field = ''; afterQuote = false; };
+      const finishRow = () => { finishField(); rows.push(row); row = []; };
+      for (let index = 0; index < text.length; index++) {
+        const char = text[index];
+        if (quoted) {
+          if (char === '"' && text[index + 1] === '"') { field += '"'; index++; }
+          else if (char === '"') { quoted = false; afterQuote = true; }
+          else field += char;
+        } else if (afterQuote) {
+          if (char === ',') finishField();
+          else if (char === '\n' || char === '\r') {
+            if (char === '\r' && text[index + 1] === '\n') index++;
+            finishRow();
+          } else if (char !== ' ' && char !== '\t') throw new Error('CSV contém texto após aspas fechadas');
+        } else if (char === '"') {
+          if (field !== '') throw new Error('Aspas em campo CSV não delimitado');
+          quoted = true;
+        } else if (char === ',') finishField();
+        else if (char === '\n' || char === '\r') {
+          if (char === '\r' && text[index + 1] === '\n') index++;
+          finishRow();
+        } else field += char;
+      }
+      if (quoted) throw new Error('CSV com aspas incompletas');
+      if (field || row.length || afterQuote) { finishField(); rows.push(row); }
+      return rows;
+    }
+
+    function parseCadastroCsv(text) {
+      const normalized = String(text || '').replace(/^\uFEFF/, '').trim();
+      if (!normalized || /^<(?:!doctype|html|head|body)\b/i.test(normalized)) throw new Error('Resposta não é CSV');
+      const rows = parseCsv(normalized).filter(row => row.some(value => value.trim() !== ''));
+      const headings = (rows[0] || []).map(value => value.trim());
+      const header = (headings[0] || '').toLocaleUpperCase('pt-BR');
+      if (header !== 'BARRAS' || headings.some(value => !value) || new Set(headings).size !== headings.length) throw new Error('Cabeçalho CSV inesperado');
+      const codes = rows.slice(1).map(row => {
+        if (row.length !== headings.length) throw new Error('Estrutura de linha CSV inválida');
+        return String(row[0] ?? '').trim();
+      }).filter(code => code !== '');
+      if (!codes.length) throw new Error('CSV sem códigos');
+      return codes;
+    }
+
+    async function loadCadastro() {
+      if (cadastroLoadPromise) return cadastroLoadPromise;
+      cadastroLoadPromise = (async () => {
+        el.loadingText.textContent = 'Carregando cadastro...';
+        const cacheKey = 'cadastroCache';
+        try {
+          for (const url of CONFIG.CADASTRO_URLS) {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 8000);
+            try {
+              const response = await fetch(url, { signal: controller.signal, headers: { Accept: 'text/csv,text/plain' } });
+              if (!response.ok) throw new Error('Falha de rede');
+              const codes = parseCadastroCsv(await response.text());
+              cadastro = codes;
+              cadastroState = 'verified';
+              try { safeStorageSet(cacheKey, JSON.stringify({ id: CONFIG.CADASTRO_ID, codes })); } catch (error) {}
+              el.statCadastro.textContent = `${codes.length} verificados`;
+              return;
+            } catch (error) {
+              continue;
+            } finally {
+              clearTimeout(timeout);
+            }
+          }
+          const cached = safeStorageGet(cacheKey);
+          if (cached) {
+            try {
+              const parsed = JSON.parse(cached);
+              if (parsed.id === CONFIG.CADASTRO_ID && Array.isArray(parsed.codes) && parsed.codes.length > 0 && parsed.codes.every(code => typeof code === 'string')) {
+                cadastro = parsed.codes;
+                cadastroState = 'cached';
+                el.statCadastro.textContent = `${cadastro.length} cache`;
+                return;
+              }
+            } catch (error) {}
+          }
+          cadastro = [];
+          cadastroState = 'unavailable';
+          el.statCadastro.textContent = 'Não verificado';
+        } finally {
+          el.loadingOverlay.classList.add('hidden');
+          if (cadastroState === 'unavailable') showAlert('Cadastro indisponível; códigos serão marcados como não verificados.', 'info');
+        }
+      })();
+      return cadastroLoadPromise;
+    }
+
+    // ============================================
+    // VALIDAÇÃO
+    // ============================================
+    function parseQuantity(value) {
+      const text = String(value ?? '').trim();
+      if (!/^-?\d+$/.test(text)) return { valid: false };
+      const quantity = Number(text);
+      if (!Number.isSafeInteger(quantity)) return { valid: false };
+      return { valid: true, quantity };
+    }
+
+    function validateBarras() {
+      const barras = el.barrasInput.value.trim();
+      if (!barras) {
+        isValid = false;
+        el.barrasInput.className = 'input-field';
+        el.validationMsg.className = 'validation-msg';
+        updateSaveButton();
+        return;
+      }
+      const found = cadastro.includes(barras);
+      isValid = found || cadastroState === 'unavailable';
+      el.barrasInput.className = `input-field ${found || cadastroState === 'unavailable' ? 'valid' : 'invalid'}`;
+      el.validationMsg.className = `validation-msg show ${found || cadastroState === 'unavailable' ? 'valid' : 'invalid'}`;
+      el.validationIcon.textContent = found ? '✓' : cadastroState === 'unavailable' ? '!' : '✗';
+      el.validationText.textContent = found ? (cadastroState === 'cached' ? 'Encontrado no último cadastro válido' : 'Encontrado no cadastro') : cadastroState === 'unavailable' ? 'Não verificado — cadastro indisponível' : 'Não cadastrado';
+      updateSaveButton();
+    }
+
+    function updateSaveButton() {
+      const quantity = parseQuantity(el.qtdInput.value);
+      el.btnSave.disabled = !(isValid && el.barrasInput.value.trim() && quantity.valid && !isSaving);
+    }
+
+    function adjustQty(delta) {
+      const current = parseQuantity(el.qtdInput.value);
+      const next = (current.valid ? current.quantity : 0) + delta;
+      if (Number.isSafeInteger(next)) { el.qtdInput.value = String(next); formRevision++; }
+      vibrate(10);
+      updateSaveButton();
+    }
+
+    // ============================================
+    // SCANNER
+    // ============================================
+    function openScanner() {
+      if (scannerActive || scannerStarting) return;
+      if (typeof Quagga === 'undefined') { showAlert('Scanner indisponível: biblioteca de leitura não carregou.', 'error'); return; }
+      scannerActive = true;
+      scannerStarting = true;
+      const session = ++scannerSession;
+      el.scannerOverlay.classList.add('show');
+      el.scannerStatus.textContent = 'Iniciando câmera...';
+      try {
+        Quagga.offDetected(onBarcodeDetected);
+        Quagga.onDetected(onBarcodeDetected);
+        Quagga.init({
+          inputStream: { name: 'Live', type: 'LiveStream', target: '#scanner-container', constraints: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } }, area: { top: '25%', right: '10%', left: '10%', bottom: '25%' } },
+          locator: { patchSize: 'medium', halfSample: false },
+          numOfWorkers: navigator.hardwareConcurrency || 4,
+          decoder: { readers: ['ean_reader', 'ean_8_reader', 'code_128_reader', 'code_39_reader', 'upc_reader'] },
+          locate: true
+        }, error => {
+          if (session !== scannerSession || !scannerActive) { try { Quagga.stop(); } catch (stopError) {} return; }
+          scannerStarting = false;
+          if (error) { showAlert('Câmera indisponível ou permissão negada.', 'error'); closeScanner(); return; }
+          try {
+            Quagga.start();
+            const video = document.querySelector('#scanner-container video');
+            if (video?.srcObject) cameraTrack = video.srcObject.getVideoTracks()[0] || null;
+            el.scannerStatus.textContent = 'Posicione o código';
+          } catch (startError) { showAlert('Não foi possível iniciar a câmera.', 'error'); closeScanner(); }
+        });
+      } catch (error) {
+        showAlert('Não foi possível abrir o scanner.', 'error');
+        closeScanner();
+      }
+    }
+
+    let lastCode = '', lastCodeTime = 0, codeBuffer = [];
+    function onBarcodeDetected(result) {
+      const code = result?.codeResult?.code;
+      if (!scannerActive || !code || code === lastCode && Date.now() - lastCodeTime < 2000) return;
+      codeBuffer.push(code);
+      if (codeBuffer.length > 5) codeBuffer.shift();
+      if (codeBuffer.filter(value => value === code).length >= 2) {
+        lastCode = code;
+        lastCodeTime = Date.now();
+        codeBuffer = [];
+        vibrate([100, 50, 100]);
+        closeScanner();
+        formRevision++;
+        el.barrasInput.value = code;
+        validateBarras();
+        if (isValid) { el.qtdInput.value = '1'; el.qtdInput.focus(); }
+        updateSaveButton();
+      }
+    }
+
+    function closeScanner() {
+      scannerActive = false;
+      scannerStarting = false;
+      scannerSession++;
+      codeBuffer = [];
+      flashOn = false;
+      el.btnFlash?.classList.remove('active');
+      try { if (typeof Quagga !== 'undefined') { Quagga.offDetected(onBarcodeDetected); Quagga.stop(); } } catch (error) {}
+      try { cameraTrack?.stop(); } catch (error) {}
+      cameraTrack = null;
+      el.scannerOverlay.classList.remove('show');
+    }
+
+    async function toggleFlash() {
+      try {
+        if (!cameraTrack || !cameraTrack.getCapabilities?.().torch) { showAlert('Lanterna indisponível neste aparelho.', 'info'); return; }
+        const next = !flashOn;
+        await cameraTrack.applyConstraints({ advanced: [{ torch: next }] });
+        flashOn = next;
+        el.btnFlash.classList.toggle('active', flashOn);
+      } catch (error) {
+        flashOn = false;
+        el.btnFlash.classList.remove('active');
+        showAlert('Não foi possível controlar a lanterna.', 'info');
+      }
+    }
+
+    function manualInput() {
+      closeScanner();
+      const code = prompt('Digite o código:');
+      if (code?.trim()) {
+        formRevision++;
+        el.barrasInput.value = code.trim();
+        validateBarras();
+        if (isValid) { el.qtdInput.value = '1'; el.qtdInput.focus(); }
+        updateSaveButton();
+      }
+    }
+
+    // ============================================
+    // SALVAR
+    // ============================================
+    let formRevision = 0;
+    el.barrasInput.addEventListener('input', () => { formRevision++; });
+    el.qtdInput.addEventListener('input', () => { formRevision++; });
+
+    async function saveData() {
+      if (isSaving) return;
+      const barras = el.barrasInput.value.trim();
+      const parsedQuantity = parseQuantity(el.qtdInput.value);
+      if (!barras || !isValid) { showAlert('Informe um código válido.', 'error'); return; }
+      if (!parsedQuantity.valid) { showAlert('Quantidade inválida; informe um inteiro dentro da faixa segura.', 'error'); return; }
+      const qty = parsedQuantity.quantity;
+      const id = createId();
+      const collectedAt = new Date();
+      const item = {
+        id,
+        remoteId: id,
+        code: barras,
+        qty,
+        date: collectedAt.toLocaleDateString('pt-BR'),
+        time: collectedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        collectedAt: collectedAt.toISOString(),
+        remoteConfirmedAt: null,
+        verificationStatus: cadastroState === 'unavailable' ? 'not-verified' : cadastroState === 'cached' ? 'cached' : 'verified',
+        syncStatus: 'pending',
+        synced: false
+      };
+      isSaving = true;
+      el.saveIcon.textContent = '⏳';
+      el.saveText.textContent = 'SALVANDO...';
+      el.btnSave.disabled = true;
+      const snapshotRevision = formRevision;
+      if (!persistHistory([item, ...history], 'Não foi possível salvar no aparelho; o registro não foi enviado à API.')) return finishSave();
+      let remoteMessage = 'Registro salvo apenas neste aparelho.';
+      try {
+        if (apiConnected && CONFIG.API_URL) {
+          const url = `${CONFIG.API_URL}?action=add&barras=${encodeURIComponent(barras)}&qtd=${encodeURIComponent(String(qty))}&id=${encodeURIComponent(id)}`;
+          try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Resposta HTTP inválida');
+            const data = await response.json();
+            if (data.success === true) {
+              const confirmedAt = new Date().toISOString();
+              const updated = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'confirmed', synced: true, remoteConfirmedAt: confirmedAt } : entry);
+              if (persistHistory(updated, 'A API confirmou, mas o estado local não foi atualizado; o registro precisa ser conferido antes de nova ação.')) remoteMessage = 'Confirmado pela API. Horário de confirmação registrado neste aparelho.';
+              else {
+                history = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'uncertain', remoteConfirmedAt: confirmedAt } : entry);
+                remoteMessage = 'A API confirmou, mas o estado local não pôde ser atualizado. Não reenvie este ID.';
+              }
+            } else {
+              const updated = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'uncertain' } : entry);
+              if (!persistHistory(updated, 'Resposta da API sem confirmação e falha ao atualizar o estado local; verifique a planilha.')) history = updated;
+              remoteMessage = 'A API não confirmou o registro. O resultado remoto é incerto; confira a planilha antes de novo lançamento.';
+            }
+          } catch (error) {
+            const updated = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'uncertain' } : entry);
+            if (!persistHistory(updated, 'Resposta remota perdida; não foi possível salvar o estado incerto neste aparelho. Verifique a planilha.')) history = updated;
+            remoteMessage = 'Resposta remota incerta. O registro permanece neste aparelho; não reenvie sem verificar a planilha.';
+          }
+        }
+        updateStats();
+        renderHistory();
+        showAlert(remoteMessage, remoteMessage.startsWith('Confirmado') ? 'success' : remoteMessage.startsWith('A API rejeitou') ? 'error' : 'info');
+        vibrate([50, 30, 50]);
+        if (formRevision === snapshotRevision && el.barrasInput.value.trim() === barras && el.qtdInput.value.trim() === String(qty)) clearFields();
+      } finally {
+        finishSave();
+      }
+    }
+
+    function finishSave() {
+      isSaving = false;
+      el.saveIcon.textContent = '💾';
+      el.saveText.textContent = 'SALVAR';
+      updateSaveButton();
+    }
+
+    // ============================================
+    // DELETAR
+    // ============================================
+    function askDelete(id) {
+      const item = history.find(entry => entry.id === id);
+      if (!item || isDeleting) return;
+      deleteTarget = { id: item.id, item };
+      el.confirmCode.textContent = `${item.code} (×${item.qty})`;
+      if (item.syncStatus === 'uncertain') {
+        el.confirmStatus.textContent = 'Resultado remoto incerto; mantenha este registro e confira a planilha antes de qualquer ação.';
+      } else if (item.syncStatus !== 'confirmed') {
+        el.confirmStatus.textContent = 'Este registro ainda não foi confirmado na planilha. Remover aqui descartará a única cópia local.';
+      } else if (apiConnected && CONFIG.API_URL && item.remoteId) {
+        el.confirmStatus.textContent = 'A exclusão será solicitada à API somente pelo ID. A cópia local será removida apenas após confirmação.';
+      } else {
+        el.confirmStatus.textContent = 'Sem ID remoto verificável ou API indisponível. A remoção será somente local; a linha da planilha continuará existindo.';
+      }
+      el.confirmOverlay.classList.add('show');
+    }
+
+    function closeConfirm() {
+      el.confirmOverlay.classList.remove('show');
+      deleteTarget = null;
+    }
+
+    async function confirmDelete() {
+      if (!deleteTarget || isDeleting) return;
+      const target = deleteTarget;
+      const item = target.item;
+      if (item.syncStatus === 'uncertain') { showAlert('Registro incerto preservado. Confira a planilha antes de agir.', 'error'); return; }
+      isDeleting = true;
+      el.btnConfirmDelete.disabled = true;
+      el.btnConfirmDelete.textContent = 'Deletando...';
+      try {
+        if (item.syncStatus === 'confirmed' && apiConnected && CONFIG.API_URL && item.remoteId) {
+          try {
+            const response = await fetch(`${CONFIG.API_URL}?action=delete&id=${encodeURIComponent(item.remoteId)}`);
+            if (!response.ok) throw new Error('Resposta HTTP inválida');
+            const data = await response.json();
+            if (data.success !== true) throw new Error('Exclusão não confirmada');
+          } catch (error) {
+            const updated = history.map(entry => entry.id === target.id ? { ...entry, syncStatus: 'uncertain' } : entry);
+            if (!persistHistory(updated, 'Resposta remota incerta e estado local não atualizado; confira a planilha.')) history = updated;
+            renderHistory();
+            showAlert('Exclusão remota não confirmada; registro local mantido e marcado como incerto.', 'error');
+            return;
+          }
+          const remainingHistory = history.filter(entry => entry.id !== target.id);
+          if (!persistHistory(remainingHistory, 'Exclusão confirmada pela API, mas não foi possível atualizar o histórico local.')) {
+            history = history.map(entry => entry.id === target.id ? { ...entry, syncStatus: 'uncertain' } : entry);
+            renderHistory();
+            return;
+          }
+          showAlert('Exclusão confirmada pela API e removida deste aparelho.', 'success');
+        } else if (!confirm('Confirma remover somente deste aparelho? A planilha não será alterada.')) {
+          return;
+        } else {
+          if (!persistHistory(history.filter(entry => entry.id !== target.id))) return;
+          showAlert('Registro removido somente deste aparelho.', 'info');
+        }
+        renderHistory();
+        updateStats();
+      } finally {
+        isDeleting = false;
+        el.btnConfirmDelete.disabled = false;
+        el.btnConfirmDelete.textContent = 'Deletar';
+        closeConfirm();
+      }
+    }
+
+    function renderHistory() {
+      el.historyList.replaceChildren();
+      if (!history.length) {
+        const empty = document.createElement('div');
+        empty.className = 'history-empty';
+        empty.textContent = 'Nenhum item salvo';
+        el.historyList.appendChild(empty);
+        return;
+      }
+      for (const item of history.slice(0, 15)) {
+        const row = document.createElement('div');
+        row.className = 'history-item';
+        const info = document.createElement('div');
+        info.className = 'history-item-info';
+        const code = document.createElement('span');
+        code.className = 'history-item-code';
+        code.textContent = item.code;
+        const meta = document.createElement('div');
+        meta.className = 'history-item-meta';
+        const qty = document.createElement('span');
+        qty.className = 'history-item-qty';
+        qty.textContent = `×${item.qty}`;
+        const time = document.createElement('span');
+        time.className = 'history-item-time';
+        time.textContent = `${item.date ? `${item.date} ` : ''}${item.time || 'Horário não registrado'}`;
+        const status = document.createElement('span');
+        status.className = `history-item-status ${item.syncStatus === 'confirmed' ? 'synced' : item.syncStatus === 'uncertain' ? 'uncertain' : 'pending'}`;
+        status.textContent = item.syncStatus === 'confirmed' ? '✓ Confirmado' : item.syncStatus === 'uncertain' ? '⚠️ Incerto' : '⏳ Pendente';
+        const remove = document.createElement('button');
+        remove.className = 'btn-delete';
+        remove.textContent = '🗑️';
+        remove.setAttribute('aria-label', 'Excluir registro');
+        remove.addEventListener('click', () => askDelete(item.id));
+        meta.append(qty, time, status);
+        info.append(code, meta);
+        row.append(info, remove);
+        el.historyList.appendChild(row);
+      }
+    }
+
+    function clearAllHistory() {
+      if (history.some(item => item.syncStatus !== 'confirmed')) {
+        showAlert('Há registros pendentes ou incertos. Exporte o histórico e resolva-os antes de limpar.', 'error');
+        return;
+      }
+      if (!confirm('Limpar apenas os registros locais confirmados? A planilha não será alterada.')) return;
+      if (!persistHistory([])) return;
+      renderHistory();
+      updateStats();
+      showAlert('Histórico local limpo; linhas da planilha preservadas.', 'info');
+    }
+
+    function csvCell(value) {
+      let text = String(value ?? '');
+      if (/^[\u0000-\u0020]*[=+\-@]/.test(text)) text = `'${text}`;
+      return `"${text.replace(/"/g, '""')}"`;
+    }
+
+    function exportHistory() {
+      if (!history.length) { showAlert('Nenhum dado local para exportar.', 'info'); return; }
+      const columns = ['Codigo (protegido para planilha)', 'Quantidade', 'Data', 'Hora', 'Timestamp coleta', 'ID local', 'ID remoto', 'Sincronizacao', 'Verificacao cadastro', 'Confirmacao remota'];
+      const rows = history.map(item => [item.code, item.qty, item.date || '', item.time || '', item.collectedAt || '', item.id, item.remoteId || '', item.syncStatus, item.verificationStatus || '', item.remoteConfirmedAt || '']);
+      const csv = [columns, ...rows].map(row => row.map(csvCell).join(',')).join('\r\n');
+      const url = URL.createObjectURL(new Blob(['\uFEFF', csv], { type: 'text/csv;charset=utf-8' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `inventario_local_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showAlert('CSV local exportado; não é backup completo da planilha.', 'info');
+    }
+
+    function updateStats() {
+      el.savedBadge.textContent = history.length;
+      el.statTotal.textContent = history.reduce((sum, item) => sum + item.qty, 0);
+      el.statUnique.textContent = new Set(history.map(item => item.code)).size;
+    }
+
+    // ============================================
+    // CONFIGURAÇÕES
+    // ============================================
+    function initSettingsUI() {
+      document.getElementById('settingApiUrl').value = safeStorageGet('apiUrl') || '';
+      document.getElementById('settingCadastroId').value = safeStorageGet('cadastroId') || DEFAULT_CONFIG.CADASTRO_ID;
+      document.getElementById('settingDadosId').value = safeStorageGet('dadosId') || DEFAULT_CONFIG.DADOS_ID;
+
+      document.getElementById('toggleSound').classList.toggle('active', settings.sound);
+      document.getElementById('toggleVibration').classList.toggle('active', settings.vibration);
+      document.getElementById('toggleDarkMode').classList.toggle('active', settings.darkMode);
+      document.getElementById('toggleDebug').classList.toggle('active', settings.debug);
+    }
+
+    function openSettings() {
+      initSettingsUI();
+      el.settingsModal.classList.add('show');
+    }
+
+    function closeSettings() { el.settingsModal.classList.remove('show'); }
+
+    function toggleSetting(setting) {
+      const nextValue = !settings[setting];
+      try { safeStorageSet(setting, nextValue); } catch (error) { showAlert('Configuração não salva no aparelho.', 'error'); return; }
+      settings[setting] = nextValue;
+      document.getElementById('toggle' + setting.charAt(0).toUpperCase() + setting.slice(1)).classList.toggle('active', settings[setting]);
+      if (setting === 'darkMode') applyTheme();
+      if (setting === 'debug') el.debugPanel.classList.toggle('show', settings.debug);
+    }
+
+    function saveSettings() {
+      const values = {
+        apiUrl: document.getElementById('settingApiUrl').value.trim(),
+        cadastroId: document.getElementById('settingCadastroId').value.trim() || DEFAULT_CONFIG.CADASTRO_ID,
+        dadosId: document.getElementById('settingDadosId').value.trim() || DEFAULT_CONFIG.DADOS_ID
+      };
+      const previous = Object.fromEntries(Object.keys(values).map(key => [key, safeStorageGet(key)]));
+      try {
+        for (const [key, value] of Object.entries(values)) safeStorageSet(key, value);
+      } catch (error) {
+        for (const [key, value] of Object.entries(previous)) {
+          try { if (value === null) safeStorageRemove(key); else safeStorageSet(key, value); } catch (rollbackError) {}
+        }
+        showAlert('Não foi possível salvar as configurações neste aparelho.', 'error');
+        return;
+      }
+      closeSettings();
+      showAlert('Configurações salvas neste aparelho.', 'success');
+      setTimeout(() => location.reload(), 1000);
+    }
+
+    // ============================================
+    // AÇÕES
+    // ============================================
+    function clearFields() {
+      el.barrasInput.value = '';
+      el.qtdInput.value = '1';
+      isValid = false;
+      el.barrasInput.className = 'input-field';
+      el.validationMsg.className = 'validation-msg';
+      updateSaveButton();
+      el.barrasInput.focus();
+    }
+
+    function handleBarrasKeydown(event) {
+      if (event.key === 'Enter') { event.preventDefault(); validateBarras(); if (isValid) el.qtdInput.focus(); }
+    }
+
+    function handleQtdKeydown(event) {
+      if (event.key === 'Enter' && isValid && parseQuantity(el.qtdInput.value).valid) { event.preventDefault(); saveData(); }
+    }
+
+    // ============================================
+    // UTILITÁRIOS
+    // ============================================
+    function showAlert(message, type) {
+      clearTimeout(alertTimeout);
+      el.alert.className = `alert alert-${type}`;
+      el.alertIcon.textContent = type === 'error' ? '⚠️' : type === 'success' ? '✓' : 'ℹ️';
+      el.alertMessage.textContent = message;
+      setTimeout(() => el.alert.classList.add('show'), 10);
+      alertTimeout = setTimeout(hideAlert, 2500);
+    }
+    function hideAlert() { el.alert.classList.remove('show'); }
+    function vibrate(pattern) { if (settings.vibration && navigator.vibrate) navigator.vibrate(pattern); }
+  </script>
+</body>
+</html>
