@@ -140,13 +140,25 @@ test('bloqueia Enter e chamadas repetidas enquanto uma gravação está pendente
   assert.equal(app.elements.get('btnSave').dataset.state, 'ready');
 });
 
-test('lançamento local concluído não recebe texto de confirmação da planilha', async () => {
+test('lançamento local concluído mantém o estado final do botão até a próxima edição', async () => {
   const app = createApp();
   setForm(app, '000050', '2');
   await app.context.saveData();
   assert.equal(app.elements.get('btnSave').dataset.state, 'saved');
+  assert.equal(app.elements.get('btnSave').disabled, true);
   assert.equal(app.elements.get('saveText').textContent, 'Salvo neste aparelho');
   assert.equal((await savedHistory(app))[0].syncStatus, 'pending');
+});
+
+test('confirmação remota mantém o botão identificado como confirmado', async () => {
+  const app = createApp({ storage: { apiUrl: 'https://api.example/exec' } });
+  app.run('apiConnected = true;');
+  setForm(app, '000051', '2');
+  await app.context.saveData();
+  assert.equal(app.elements.get('btnSave').dataset.state, 'saved');
+  assert.equal(app.elements.get('btnSave').disabled, true);
+  assert.equal(app.elements.get('saveText').textContent, 'Confirmado na planilha');
+  assert.equal((await savedHistory(app))[0].syncStatus, 'confirmed');
 });
 
 test('mais de 100 registros ficam persistidos e a exibição é limitada separadamente', async () => {
@@ -189,7 +201,17 @@ test('resposta perdida marca resultado remoto incerto e não reenvia automaticam
   setForm(app);
   await app.context.saveData();
   assert.equal((await savedHistory(app))[0].syncStatus, 'uncertain');
+  assert.equal(app.elements.get('btnSave').dataset.state, 'uncertain');
+  assert.equal(app.elements.get('btnSave').disabled, true);
+  assert.equal(app.elements.get('saveText').textContent, 'Confirmação incerta');
   assert.equal(app.requests.length, 1);
+  await app.context.saveData();
+  assert.equal(app.requests.length, 1);
+  assert.match(app.elements.get('alertMessage').textContent, /confirmação incerta/);
+  app.elements.get('barrasInput').value = '000124';
+  app.elements.get('barrasInput').dispatch('input');
+  assert.equal(app.elements.get('btnSave').dataset.state, 'ready');
+  assert.equal(app.elements.get('btnSave').disabled, false);
 });
 
 test('persistência local falha antes do envio remoto e não anuncia gravação', async () => {
@@ -251,6 +273,23 @@ test('exclusão remota rejeitada mantém o registro local identificado e não us
   assert.equal(app.requests.length, 1);
   assert.match(app.requests[0][0], /action=delete&id=stable-1/);
   assert.doesNotMatch(app.requests[0][0], /barras=|qtd=/);
+});
+
+test('remoção de lançamento incerto fica desabilitada e a chamada direta preserva o histórico', async () => {
+  const item = { id: 'uncertain-1', remoteId: 'uncertain-1', code: '0008', qty: 3, syncStatus: 'uncertain', synced: false };
+  const app = createApp({ storage: { apiUrl: 'https://api.example/exec', history: JSON.stringify([item]) } });
+  app.run('apiConnected = true;');
+  app.context.askDelete('uncertain-1');
+  assert.equal(app.elements.get('btnConfirmDelete').disabled, true);
+  assert.equal(app.elements.get('btnConfirmDelete').textContent, 'Remoção bloqueada');
+  await app.context.confirmDelete();
+  assert.equal(app.elements.get('confirmOverlay').classList.contains('show'), true);
+  assert.deepEqual(await savedHistory(app), [item]);
+  assert.equal(app.requests.length, 0);
+  assert.match(app.elements.get('alertMessage').textContent, /Registro incerto preservado/);
+  app.context.closeConfirm();
+  assert.equal(app.elements.get('btnConfirmDelete').disabled, false);
+  assert.equal(app.elements.get('btnConfirmDelete').textContent, 'Remover');
 });
 
 test('duas chamadas de exclusão simultâneas geram uma única requisição', async () => {
@@ -342,6 +381,7 @@ test('configurações legadas e IDs padrão são preservados', () => {
   assert.equal(app.run('CONFIG.DADOS_ID'), 'legacy-dados');
   assert.equal(app.run('settings.sound'), true);
   const defaults = createApp();
+  assert.equal(defaults.run('CONFIG.API_URL'), '');
   assert.equal(defaults.run('CONFIG.CADASTRO_ID'), '1VdZPW6awQJmV3gTQ_tncPjPtLHMPCLDNLSTglqezvu8');
   assert.equal(defaults.run('CONFIG.DADOS_ID'), '1ROSdUmwBl2P9EwCPCGKe-Qh6eyBOzoYMX8h9vC-nph4');
 });

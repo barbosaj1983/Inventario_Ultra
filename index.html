@@ -186,6 +186,9 @@
   .btn-save:disabled { border-color: var(--line); background: var(--line); color: var(--ink-subtle); }
   .btn-save[data-state="saving"] { border-color: var(--green-800); background: var(--green-800); color: #fff; }
   .btn-save[data-state="saved"] { border-color: #23734f; background: #23734f; color: #fff; }
+  .btn-save[data-state="uncertain"] { border-color: var(--amber-800); background: var(--amber-100); color: var(--amber-800); }
+  .btn-save:disabled[data-state="saved"] { border-color: #23734f; background: #23734f; color: #fff; }
+  .btn-save:disabled[data-state="uncertain"] { border-color: var(--amber-800); background: var(--amber-100); color: var(--amber-800); }
   .btn-save .icon { width: 17px; height: 17px; }
   .save-spinner { display: none; width: 17px; height: 17px; border: 2px solid rgba(255,255,255,.42); border-top-color: #fff; border-radius: 50%; }
   .btn-save[data-state="saving"] .save-spinner { display: block; animation: spin 700ms linear infinite; }
@@ -605,6 +608,7 @@
     let cadastroState = 'unavailable';
     let isValid = false;
     let isSaving = false;
+    let uncertainSaveOutcome = null;
     let isDeleting = false;
     let apiConnected = false;
     let deleteTarget = null;
@@ -1032,14 +1036,22 @@
       el.qtyContextText.textContent = kind === 'negative' ? `Ajuste aditivo de ${Math.abs(quantity.quantity)} unidades` : kind === 'zero' ? 'Registro de zero unidade; não remove lançamentos' : `Entrada de ${quantity.quantity} ${quantity.quantity === 1 ? 'unidade' : 'unidades'}`;
     }
 
+    function hasUncertainSubmission(code, quantity) {
+      return uncertainSaveOutcome?.revision === formRevision && uncertainSaveOutcome.code === code && uncertainSaveOutcome.quantity === quantity;
+    }
+
     function updateSaveButton() {
       const quantity = parseQuantity(el.qtdInput.value);
       const hasCode = Boolean(el.barrasInput.value.trim());
-      const canSave = isValid && hasCode && quantity.valid && !isSaving;
+      const hasUncertain = quantity.valid && hasUncertainSubmission(el.barrasInput.value.trim(), quantity.quantity);
+      const canSave = isValid && hasCode && quantity.valid && !isSaving && !hasUncertain;
       el.btnSave.disabled = !canSave;
       if (isSaving) {
         el.btnSave.dataset.state = 'saving';
         el.saveText.textContent = 'Salvando…';
+      } else if (hasUncertain) {
+        el.btnSave.dataset.state = 'uncertain';
+        el.saveText.textContent = 'Confirmação incerta';
       } else if (!hasCode) {
         el.btnSave.dataset.state = 'unavailable';
         el.saveText.textContent = 'Informe um código';
@@ -1178,8 +1190,8 @@
     // SALVAR
     // ============================================
     let formRevision = 0;
-    el.barrasInput.addEventListener('input', () => { formRevision++; });
-    el.qtdInput.addEventListener('input', () => { formRevision++; });
+    el.barrasInput.addEventListener('input', () => { formRevision++; updateSaveButton(); });
+    el.qtdInput.addEventListener('input', () => { formRevision++; updateSaveButton(); });
 
     async function saveData() {
       if (isSaving) return;
@@ -1188,6 +1200,11 @@
       if (!barras || !isValid) { showAlert('Informe um código válido.', 'error'); return; }
       if (!parsedQuantity.valid) { showAlert('Quantidade inválida; informe um inteiro dentro da faixa segura.', 'error'); return; }
       const qty = parsedQuantity.quantity;
+      if (hasUncertainSubmission(barras, qty)) {
+        showAlert('Este código e quantidade já têm uma confirmação incerta. Confira a planilha antes de repetir.', 'error');
+        updateSaveButton();
+        return;
+      }
       const id = createId();
       const collectedAt = new Date();
       const item = {
@@ -1212,6 +1229,7 @@
       if (!persistHistory([item, ...history], 'Não foi possível salvar no aparelho; o registro não foi enviado à API.')) return finishSave();
       let remoteMessage = 'Registro salvo apenas neste aparelho.';
       let formCleared = false;
+      let uncertainOutcome = null;
       try {
         if (apiConnected && CONFIG.API_URL) {
           const url = `${CONFIG.API_URL}?action=add&barras=${encodeURIComponent(barras)}&qtd=${encodeURIComponent(String(qty))}&id=${encodeURIComponent(id)}`;
@@ -1225,16 +1243,19 @@
               if (persistHistory(updated, 'A API confirmou, mas o estado local não foi atualizado; o registro precisa ser conferido antes de nova ação.')) remoteMessage = 'Confirmado pela API. Horário de confirmação registrado neste aparelho.';
               else {
                 history = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'uncertain', remoteConfirmedAt: confirmedAt } : entry);
+                uncertainOutcome = { revision: snapshotRevision, code: barras, quantity: qty };
                 remoteMessage = 'A API confirmou, mas o estado local não pôde ser atualizado. Não reenvie este ID.';
               }
             } else {
               const updated = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'uncertain' } : entry);
               if (!persistHistory(updated, 'Resposta da API sem confirmação e falha ao atualizar o estado local; verifique a planilha.')) history = updated;
+              uncertainOutcome = { revision: snapshotRevision, code: barras, quantity: qty };
               remoteMessage = 'A API não confirmou o registro. O resultado remoto é incerto; confira a planilha antes de novo lançamento.';
             }
           } catch (error) {
             const updated = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'uncertain' } : entry);
             if (!persistHistory(updated, 'Resposta remota perdida; não foi possível salvar o estado incerto neste aparelho. Verifique a planilha.')) history = updated;
+            uncertainOutcome = { revision: snapshotRevision, code: barras, quantity: qty };
             remoteMessage = 'Resposta remota incerta. O registro permanece neste aparelho; não reenvie sem verificar a planilha.';
           }
         }
@@ -1247,12 +1268,13 @@
           formCleared = true;
         }
       } finally {
-        finishSave(formCleared, remoteMessage);
+        finishSave(formCleared, remoteMessage, uncertainOutcome);
       }
     }
 
-    function finishSave(completed = false, remoteMessage = '') {
+    function finishSave(completed = false, remoteMessage = '', uncertainOutcome = null) {
       isSaving = false;
+      uncertainSaveOutcome = uncertainOutcome;
       el.saveIcon.classList.remove('icon-loading');
       updateSaveButton();
       if (completed) {
@@ -1269,6 +1291,9 @@
       if (!item || isDeleting) return;
       confirmReturnFocus = document.activeElement && document.activeElement !== document.body ? document.activeElement : el.historyList;
       deleteTarget = { id: item.id, item };
+      const uncertain = item.syncStatus === 'uncertain';
+      el.btnConfirmDelete.disabled = uncertain;
+      el.btnConfirmDelete.textContent = uncertain ? 'Remoção bloqueada' : 'Remover';
       el.confirmCode.textContent = `${item.code} (${item.qty > 0 ? '+' : ''}${item.qty} un.)`;
       if (item.syncStatus === 'uncertain') {
         el.confirmStatus.textContent = 'Resultado remoto incerto; mantenha este registro e confira a planilha antes de qualquer ação.';
@@ -1287,6 +1312,8 @@
     function closeConfirm(restoreFocus = true) {
       el.confirmOverlay.classList.remove('show');
       el.confirmOverlay.setAttribute('aria-hidden', 'true');
+      el.btnConfirmDelete.disabled = false;
+      el.btnConfirmDelete.textContent = 'Remover';
       deleteTarget = null;
       const returnFocus = confirmReturnFocus;
       confirmReturnFocus = null;
