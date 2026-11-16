@@ -1239,10 +1239,11 @@
             const data = await response.json();
             if (data.success === true) {
               const confirmedAt = new Date().toISOString();
-              const updated = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'confirmed', synced: true, remoteConfirmedAt: confirmedAt } : entry);
-              if (persistHistory(updated, 'A API confirmou, mas o estado local não foi atualizado; o registro precisa ser conferido antes de nova ação.')) remoteMessage = 'Confirmado pela API. Horário de confirmação registrado neste aparelho.';
+              const serverTimestamp = typeof data.data?.timestamp === 'string' && Number.isFinite(Date.parse(data.data.timestamp)) ? new Date(data.data.timestamp).toISOString() : null;
+              const updated = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'confirmed', synced: true, remoteConfirmedAt: confirmedAt, remoteServerTimestamp: serverTimestamp } : entry);
+              if (persistHistory(updated, 'A API confirmou, mas o estado local não foi atualizado; o registro precisa ser conferido antes de nova ação.')) remoteMessage = serverTimestamp ? 'Confirmado pela API. Horário de gravação confirmado pelo servidor.' : 'Confirmado pela API; horário do servidor não informado.';
               else {
-                history = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'uncertain', remoteConfirmedAt: confirmedAt } : entry);
+                history = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'uncertain', remoteConfirmedAt: confirmedAt, remoteServerTimestamp: serverTimestamp } : entry);
                 uncertainOutcome = { revision: snapshotRevision, code: barras, quantity: qty };
                 remoteMessage = 'A API confirmou, mas o estado local não pôde ser atualizado. Não reenvie este ID.';
               }
@@ -1426,8 +1427,8 @@
 
     function exportHistory() {
       if (!history.length) { showAlert('Nenhum dado local para exportar.', 'info'); return; }
-      const columns = ['Codigo (protegido para planilha)', 'Quantidade', 'Data', 'Hora', 'Timestamp coleta', 'ID local', 'ID remoto', 'Sincronizacao', 'Verificacao cadastro', 'Confirmacao remota'];
-      const rows = history.map(item => [item.code, item.qty, item.date || '', item.time || '', item.collectedAt || '', item.id, item.remoteId || '', item.syncStatus, item.verificationStatus || '', item.remoteConfirmedAt || '']);
+      const columns = ['Codigo (protegido para planilha)', 'Quantidade', 'Data', 'Hora', 'Timestamp coleta', 'ID local', 'ID remoto', 'Sincronizacao', 'Verificacao cadastro', 'Confirmacao recebida neste aparelho', 'Gravacao confirmada pelo servidor'];
+      const rows = history.map(item => [item.code, item.qty, item.date || '', item.time || '', item.collectedAt || '', item.id, item.remoteId || '', item.syncStatus, item.verificationStatus || '', item.remoteConfirmedAt || '', item.remoteServerTimestamp || '']);
       const csv = [columns, ...rows].map(row => row.map(csvCell).join(',')).join('\r\n');
       const url = URL.createObjectURL(new Blob(['\uFEFF', csv], { type: 'text/csv;charset=utf-8' }));
       const link = document.createElement('a');
