@@ -9,11 +9,11 @@ const inlineScripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
 assert.ok(inlineScripts.length);
 const appScript = inlineScripts.at(-1)[1];
 
-function createElement() {
+function createElement(onFocus = () => {}) {
   const listeners = new Map();
   const classes = new Set();
   return {
-    value: '', textContent: '', innerHTML: '', className: '', disabled: false, style: {}, children: [],
+    value: '', textContent: '', innerHTML: '', className: '', disabled: false, style: {}, children: [], dataset: {}, focusables: [],
     classList: {
       add: (...values) => values.forEach(value => classes.add(value)),
       remove: (...values) => values.forEach(value => classes.delete(value)),
@@ -30,7 +30,9 @@ function createElement() {
     append(...children) { this.children.push(...children); },
     replaceChildren(...children) { this.children = children; },
     setAttribute(name, value) { this[name] = value; },
-    focus() {}, click() { this.clicked = true; }
+    querySelectorAll() { return this.focusables; },
+    focus() { onFocus(this); this.focused = true; },
+    click() { this.clicked = true; }
   };
 }
 
@@ -45,12 +47,14 @@ function createApp(options = {}) {
   let failWrites = false;
   let generatedUrl = 0;
   const document = {
+    activeElement: null,
+    body: createElement(element => { document.activeElement = element; }),
     getElementById(id) {
-      if (!elements.has(id)) elements.set(id, createElement());
+      if (!elements.has(id)) elements.set(id, createElement(element => { document.activeElement = element; }));
       return elements.get(id);
     },
-    createElement: () => createElement(),
-    querySelector: () => createElement(),
+    createElement: () => createElement(element => { document.activeElement = element; }),
+    querySelector: () => createElement(element => { document.activeElement = element; }),
     addEventListener(name, callback) { documentListeners.set(name, callback); }
   };
   const localStorage = {
@@ -86,7 +90,7 @@ function createApp(options = {}) {
   });
   vm.runInContext(appScript, context, { timeout: 1000 });
   return {
-    context, storage, elements, requests, downloads, revokedUrls,
+    context, storage, elements, requests, downloads, revokedUrls, document, documentListeners,
     setFailWrites(value) { failWrites = value; },
     run(source) { return vm.runInContext(source, context); }
   };
@@ -117,6 +121,8 @@ test('bloqueia Enter e chamadas repetidas enquanto uma gravação está pendente
   app.run('apiConnected = true;');
   setForm(app);
   const first = app.context.saveData();
+  assert.equal(app.elements.get('btnSave').dataset.state, 'saving');
+  assert.equal(app.elements.get('saveText').textContent, 'Salvando…');
   app.context.handleQtdKeydown({ key: 'Enter', preventDefault() {} });
   await app.context.saveData();
   assert.equal(app.requests.length, 1);
@@ -129,8 +135,18 @@ test('bloqueia Enter e chamadas repetidas enquanto uma gravação está pendente
   assert.equal((await savedHistory(app)).length, 1);
   assert.equal(app.elements.get('barrasInput').value, '000999');
   assert.equal(app.elements.get('qtdInput').value, '4');
-  assert.equal(app.elements.get('saveText').textContent, 'SALVAR');
+  assert.equal(app.elements.get('saveText').textContent, 'Registrar lançamento');
   assert.equal(app.elements.get('btnSave').disabled, false);
+  assert.equal(app.elements.get('btnSave').dataset.state, 'ready');
+});
+
+test('lançamento local concluído não recebe texto de confirmação da planilha', async () => {
+  const app = createApp();
+  setForm(app, '000050', '2');
+  await app.context.saveData();
+  assert.equal(app.elements.get('btnSave').dataset.state, 'saved');
+  assert.equal(app.elements.get('saveText').textContent, 'Salvo neste aparelho');
+  assert.equal((await savedHistory(app))[0].syncStatus, 'pending');
 });
 
 test('mais de 100 registros ficam persistidos e a exibição é limitada separadamente', async () => {
@@ -185,7 +201,7 @@ test('persistência local falha antes do envio remoto e não anuncia gravação'
   assert.equal(app.requests.length, 0);
   assert.equal(app.storage.has('history'), false);
   assert.match(app.elements.get('alertMessage').textContent, /Não foi possível salvar/);
-  assert.equal(app.elements.get('saveText').textContent, 'SALVAR');
+  assert.equal(app.elements.get('saveText').textContent, 'Registrar lançamento');
 });
 
 test('histórico inválido é arquivado e histórico antigo mantém horário ausente', async () => {
@@ -343,6 +359,40 @@ test('falha de armazenamento nas configurações restaura valores anteriores', (
   assert.equal(app.storage.get('dadosId'), 'old-dados');
 });
 
+test('configurações editadas só persistem ao salvar; cancelar restaura a preferência anterior e o foco', () => {
+  const app = createApp({ storage: { darkMode: 'false' } });
+  app.context.openSettings();
+  const dialog = app.elements.get('settingsDialog');
+  const first = app.elements.get('settingApiUrl');
+  const last = app.elements.get('toggleDebug');
+  dialog.focusables = [first, last];
+  let prevented = false;
+  app.documentListeners.get('keydown')({ key: 'Tab', shiftKey: true, preventDefault() { prevented = true; } });
+  assert.equal(prevented, true);
+  assert.equal(app.document.activeElement, last);
+  app.context.toggleSetting('darkMode');
+  assert.equal(app.storage.get('darkMode'), 'false');
+  assert.equal(app.document.body['data-theme'], 'dark');
+  app.context.closeSettings();
+  assert.equal(app.storage.get('darkMode'), 'false');
+  assert.equal(app.document.body['data-theme'], 'light');
+  assert.equal(app.document.activeElement, app.elements.get('btnSettings'));
+  app.context.openSettings();
+  let escapePrevented = false;
+  app.documentListeners.get('keydown')({ key: 'Escape', preventDefault() { escapePrevented = true; } });
+  assert.equal(escapePrevented, true);
+  assert.equal(app.elements.get('settingsModal').classList.contains('show'), false);
+});
+
+test('salvar preferências confirma os toggles e persiste os valores escolhidos', () => {
+  const app = createApp();
+  app.context.openSettings();
+  app.context.toggleSetting('darkMode');
+  app.context.saveSettings();
+  assert.equal(app.storage.get('darkMode'), 'true');
+  assert.equal(app.run('settings.darkMode'), true);
+});
+
 test('novos registros guardam segundos e timestamp completo; antigas datas não são fabricadas', async () => {
   const app = createApp();
   setForm(app, '0001', '1');
@@ -359,7 +409,9 @@ test('totais permanecem identificados como locais e renderização não usa HTML
   await app.context.saveData();
   assert.equal(app.elements.get('historyList').children[0].children[0].children[0].textContent, '<img src=x onerror=alert(1)>');
   assert.equal(app.elements.get('historyList').children[0].children[0].children[0].innerHTML, '');
-  assert.match(html, /totais acima consideram somente os registros armazenados neste aparelho/i);
+  assert.equal(app.elements.get('statPending').textContent, 1);
+  assert.equal(app.elements.get('historyList').children[0].children[0].children[1].children[2].textContent, 'Somente neste aparelho');
+  assert.match(html, /números acima são locais e não consolidam contagens de outros aparelhos/i);
 });
 
 test('alteração concorrente do histórico em outra aba bloqueia sobrescrita', async () => {
