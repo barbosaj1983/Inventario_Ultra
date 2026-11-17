@@ -8,7 +8,7 @@ O cadastro CSV aceita somente respostas com cabeçalho `BARRAS`, preserva códig
 
 ## Verificação
 
-Execute `node --test --test-reporter=spec tests\\inventory-v8.test.cjs tests\\inventory-api.test.cjs tests\\homologation-page.test.cjs`. Na validação atual, 48 testes automatizados passaram; as suítes simulam armazenamento, API, scanner, Apps Script/Sheets e a configuração da página isolada. Nenhum teste escreve ou exclui linhas em planilhas reais. Os originais recebidos estão em `backend/originals/`; `macros.GS` foi preservado sem execução ou modificação. O backend proposto ainda não foi implantado. Homologação em planilha separada, horários/fusos reais, permissões, autenticação, vínculos da macro e testes com dois aparelhos, câmera e teclado virtual continuam pendentes.
+Execute `node --test --test-reporter=spec tests\\inventory-v8.test.cjs tests\\inventory-api.test.cjs tests\\homologation-page.test.cjs`. Na validação atual, 50 testes automatizados passaram; as suítes simulam armazenamento, API, scanner, Apps Script/Sheets e a configuração da página isolada. Incluem falha de exclusão após gravar tombstone, repetição segura e bloqueio de IDs com tombstone inválido. Nenhum teste escreve ou exclui linhas em planilhas reais. Os originais recebidos estão em `backend/originals/`; `macros.GS` foi preservado sem execução ou modificação. O backend proposto ainda não foi implantado. Homologação em planilha separada, horários/fusos reais, permissões, autenticação, vínculos da macro e testes com dois aparelhos, câmera e teclado virtual continuam pendentes.
 
 ## Reversão
 

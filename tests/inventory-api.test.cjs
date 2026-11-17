@@ -127,6 +127,32 @@ test('exclusão exige ID, remove apenas a linha com esse ID e guarda tombstone',
   assert.equal(app.rows.length, 2);
 });
 
+test('tombstone com timestamp inválido bloqueia reuso do ID sem recriar o lançamento', () => {
+  const app = createMockAppsScript({ ledgerRows: [['deleted-id', 'not-a-timestamp']] });
+  const result = app.call({ action: 'add', barras: '000123', qtd: '12', id: 'deleted-id' });
+  assert.equal(result.success, false);
+  assert.match(result.error, /tombstone inválido/);
+  assert.equal(app.rows.length, 1);
+});
+
+test('falha ao remover após gravar tombstone não permite ressurreição e exclusão repetida conclui', () => {
+  const app = createMockAppsScript({ rows: [seedRow({ id: 'retry-delete' })] });
+  const originalDeleteRow = app.sheet.deleteRow.bind(app.sheet);
+  app.sheet.deleteRow = () => { throw new Error('simulated delete failure'); };
+  const firstAttempt = app.call({ action: 'delete', id: 'retry-delete' });
+  assert.equal(firstAttempt.success, false);
+  assert.equal(app.rows.length, 2);
+  assert.equal(app.sheets.get('__InventarioDeletedIds').rows.length, 2);
+  app.sheet.deleteRow = originalDeleteRow;
+  const retry = app.call({ action: 'delete', id: 'retry-delete' });
+  assert.equal(retry.success, true);
+  assert.equal(app.rows.length, 1);
+  assert.equal(app.sheets.get('__InventarioDeletedIds').rows.length, 2);
+  const staleAdd = app.call({ action: 'add', barras: '000123', qtd: '12', id: 'retry-delete' });
+  assert.equal(staleAdd.success, false);
+  assert.match(staleAdd.error, /já excluído/);
+});
+
 test('bloqueio envolve operação crítica e recusa sem gravar quando não adquirido', () => {
   const app = createMockAppsScript();
   const held = app.context.LockService.getScriptLock();

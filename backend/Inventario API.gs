@@ -272,7 +272,9 @@ function getDeletedIdTimestamp_(id) {
   }
   if (matches.length > 1) throw new Error('ID possui tombstones duplicados; nenhuma ação executada');
   if (!matches.length) return null;
-  return timestampToIso_(ledger.getRange(matches[0], 2).getValues()[0][0]);
+  const deletedAt = timestampToIso_(ledger.getRange(matches[0], 2).getValues()[0][0]);
+  if (!deletedAt) throw new Error('Timestamp de tombstone inválido; nenhuma ação executada');
+  return deletedAt;
 }
 
 function setDeletedIdTimestamp_(id, timestamp) {
