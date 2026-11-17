@@ -86,6 +86,7 @@ function addRow(params, sheet) {
       }
       const timestamp = timestampToIso_(existing.timestamp);
       if (!timestamp) throw new Error('Timestamp do registro existente é inválido');
+      updateLastModifiedIfLater_(timestamp);
       return jsonResponse({
         success: true,
         message: 'Lançamento já registrado; resposta idempotente',
@@ -116,6 +117,7 @@ function deleteRow(params, sheet) {
     if (matches.length === 0) {
       const deletedAt = getDeletedIdTimestamp_(id);
       if (deletedAt) {
+        updateLastModifiedIfLater_(deletedAt);
         return jsonResponse({ success: true, message: 'ID já excluído anteriormente', id, deletedAt });
       }
       return jsonResponse({ success: false, error: 'ID não encontrado', id });
@@ -259,6 +261,14 @@ function timestampToIso_(value) {
 
 function setLastModified_(timestamp) {
   PropertiesService.getScriptProperties().setProperty(LAST_MODIFIED_PROPERTY, timestamp);
+}
+
+function updateLastModifiedIfLater_(timestamp) {
+  const properties = PropertiesService.getScriptProperties();
+  const current = timestampToIso_(properties.getProperty(LAST_MODIFIED_PROPERTY));
+  if (!current || Date.parse(current) < Date.parse(timestamp)) {
+    properties.setProperty(LAST_MODIFIED_PROPERTY, timestamp);
+  }
 }
 
 function getDeletedIdTimestamp_(id) {

@@ -217,6 +217,60 @@ test('test retorna lastModified de mutação, não o horário da consulta', () =
   assert.equal(app.scriptProperties.get('lastModified'), actualLastModified);
 });
 
+test('reenvio idempotente reconcilia lastModified após falha da propriedade pós-gravação', () => {
+  const app = createMockAppsScript({ DateConstructor: fixedDate() });
+  const propertiesService = app.context.PropertiesService;
+  const originalGetProperties = propertiesService.getScriptProperties;
+  let failOnce = true;
+  propertiesService.getScriptProperties = () => {
+    const properties = originalGetProperties();
+    return {
+      getProperty: properties.getProperty,
+      setProperty(key, value) {
+        if (failOnce) {
+          failOnce = false;
+          throw new Error('temporary property failure');
+        }
+        properties.setProperty(key, value);
+      }
+    };
+  };
+  const first = app.call({ action: 'add', barras: '000123', qtd: '12', id: 'repair-last-modified' });
+  assert.equal(first.success, false);
+  assert.equal(app.rows.length, 2);
+  propertiesService.getScriptProperties = originalGetProperties;
+  const replay = app.call({ action: 'add', barras: '000123', qtd: '12', id: 'repair-last-modified' });
+  assert.equal(replay.success, true);
+  assert.equal(app.call({ action: 'test' }).lastModified, ORIGINAL_TIMESTAMP);
+});
+
+test('repetição de exclusão reconcilia lastModified após falha da propriedade pós-exclusão', () => {
+  const app = createMockAppsScript({ rows: [seedRow({ id: 'repair-delete' })], DateConstructor: fixedDate() });
+  const propertiesService = app.context.PropertiesService;
+  const originalGetProperties = propertiesService.getScriptProperties;
+  let failOnce = true;
+  propertiesService.getScriptProperties = () => {
+    const properties = originalGetProperties();
+    return {
+      getProperty: properties.getProperty,
+      setProperty(key, value) {
+        if (failOnce) {
+          failOnce = false;
+          throw new Error('temporary property failure');
+        }
+        properties.setProperty(key, value);
+      }
+    };
+  };
+  const first = app.call({ action: 'delete', id: 'repair-delete' });
+  assert.equal(first.success, false);
+  assert.equal(app.rows.length, 1);
+  propertiesService.getScriptProperties = originalGetProperties;
+  const replay = app.call({ action: 'delete', id: 'repair-delete' });
+  assert.equal(replay.success, true);
+  assert.equal(app.call({ action: 'test' }).lastModified, ORIGINAL_TIMESTAMP);
+});
+
 test('lastModified muda após inclusão e exclusão confirmadas, não após consulta', () => {
   const app = createMockAppsScript({ DateConstructor: fixedDate('2026-11-16T20:00:00.000Z') });
   assert.equal(app.call({ action: 'test' }).lastModified, null);
