@@ -74,6 +74,7 @@ function createApp(options = {}) {
     navigator: { hardwareConcurrency: 2, vibrate() {} },
     fetch: async (...args) => { requests.push(args); return options.fetch ? options.fetch(...args) : { ok: true, json: async () => ({ success: true }) }; },
     setTimeout(callback, delay) { if (delay === 0 || delay === 1000) callback(); return 1; },
+    setInterval() { return 1; },
     clearTimeout() {},
     URL,
     Blob,

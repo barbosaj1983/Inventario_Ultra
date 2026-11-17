@@ -157,6 +157,9 @@
   .pending-content { padding: 0 18px 16px; }
   .pending-content .history-list { max-height: min(54vh, 620px); overflow-y: auto; overscroll-behavior: contain; }
   .pending-content .history-item { align-items: flex-start; }
+  .history-item-error { flex: 1 1 100%; color: var(--red-700); font-size: 10px; overflow-wrap: anywhere; }
+  .btn-sync { flex: 0 0 auto; min-height: 38px; padding: 0 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--green-700); font-size: 10px; font-weight: 700; cursor: pointer; }
+  .btn-sync:disabled { cursor: wait; opacity: .65; }
   .pending-content .history-item-status.pending { color: var(--amber-800); }
   .form-status-line { margin-top: 4px; }
   .card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin: 0 0 18px; }
@@ -586,13 +589,15 @@
       const qty = typeof item.qty === 'number' ? item.qty : quantityText && /^-?\d+$/.test(quantityText) ? Number(quantityText) : NaN;
       if (!Number.isSafeInteger(qty) || typeof item.code !== 'string') return null;
       if (item.syncStatus && !['pending', 'confirmed', 'uncertain'].includes(item.syncStatus)) return null;
+      const interruptedAttempt = item.syncAttempted === true && item.syncStatus !== 'confirmed' && (item.syncStatus === 'pending' || item.syncError === 'Enviando à API…');
       return {
         ...item,
         id: typeof item.id === 'string' && item.id ? item.id : createId(),
         remoteId: typeof item.remoteId === 'string' && item.remoteId ? item.remoteId : typeof item.id === 'string' && item.id ? item.id : null,
         qty,
-        syncStatus: item.syncStatus || (item.synced === true ? 'confirmed' : 'pending'),
-        synced: item.syncStatus ? item.syncStatus === 'confirmed' : item.synced === true
+        syncStatus: interruptedAttempt ? 'uncertain' : item.syncStatus || (item.synced === true ? 'confirmed' : 'pending'),
+        syncError: interruptedAttempt && !item.syncError ? 'Tentativa anterior interrompida; confirmação remota incerta.' : item.syncError || '',
+        synced: interruptedAttempt ? false : item.syncStatus ? item.syncStatus === 'confirmed' : item.synced === true
       };
     }
 
@@ -610,6 +615,8 @@
     let uncertainSaveOutcome = null;
     let isDeleting = false;
     let apiConnected = false;
+    let apiStatusError = 'A API ainda não foi verificada.';
+    const syncInProgress = new Set();
     let deleteTarget = null;
     let cameraTrack = null;
     let flashOn = false;
@@ -760,6 +767,9 @@
       updateCollectionStatus();
     });
     window.addEventListener('online', checkApiStatus);
+    setInterval(async () => {
+      if (!apiConnected && history.some(item => item.syncStatus === 'pending' && item.syncAttempted !== true)) await checkApiStatus();
+    }, 30000);
 
     let settingsDraft = null;
     let settingsReturnFocus = null;
@@ -802,26 +812,33 @@
     // ============================================
     function updateCollectionStatus() {
       const pendingCount = history.filter(item => item.syncStatus !== 'confirmed').length;
-      const state = isSaving ? 'Enviando' : pendingCount ? 'Com pendências' : apiConnected ? 'Pronto' : 'Sem conexão';
+      const state = isSaving || syncInProgress.size ? 'Enviando' : pendingCount ? 'Com pendências' : apiConnected ? 'Pronto' : 'Sem conexão';
       el.collectionStatusText.textContent = state;
-      el.apiStatusDot.className = `api-status-dot ${isSaving ? 'sending' : pendingCount ? 'pending' : apiConnected ? 'connected' : 'error'}`;
+      el.apiStatusDot.className = `api-status-dot ${isSaving || syncInProgress.size ? 'sending' : pendingCount ? 'pending' : apiConnected ? 'connected' : 'error'}`;
     }
 
-    async function checkApiStatus() {
+    async function checkApiStatus(options = {}) {
       const apiUrl = CONFIG.API_URL;
       if (!apiUrl) {
         apiConnected = false;
+        apiStatusError = 'Endpoint da API não configurado.';
         updateCollectionStatus();
         return;
       }
       try {
         const response = await fetch(`${apiUrl}?action=test`);
-        if (!response.ok) throw new Error('HTTP inválido');
+        if (!response.ok) throw new Error(`HTTP ${response.status || 'inválido'}`);
         const data = await response.json();
-        if (data.success !== true) throw new Error('Resposta inválida');
+        if (data.success !== true) throw new Error(typeof data.error === 'string' ? data.error : 'Resposta inválida da API.');
         apiConnected = true;
+        apiStatusError = '';
+        if (options.resume !== false) await resumePendingSync();
       } catch (error) {
         apiConnected = false;
+        apiStatusError = String(error?.message || 'Falha ao acessar o endpoint da API.').slice(0, 240);
+        const updated = history.map(item => item.syncStatus === 'pending' && item.syncAttempted !== true ? { ...item, syncError: apiStatusError } : item);
+        if (updated.some((item, index) => item.syncError !== history[index].syncError) && !persistHistory(updated, 'Pendências mantidas; não foi possível salvar o motivo de indisponibilidade.')) history = updated;
+        renderHistory();
       }
       updateCollectionStatus();
     }
@@ -1228,6 +1245,8 @@
         remoteConfirmedAt: null,
         verificationStatus: cadastroState === 'unavailable' ? 'not-verified' : cadastroState === 'cached' ? 'cached' : 'verified',
         syncStatus: 'pending',
+        syncAttempted: false,
+        syncError: CONFIG.API_URL ? 'Aguardando envio à API.' : 'Endpoint da API não configurado.',
         synced: false
       };
       isSaving = true;
@@ -1238,53 +1257,114 @@
       updateCollectionStatus();
       const snapshotRevision = formRevision;
       if (!persistHistory([item, ...history], 'Não foi possível salvar no aparelho; o registro não foi enviado à API.')) return finishSave();
-      let remoteMessage = 'Registro salvo apenas neste aparelho.';
+      let remoteMessage = 'Registro salvo neste aparelho; aguardando acesso à API.';
       let remoteConfirmed = false;
       let formCleared = false;
       let uncertainOutcome = null;
       try {
         if (apiConnected && CONFIG.API_URL) {
-          const url = `${CONFIG.API_URL}?action=add&barras=${encodeURIComponent(barras)}&qtd=${encodeURIComponent(String(qty))}&id=${encodeURIComponent(id)}`;
-          try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error('Resposta HTTP inválida');
-            const data = await response.json();
-            if (data.success === true) {
-              const confirmedAt = new Date().toISOString();
-              const serverTimestamp = typeof data.data?.timestamp === 'string' && Number.isFinite(Date.parse(data.data.timestamp)) ? new Date(data.data.timestamp).toISOString() : null;
-              const updated = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'confirmed', synced: true, remoteConfirmedAt: confirmedAt, remoteServerTimestamp: serverTimestamp } : entry);
-              if (persistHistory(updated, 'A API confirmou, mas o estado local não foi atualizado; o registro precisa ser conferido antes de nova ação.')) {
-                remoteConfirmed = true;
-                remoteMessage = 'Contagem confirmada. Próxima coleta pronta.';
-              } else {
-                history = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'uncertain', remoteConfirmedAt: confirmedAt, remoteServerTimestamp: serverTimestamp } : entry);
-                uncertainOutcome = { revision: snapshotRevision, code: barras, quantity: qty };
-                remoteMessage = 'A API confirmou, mas o estado local não pôde ser atualizado. Não reenvie este ID.';
-              }
-            } else {
-              const updated = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'uncertain' } : entry);
-              if (!persistHistory(updated, 'Resposta da API sem confirmação e falha ao atualizar o estado local; verifique a planilha.')) history = updated;
-              uncertainOutcome = { revision: snapshotRevision, code: barras, quantity: qty };
-              remoteMessage = 'A API não confirmou o registro. O resultado remoto é incerto; confira a planilha antes de novo lançamento.';
-            }
-          } catch (error) {
-            const updated = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'uncertain' } : entry);
-            if (!persistHistory(updated, 'Resposta remota perdida; não foi possível salvar o estado incerto neste aparelho. Verifique a planilha.')) history = updated;
-            uncertainOutcome = { revision: snapshotRevision, code: barras, quantity: qty };
-            remoteMessage = 'Resposta remota incerta. O registro permanece neste aparelho; não reenvie sem verificar a planilha.';
-          }
+          const result = await syncPendingItem(id);
+          remoteConfirmed = result.confirmed;
+          remoteMessage = result.message;
+          if (result.uncertain) uncertainOutcome = { revision: snapshotRevision, code: barras, quantity: qty };
+        } else {
+          const error = CONFIG.API_URL ? apiStatusError || 'A API não está acessível neste momento.' : 'Endpoint da API não configurado.';
+          const updated = history.map(entry => entry.id === id ? { ...entry, syncError: error } : entry);
+          if (!persistHistory(updated, 'Contagem preservada no aparelho; não foi possível registrar o motivo da indisponibilidade.')) history = updated;
+          remoteMessage = `Contagem salva apenas neste aparelho. Não enviada: ${error}`;
         }
         updateStats();
         renderHistory();
-        showAlert(remoteMessage, remoteConfirmed ? 'success' : remoteMessage.startsWith('A API rejeitou') ? 'error' : 'info');
+        showAlert(remoteMessage, remoteConfirmed ? 'success' : 'info');
         vibrate([50, 30, 50]);
-        if (formRevision === snapshotRevision && el.barrasInput.value.trim() === barras && el.qtdInput.value.trim() === String(qty) && (remoteConfirmed || remoteMessage === 'Registro salvo apenas neste aparelho.')) {
+        if (formRevision === snapshotRevision && el.barrasInput.value.trim() === barras && el.qtdInput.value.trim() === String(qty) && (remoteConfirmed || remoteMessage.startsWith('Contagem salva apenas neste aparelho.'))) {
           clearFields();
           formCleared = true;
         }
       } finally {
         finishSave(formCleared && !remoteConfirmed, uncertainOutcome);
       }
+    }
+
+    async function syncPendingItem(id, options = {}) {
+      const item = history.find(entry => entry.id === id);
+      if (!item || item.syncStatus === 'confirmed' || syncInProgress.has(id)) return { confirmed: false, skipped: true, message: 'Esta operação não está disponível para sincronização.' };
+      if (options.automatic && (item.syncStatus !== 'pending' || item.syncAttempted === true)) return { confirmed: false, skipped: true };
+      if (!CONFIG.API_URL || !apiConnected) return { confirmed: false, message: apiStatusError || 'API indisponível; a pendência foi preservada.' };
+
+      syncInProgress.add(id);
+      const attempted = history.map(entry => entry.id === id ? { ...entry, syncAttempted: true, syncError: 'Enviando à API…' } : entry);
+      if (!persistHistory(attempted, 'Não foi possível registrar a tentativa; nenhum envio foi iniciado.')) {
+        syncInProgress.delete(id);
+        const reason = 'Não foi possível registrar a tentativa neste aparelho; nenhum envio foi iniciado.';
+        history = history.map(entry => entry.id === id ? { ...entry, syncError: reason } : entry);
+        renderHistory();
+        updateCollectionStatus();
+        return { confirmed: false, message: reason };
+      }
+      renderHistory();
+      updateCollectionStatus();
+      try {
+        const url = `${CONFIG.API_URL}?action=add&barras=${encodeURIComponent(item.code)}&qtd=${encodeURIComponent(String(item.qty))}&id=${encodeURIComponent(item.remoteId || item.id)}`;
+        const response = await fetch(url);
+        let data;
+        try {
+          data = await response.json();
+        } catch (error) {
+          throw new Error(`Resposta JSON inválida da API: ${String(error?.message || 'formato inesperado')}`);
+        }
+        if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('Resposta JSON inválida da API: esperado um objeto.');
+        if (!response.ok) throw new Error(typeof data.error === 'string' && data.error ? data.error : `Resposta HTTP ${response.status || 'inválida'}`);
+        if (data.success !== true) throw new Error(typeof data.error === 'string' && data.error ? data.error : 'A API não confirmou a inclusão.');
+        if (!data.data || data.data.id !== (item.remoteId || item.id) || data.data.barras !== item.code || Number(data.data.qtd) !== item.qty) {
+          throw new Error('A resposta da API não corresponde ao ID, código e quantidade desta operação.');
+        }
+        const confirmedAt = new Date().toISOString();
+        const serverTimestamp = typeof data.data.timestamp === 'string' && Number.isFinite(Date.parse(data.data.timestamp)) ? new Date(data.data.timestamp).toISOString() : null;
+        const updated = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'confirmed', syncAttempted: true, syncError: '', synced: true, remoteConfirmedAt: confirmedAt, remoteServerTimestamp: serverTimestamp } : entry);
+        if (!persistHistory(updated, 'A API confirmou, mas a confirmação não pôde ser salva no aparelho; a operação permanece para conferência.')) {
+          history = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'uncertain', syncError: 'A API confirmou, mas a confirmação não pôde ser salva no aparelho.' } : entry);
+          renderHistory();
+          return { confirmed: false, uncertain: true, message: 'A API confirmou, mas o estado local falhou. A operação permanece para conferência.' };
+        }
+        renderHistory();
+        updateStats();
+        return { confirmed: true, message: 'Contagem confirmada. Próxima coleta pronta.' };
+      } catch (error) {
+        const reason = String(error?.message || 'Falha sem detalhe informado pela API.').slice(0, 240);
+        const updated = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'uncertain', syncAttempted: true, syncError: reason, synced: false } : entry);
+        if (!persistHistory(updated, 'A tentativa falhou; a operação continua preservada para conferência.')) history = updated;
+        renderHistory();
+        updateStats();
+        return { confirmed: false, uncertain: true, message: `Confirmação incerta: ${reason}` };
+      } finally {
+        syncInProgress.delete(id);
+        renderHistory();
+        updateCollectionStatus();
+      }
+    }
+
+    async function resumePendingSync() {
+      if (!CONFIG.API_URL || !apiConnected) return;
+      const ids = history.filter(item => item.syncStatus === 'pending' && item.syncAttempted !== true).map(item => item.id);
+      for (const id of ids) await syncPendingItem(id, { automatic: true });
+    }
+
+    async function retrySync(id) {
+      const item = history.find(entry => entry.id === id);
+      if (!item || item.syncStatus === 'confirmed' || syncInProgress.has(id)) return;
+      const snapshotRevision = formRevision;
+      await checkApiStatus({ resume: false });
+      if (!apiConnected) {
+        const updated = history.map(entry => entry.id === id ? { ...entry, syncError: apiStatusError || 'A API segue indisponível.' } : entry);
+        if (!persistHistory(updated, 'Pendência mantida; não foi possível atualizar o motivo da falha.')) history = updated;
+        renderHistory();
+        showAlert(`Ainda não foi possível acessar a API: ${apiStatusError}`, 'error');
+        return;
+      }
+      const result = await syncPendingItem(id);
+      if (result.confirmed && formRevision === snapshotRevision && el.barrasInput.value.trim() === item.code && el.qtdInput.value.trim() === String(item.qty)) clearFields();
+      showAlert(result.message || 'A operação continua preservada neste aparelho.', result.confirmed ? 'success' : 'error');
     }
 
     function finishSave(savedLocally = false, uncertainOutcome = null) {
@@ -1412,8 +1492,21 @@
         status.className = `history-item-status ${item.syncStatus === 'uncertain' ? 'uncertain' : 'pending'}`;
         status.textContent = item.syncStatus === 'uncertain' ? 'Confirmação incerta' : 'Não enviado';
         meta.append(qty, time, status);
+        if (item.syncError) {
+          const error = document.createElement('span');
+          error.className = 'history-item-error';
+          error.textContent = item.syncError;
+          meta.appendChild(error);
+        }
         info.append(code, meta);
-        row.append(info);
+        const retry = document.createElement('button');
+        retry.type = 'button';
+        retry.className = 'btn-sync';
+        retry.textContent = syncInProgress.has(item.id) ? 'Enviando…' : 'Tentar sincronizar';
+        retry.disabled = syncInProgress.has(item.id);
+        retry.setAttribute('aria-label', `Tentar sincronizar lançamento ${item.code}, ID ${item.id}`);
+        retry.addEventListener('click', () => retrySync(item.id));
+        row.append(info, retry);
         el.historyList.appendChild(row);
       }
     }

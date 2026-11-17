@@ -41,6 +41,7 @@ function createApp(options = {}) {
   const elements = new Map();
   const documentListeners = new Map();
   const windowListeners = new Map();
+  const intervalCallbacks = [];
   const requests = [];
   const downloads = [];
   const revokedUrls = [];
@@ -74,8 +75,14 @@ function createApp(options = {}) {
     window: { addEventListener(name, callback) { windowListeners.set(name, callback); } },
     localStorage,
     navigator: { hardwareConcurrency: 2, vibrate() {} },
-    fetch: async (...args) => { requests.push(args); return options.fetch ? options.fetch(...args) : { ok: true, json: async () => ({ success: true }) }; },
+    fetch: async (...args) => {
+      requests.push(args);
+      if (options.fetch) return options.fetch(...args);
+      const requestUrl = new globalThis.URL(args[0]);
+      return { ok: true, json: async () => ({ success: true, data: { id: requestUrl.searchParams.get('id'), barras: requestUrl.searchParams.get('barras'), qtd: Number(requestUrl.searchParams.get('qtd')), timestamp: '2026-11-17T22:00:00.000Z' } }) };
+    },
     setTimeout(callback, delay) { if (delay === 0 || delay === 1000) callback(); return 1; },
+    setInterval(callback) { intervalCallbacks.push(callback); return 1; },
     clearTimeout() {},
     URL,
     Blob,
@@ -90,7 +97,7 @@ function createApp(options = {}) {
   });
   vm.runInContext(appScript, context, { timeout: 1000 });
   return {
-    context, storage, elements, requests, downloads, revokedUrls, document, documentListeners,
+    context, storage, elements, requests, downloads, revokedUrls, document, documentListeners, windowListeners, intervalCallbacks,
     setFailWrites(value) { failWrites = value; },
     run(source) { return vm.runInContext(source, context); }
   };
@@ -130,7 +137,7 @@ test('bloqueia Enter e chamadas repetidas enquanto uma gravação está pendente
   app.elements.get('qtdInput').value = '4';
   app.elements.get('barrasInput').dispatch('input');
   app.elements.get('qtdInput').dispatch('input');
-  resolveFetch(response({ success: true }));
+  resolveFetch(response({ success: true, data: { id: 'test-1', barras: '000123', qtd: 1, timestamp: '2026-11-17T22:00:00.000Z' } }));
   await first;
   assert.equal((await savedHistory(app)).length, 1);
   assert.equal(app.elements.get('barrasInput').value, '000999');
@@ -212,6 +219,142 @@ test('resposta perdida marca resultado remoto incerto e não reenvia automaticam
   app.elements.get('barrasInput').dispatch('input');
   assert.equal(app.elements.get('btnSave').dataset.state, 'ready');
   assert.equal(app.elements.get('btnSave').disabled, false);
+});
+
+test('retoma ao reconectar apenas pendências não enviadas, com o ID original', async () => {
+  let networkAvailable = false;
+  const pending = { id: 'phone-original-id', remoteId: 'phone-original-id', code: '440578', qty: 1, syncStatus: 'pending', synced: false };
+  const uncertain = { id: 'uncertain-original-id', remoteId: 'uncertain-original-id', code: '440578', qty: 2, syncStatus: 'pending', syncAttempted: true, synced: false };
+  const app = createApp({
+    storage: {
+      apiUrl: 'https://api.example/exec',
+      history: JSON.stringify([pending, uncertain]),
+      cadastroCache: JSON.stringify({ id: '1VdZPW6awQJmV3gTQ_tncPjPtLHMPCLDNLSTglqezvu8', codes: ['440578'] })
+    },
+    fetch: async url => {
+      const requestUrl = new URL(url);
+      const action = requestUrl.searchParams.get('action');
+      if (url.includes('/export?format=csv') || url.includes('corsproxy.io')) throw new Error('offline');
+      if (!networkAvailable) throw new Error('offline');
+      if (action === 'test') return response({ success: true });
+      if (action === 'add') return response({ success: true, data: { id: requestUrl.searchParams.get('id'), barras: requestUrl.searchParams.get('barras'), qtd: Number(requestUrl.searchParams.get('qtd')), timestamp: '2026-11-17T22:00:00.000Z' } });
+      throw new Error(`Unexpected action: ${action}`);
+    }
+  });
+
+  await app.documentListeners.get('DOMContentLoaded')();
+  const unsent = await savedHistory(app);
+  assert.equal(unsent.find(item => item.id === 'phone-original-id').syncStatus, 'pending');
+  assert.equal(unsent.find(item => item.id === 'phone-original-id').syncError, 'offline');
+  assert.equal(app.requests.some(([url]) => new URL(url).searchParams.get('action') === 'add'), false);
+
+  networkAvailable = true;
+  await app.windowListeners.get('online')();
+
+  const [addUrl] = app.requests.map(([url]) => url).filter(url => new URL(url).searchParams.get('action') === 'add');
+  assert.ok(addUrl);
+  assert.equal(new URL(addUrl).searchParams.get('id'), 'phone-original-id');
+  const saved = await savedHistory(app);
+  assert.equal(saved.find(item => item.id === 'phone-original-id').syncStatus, 'confirmed');
+  assert.equal(saved.find(item => item.id === 'uncertain-original-id').syncStatus, 'uncertain');
+  assert.equal(app.requests.filter(([url]) => new URL(url).searchParams.get('action') === 'add').length, 1);
+});
+
+test('retoma no carregamento mesmo quando navigator.onLine é falso e endpoint responde', async () => {
+  const item = { id: 'startup-original-id', remoteId: 'startup-original-id', code: '440578', qty: 1, syncStatus: 'pending', syncAttempted: false, synced: false };
+  const app = createApp({
+    storage: {
+      apiUrl: 'https://tests.example/exec',
+      history: JSON.stringify([item]),
+      cadastroCache: JSON.stringify({ id: '1VdZPW6awQJmV3gTQ_tncPjPtLHMPCLDNLSTglqezvu8', codes: ['440578'] })
+    },
+    fetch: async url => {
+      const requestUrl = new URL(url);
+      const action = requestUrl.searchParams.get('action');
+      if (url.includes('/export?format=csv') || url.includes('corsproxy.io')) throw new Error('NetworkError');
+      if (action === 'test') return response({ success: true });
+      if (action === 'add') return response({ success: true, data: { id: requestUrl.searchParams.get('id'), barras: '440578', qtd: 1, timestamp: '2026-11-17T22:00:00.000Z' } });
+      throw new Error(`Unexpected action: ${action}`);
+    }
+  });
+  app.run('navigator.onLine = false');
+
+  await app.documentListeners.get('DOMContentLoaded')();
+
+  const adds = app.requests.map(([url]) => url).filter(url => new URL(url).searchParams.get('action') === 'add');
+  assert.equal(adds.length, 1);
+  assert.equal(new URL(adds[0]).origin, 'https://tests.example');
+  assert.equal(new URL(adds[0]).searchParams.get('id'), 'startup-original-id');
+  assert.equal((await savedHistory(app))[0].syncStatus, 'confirmed');
+});
+
+test('retoma pendências quando a API volta sem evento online do navegador', async () => {
+  let networkAvailable = false;
+  const item = { id: 'poll-original-id', remoteId: 'poll-original-id', code: '440578', qty: 1, syncStatus: 'pending', syncAttempted: false, synced: false };
+  const app = createApp({
+    storage: { apiUrl: 'https://tests.example/exec', history: JSON.stringify([item]) },
+    fetch: async url => {
+      const requestUrl = new URL(url);
+      const action = requestUrl.searchParams.get('action');
+      if (url.includes('/export?format=csv') || url.includes('corsproxy.io')) throw new Error('NetworkError');
+      if (!networkAvailable) throw new Error('NetworkError');
+      if (action === 'test') return response({ success: true });
+      if (action === 'add') return response({ success: true, data: { id: requestUrl.searchParams.get('id'), barras: '440578', qtd: 1, timestamp: '2026-11-17T22:00:00.000Z' } });
+      throw new Error(`Unexpected action: ${action}`);
+    }
+  });
+
+  await app.documentListeners.get('DOMContentLoaded')();
+  assert.equal((await savedHistory(app))[0].syncStatus, 'pending');
+  networkAvailable = true;
+  await app.intervalCallbacks[0]();
+
+  const adds = app.requests.map(([url]) => url).filter(url => new URL(url).searchParams.get('action') === 'add');
+  assert.equal(adds.length, 1);
+  assert.equal(new URL(adds[0]).searchParams.get('id'), 'poll-original-id');
+  assert.equal((await savedHistory(app))[0].syncStatus, 'confirmed');
+});
+
+test('tentativa manual mantém o mesmo ID e confirma somente resposta correspondente', async () => {
+  const item = { id: 'manual-original-id', remoteId: 'manual-original-id', code: '440578', qty: 1, syncStatus: 'pending', syncAttempted: false, synced: false, syncError: 'Sem conexão' };
+  const app = createApp({
+    storage: { apiUrl: 'https://api.example/exec', history: JSON.stringify([item]) },
+    fetch: async url => {
+      const requestUrl = new URL(url);
+      return response({ success: true, data: { id: requestUrl.searchParams.get('id'), barras: '440578', qtd: 1, timestamp: '2026-11-17T22:00:00.000Z' } });
+    }
+  });
+  app.context.renderHistory();
+
+  assert.equal(app.elements.get('historyList').children[0].children.at(-1).textContent, 'Tentar sincronizar');
+  await app.context.retrySync('manual-original-id');
+
+  const addUrl = app.requests.map(([url]) => url).find(url => new URL(url).searchParams.get('action') === 'add');
+  assert.ok(addUrl);
+  assert.equal(new URL(addUrl).searchParams.get('id'), 'manual-original-id');
+  assert.equal((await savedHistory(app))[0].syncStatus, 'confirmed');
+  assert.equal((await savedHistory(app))[0].id, 'manual-original-id');
+});
+
+test('sincronização sem confirmação válida conserva a pendência e mostra o motivo', async () => {
+  const item = { id: 'keep-original-id', remoteId: 'keep-original-id', code: '440578', qty: 1, syncStatus: 'pending', synced: false };
+  const app = createApp({
+    storage: { apiUrl: 'https://api.example/exec', history: JSON.stringify([item]) },
+    fetch: async url => {
+      const requestUrl = new URL(url);
+      if (requestUrl.searchParams.get('action') === 'test') return response({ success: true });
+      return response({ success: false, error: 'Conflito de ID' });
+    }
+  });
+
+  await app.context.retrySync('keep-original-id');
+
+  const [saved] = await savedHistory(app);
+  assert.equal(saved.id, 'keep-original-id');
+  assert.equal(saved.syncStatus, 'uncertain');
+  assert.equal(saved.syncError, 'Conflito de ID');
+  assert.equal(app.elements.get('historyList').children[0].children[0].children[1].children.at(-1).textContent, 'Conflito de ID');
+  assert.equal(app.elements.get('historyList').children[0].children.at(-1).textContent, 'Tentar sincronizar');
 });
 
 test('persistência local falha antes do envio remoto e não anuncia gravação', async () => {
@@ -474,7 +617,7 @@ test('estado compacto distingue pronto, envio, desconexão e pendências', () =>
   assert.equal(app.elements.get('collectionStatusText').textContent, 'Com pendências');
 });
 
-test('pendências recolhíveis mostram apenas não enviados e incertos sem ações', async () => {
+test('pendências recolhíveis mostram estados distintos e ação manual de sincronização', async () => {
   const records = [
     { id: 'confirmed', code: '0001', qty: 12, date: '17/11/2026', time: '10:32:15', syncStatus: 'confirmed' },
     { id: 'pending', code: '0002', qty: -2, date: '17/11/2026', time: '10:35:42', syncStatus: 'pending' },
@@ -490,8 +633,10 @@ test('pendências recolhíveis mostram apenas não enviados e incertos sem açõ
   assert.equal(app.elements.get('historyList').children[0].children[0].children[1].children[1].textContent, '17/11/2026 · 10:35:42');
   assert.equal(app.elements.get('historyList').children[0].children[0].children[1].children[2].textContent, 'Não enviado');
   assert.equal(app.elements.get('historyList').children[1].children[0].children[1].children[2].textContent, 'Confirmação incerta');
-  assert.equal(app.elements.get('historyList').children[0].children.length, 1);
-  assert.equal(app.elements.get('historyList').children[1].children.length, 1);
+  assert.equal(app.elements.get('historyList').children[0].children.length, 2);
+  assert.equal(app.elements.get('historyList').children[1].children.length, 2);
+  assert.equal(app.elements.get('historyList').children[0].children[1].textContent, 'Tentar sincronizar');
+  assert.equal(app.elements.get('historyList').children[1].children[1].textContent, 'Tentar sincronizar');
   assert.deepEqual(await savedHistory(app), records);
 });
 
