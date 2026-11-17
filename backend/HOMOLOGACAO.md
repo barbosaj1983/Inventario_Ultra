@@ -3,7 +3,7 @@
 ## Conteúdo preparado
 
 - `backend/originals/Inventario API.gs` e `backend/originals/macros.GS` são referências copiadas do conteúdo recebido. A cópia de `macros.GS` não é carregada pelos testes, executada nem alterada.
-- `backend/Inventario API.gs` é a proposta revisada. Nenhum código foi enviado ao editor ou implantado.
+- `backend/Inventario API.gs` é a proposta revisada. O usuário relata ter copiado essa versão para o projeto de homologação e os testes individuais passaram; não foi possível comparar diretamente o conteúdo no editor do Google ao commit nem confirmar o deployment por metadados. O Apps Script e a planilha de produção não foram alterados.
 - `tests/apps-script-mock.cjs` simula planilha, lock, propriedades e resposta JSON. `tests/inventory-api.test.cjs` testa o backend simulado e o contrato usado pela V8.
 
 Execute no diretório do repositório:
@@ -24,6 +24,8 @@ Esses testes são locais e não acessam Google Sheets, Apps Script, dispositivos
 - Cada exclusão acrescenta uma linha permanente à aba de tombstones; as consultas atuais percorrem esses IDs, então o custo cresce com o histórico. Não há limpeza/compactação automática. O código não define volume-alvo, portanto capacidade para o volume esperado ainda precisa ser avaliada com uma estimativa de exclusões e limites aplicáveis do Sheets.
 - `list` lê somente as últimas 50 linhas; `search` lê os códigos da coluna B para localizar correspondências.
 - `lastModified` é guardado em Script Properties após mutações da API; consultas não atualizam o valor. Reenvios idempotentes de inclusão e exclusão podem reconciliar essa propriedade caso uma falha tenha ocorrido depois da mutação, sem mover o timestamp para trás. Um projeto sem histórico de mutações pela API retorna `null`, pois não é seguro inventar a data inicial; alterações manuais, macros e outros escritores não são observados.
+- Os testes individuais de homologação passaram: inclusão, idempotência, ajuste negativo, conflito de ID, exclusão por ID, bloqueio de recriação e repetição segura; a consulta final preservou somente o lançamento original.
+- Pendência de timestamp: a resposta imediata de `add` usa `new Date().toISOString()` e inclui milissegundos, mas consulta/repetição observa `.000Z`. A API lê `Date` com `getValues()` da coluna A para consulta e idempotência; portanto, a diferença aparece após a ida e volta pelo valor de célula da planilha, não na formatação visual. `lastModified` fica em Script Properties e pode reter milissegundos. Não alteramos nem regravamos dados. Para isolar o ponto exato, em uma próxima inclusão de teste verificar `getTime()` antes de `setValues`, depois de `getValues` e na resposta JSON. Não adicionar colunas nem converter A para texto antes de verificar os consumidores e decidir o contrato.
 - A resposta de `add` mantém `success`, `message` e `data` (`barras`, `qtd`, `id`, `timestamp`). A V8 preserva o horário de confirmação no aparelho separadamente do timestamp recebido do servidor.
 
 A aba `__InventarioDeletedIds` é uma necessidade adicional para impedir ressurreição após exclusão sem acrescentar colunas à aba de respostas. A proposta só a cria no projeto/planilha em que uma exclusão for efetivamente executada. Revisar esse efeito na cópia de homologação antes de qualquer uso.
