@@ -71,6 +71,10 @@ function addRow(params, sheet) {
     const code = requireCode_(params.barras);
     const quantity = parseQuantity_(params.qtd);
     const id = params.id === undefined || params.id === null || params.id === '' ? generateId() : requireId_(params.id);
+    const tombstone = getDeletedIdTimestamp_(id);
+    if (tombstone) {
+      return jsonResponse({ success: false, error: 'ID já excluído; não pode ser reutilizado', id, deletedAt: tombstone });
+    }
     const matches = findIdRows_(sheet, id);
     if (matches.length > 1) {
       return jsonResponse({ success: false, error: 'ID duplicado na planilha; nenhum registro foi alterado', id });
@@ -87,10 +91,6 @@ function addRow(params, sheet) {
         message: 'Lançamento já registrado; resposta idempotente',
         data: { barras: code, qtd: quantity, id, timestamp }
       });
-    }
-    const tombstone = getDeletedIdTimestamp_(id);
-    if (tombstone) {
-      return jsonResponse({ success: false, error: 'ID já excluído; não pode ser reutilizado', id, deletedAt: tombstone });
     }
     const timestamp = new Date();
     const rowNumber = Math.max(1, sheet.getLastRow()) + 1;

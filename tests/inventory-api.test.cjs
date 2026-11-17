@@ -127,6 +127,17 @@ test('exclusão exige ID, remove apenas a linha com esse ID e guarda tombstone',
   assert.equal(app.rows.length, 2);
 });
 
+test('tombstone existente bloqueia reenvio enquanto a linha ainda aguarda exclusão', () => {
+  const app = createMockAppsScript({
+    rows: [seedRow({ id: 'delete-pending' })],
+    ledgerRows: [['delete-pending', new Date(ORIGINAL_TIMESTAMP)]]
+  });
+  const result = app.call({ action: 'add', barras: '000123', qtd: '12', id: 'delete-pending' });
+  assert.equal(result.success, false);
+  assert.match(result.error, /já excluído/);
+  assert.equal(app.rows.length, 2);
+});
+
 test('tombstone com timestamp inválido bloqueia reuso do ID sem recriar o lançamento', () => {
   const app = createMockAppsScript({ ledgerRows: [['deleted-id', 'not-a-timestamp']] });
   const result = app.call({ action: 'add', barras: '000123', qtd: '12', id: 'deleted-id' });
