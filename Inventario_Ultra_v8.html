@@ -123,11 +123,14 @@
   .api-status { display: inline-flex; min-height: 40px; align-items: center; gap: 8px; padding: 0 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); text-align: left; cursor: pointer; }
   .api-status-dot { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; background: var(--ink-subtle); }
   .api-status-dot.connected { background: #238456; }
+  .api-status-dot.pending { background: #a77925; }
+  .api-status-dot.sending { background: #3168a8; }
   .api-status-dot.error { background: #b34a3f; }
   [data-theme="dark"] .api-status-dot.connected { background: #72ce9b; }
+  [data-theme="dark"] .api-status-dot.pending { background: #e9c77d; }
+  [data-theme="dark"] .api-status-dot.sending { background: #8ab8f0; }
   [data-theme="dark"] .api-status-dot.error { background: #fa9b8d; }
   .api-status-text { max-width: 190px; overflow: hidden; color: var(--ink-muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-  .api-status-action { color: var(--green-700); font-size: 11px; font-weight: 700; }
   .btn-header { display: grid; width: 44px; height: 44px; flex: 0 0 auto; place-items: center; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink-muted); cursor: pointer; }
   .btn-header:hover, .api-status:hover { border-color: var(--line-strong); background: var(--surface-muted); }
 
@@ -138,14 +141,24 @@
   .page-description { margin: 5px 0 0; color: var(--ink-muted); font-size: 13px; }
   .version-badge { display: inline-flex; align-items: center; padding: 4px 8px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink-muted); font-size: 11px; font-weight: 700; letter-spacing: 0.03em; }
 
-  .stats-bar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
-  .stat-card { min-width: 0; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); box-shadow: var(--shadow-card); }
-  .stat-card-value { overflow: hidden; color: var(--ink); font-size: 23px; font-variant-numeric: tabular-nums; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; text-overflow: ellipsis; }
-  .stat-card-label { margin-top: 5px; color: var(--ink-muted); font-size: 11px; font-weight: 600; }
-  .stat-card-note { margin-top: 2px; color: var(--ink-subtle); font-size: 10px; }
-  .content-grid { display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(330px, 0.96fr); align-items: start; gap: 16px; }
-  .form-card, .history-card { min-width: 0; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-card); }
+  .collector-layout { display: grid; grid-template-columns: minmax(0, 760px); justify-content: center; gap: 14px; }
+  .form-card, .pending-panel { min-width: 0; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-card); }
   .form-card { padding: 22px; }
+  .pending-panel { overflow: hidden; }
+  .pending-summary { display: flex; min-height: 68px; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 18px; cursor: pointer; list-style: none; }
+  .pending-summary::-webkit-details-marker { display: none; }
+  .pending-summary::after { width: 8px; height: 8px; flex: 0 0 auto; margin-left: 2px; transform: rotate(45deg); border-right: 2px solid var(--ink-subtle); border-bottom: 2px solid var(--ink-subtle); content: ""; transition: transform 120ms ease; }
+  .pending-panel[open] .pending-summary::after { transform: rotate(225deg); }
+  .pending-summary-copy { display: grid; min-width: 0; gap: 2px; margin-right: auto; }
+  .pending-title { color: var(--ink); font-size: 13px; font-weight: 700; }
+  .pending-subtitle { color: var(--ink-muted); font-size: 10px; }
+  .pending-count { display: inline-flex; min-width: 30px; min-height: 30px; align-items: center; justify-content: center; padding: 0 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface-muted); color: var(--ink-muted); font-size: 11px; font-variant-numeric: tabular-nums; font-weight: 700; }
+  .pending-content { padding: 0 18px 16px; }
+  .pending-content .history-list { max-height: min(54vh, 620px); overflow-y: auto; overscroll-behavior: contain; }
+  .pending-content .history-item { align-items: flex-start; }
+  .pending-content .history-item-status.pending { color: var(--amber-800); }
+  .form-status-line { margin-top: 4px; }
+
   .card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin: 0 0 18px; }
   .card-heading h2, .history-title { margin: 0; color: var(--ink); font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
   .card-heading p { margin: 4px 0 0; color: var(--ink-muted); font-size: 12px; }
@@ -198,7 +211,6 @@
   .debug-panel .log-success { color: var(--green-700); }
   .debug-panel .log-error { color: var(--red-700); }
 
-  .history-card { padding: 20px; }
   .history-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
   .history-title-block { min-width: 0; }
   .history-subtitle { margin: 4px 0 0; color: var(--ink-muted); font-size: 11px; }
@@ -304,21 +316,16 @@
   @media (max-width: 760px) {
     .header-content { min-height: 60px; padding: 7px 16px; }
     .header-meta { display: none; }
-    .api-status { min-height: 40px; gap: 6px; padding: 0 8px; }
-    .api-status-text { max-width: 105px; font-size: 10px; }
-    .api-status-action { display: none; }
+    .api-status { min-height: 38px; gap: 6px; padding: 0 10px; }
+    .api-status-text { max-width: 112px; font-size: 10px; }
     .main-content { padding: 18px 16px calc(28px + env(safe-area-inset-bottom)); }
     .page-intro { align-items: center; margin-bottom: 14px; }
     .page-description { max-width: 35ch; font-size: 12px; }
-    .stats-bar { gap: 8px; margin-bottom: 12px; }
-    .stat-card { padding: 11px 10px; border-radius: 12px; }
-    .stat-card-value { font-size: clamp(17px, 5vw, 21px); }
-    .stat-card-label { font-size: 10px; line-height: 1.35; }
-    .stat-card-note { display: none; }
-    .content-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+    .collector-layout { gap: 12px; }
     .form-card { padding: 18px; }
-    .history-card { padding: 17px; }
-    .history-list { max-height: min(52vh, 420px); }
+    .pending-summary { min-height: 62px; padding: 12px 15px; }
+    .pending-content { padding: 0 15px 14px; }
+    .pending-content .history-list { max-height: min(48vh, 400px); }
     .alert { top: calc(66px + env(safe-area-inset-top)); }
   }
   @media (max-width: 390px) {
@@ -328,17 +335,17 @@
     .logo-text { max-width: 70px; font-size: 12px; }
     .logo-subtitle { font-size: 9px; }
     .header-actions { gap: 6px; }
-    .api-status { width: 108px; max-width: 108px; min-width: 108px; padding: 0 7px; }
-    .api-status-text { max-width: 68px; }
+    .api-status { width: 116px; max-width: 116px; min-width: 116px; padding: 0 8px; }
+    .api-status-text { max-width: 90px; }
     .btn-header { width: 42px; height: 42px; }
     .main-content { padding-right: 12px; padding-left: 12px; }
     .form-card { padding: 15px; }
-    .history-card { padding: 15px; }
+    .pending-summary { gap: 9px; padding-right: 12px; padding-left: 12px; }
+    .pending-subtitle { max-width: 28ch; }
+    .pending-content { padding-right: 12px; padding-left: 12px; }
     .btn-scan { min-width: 44px; padding: 0 10px; font-size: 0; }
     .btn-scan .icon { width: 19px; height: 19px; }
     .input-field { padding-right: 10px; padding-left: 10px; }
-    .history-header { gap: 6px; }
-    .btn-history { padding: 0 9px; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
@@ -450,10 +457,9 @@
       </button>
       <input type="file" id="logoInput" accept="image/*" onchange="handleLogoUpload(event)" aria-label="Selecionar logotipo">
       <div class="header-actions">
-        <button class="api-status" id="apiStatus" type="button" onclick="testApiConnection()" aria-label="Testar conexão com a API">
+        <button class="api-status" id="apiStatus" type="button" onclick="testApiConnection()" aria-label="Situação da coleta; testar conexão">
           <span class="api-status-dot" id="apiStatusDot" aria-hidden="true"></span>
-          <span class="api-status-text" id="apiStatusText" role="status">Verificando conexão...</span>
-          <span class="api-status-action">Testar</span>
+          <span class="api-status-text" id="collectionStatusText" role="status" aria-live="polite">Sem conexão</span>
         </button>
         <span class="header-meta">Inventário <strong>V8</strong></span>
         <button class="btn-header" id="btnSettings" type="button" onclick="openSettings()" aria-label="Abrir configurações"><svg class="icon" aria-hidden="true"><use href="#icon-settings"></use></svg></button>
@@ -465,27 +471,22 @@
     <div class="page-intro">
       <div>
         <p class="page-eyebrow">Drogarias Ultra Popular</p>
-        <h1 class="page-title">Inventário</h1>
-        <p class="page-description">Registre as quantidades à medida que conta.</p>
+        <h1 class="page-title">Coleta de contagem</h1>
+        <p class="page-description">Registre uma operação por vez na planilha central.</p>
       </div>
       <span class="version-badge">VERSÃO 8</span>
     </div>
 
-    <section class="stats-bar" aria-label="Resumo local deste aparelho">
-      <div class="stat-card"><div class="stat-card-value" id="statTotal">0</div><div class="stat-card-label">Unidades contabilizadas</div><div class="stat-card-note">Neste aparelho</div></div>
-      <div class="stat-card"><div class="stat-card-value" id="statUnique">0</div><div class="stat-card-label">Produtos distintos</div><div class="stat-card-note">Códigos neste histórico local</div></div>
-      <div class="stat-card"><div class="stat-card-value" id="statPending">0</div><div class="stat-card-label">Pendentes</div><div class="stat-card-note">Sem confirmação na planilha</div></div>
-    </section>
-
-    <div class="content-grid">
+    <div class="collector-layout">
       <section class="form-card" aria-labelledby="countTitle">
         <div class="card-heading">
-          <div><h2 id="countTitle">Nova contagem</h2><p>Escaneie ou digite o código e informe a quantidade.</p></div>
+          <div><h2 id="countTitle">Nova contagem</h2><p>Cada entrada é um lançamento separado, inclusive ajustes.</p></div>
         </div>
         <div class="input-group">
           <label class="input-label" for="barrasInput"><span>Código de barras</span><span class="label-hint">Leitor físico compatível</span></label>
           <div class="input-wrapper">
             <input type="text" inputmode="numeric" class="input-field code-field" id="barrasInput" placeholder="Digite ou leia o código" autocomplete="off" aria-describedby="validationMsg" oninput="validateBarras()" onkeydown="handleBarrasKeydown(event)">
+            <button class="btn-scan" id="btnScan" type="button" onclick="openScanner()" aria-label="Ler código com a câmera" title="Abrir câmera"><svg class="icon" aria-hidden="true"><use href="#icon-camera"></use></svg><span>Câmera</span></button>
             <button class="btn-clear" type="button" onclick="clearFields()" aria-label="Limpar código e quantidade"><svg class="icon" aria-hidden="true"><use href="#icon-close"></use></svg></button>
           </div>
           <div class="validation-msg" id="validationMsg" aria-live="polite">
@@ -495,7 +496,7 @@
         </div>
 
         <div class="input-group">
-          <label class="input-label" for="qtdInput"><span>Quantidade</span><span class="label-hint">Ajustes são lançamentos separados</span></label>
+          <label class="input-label" for="qtdInput"><span>Quantidade</span><span class="label-hint">Ajuste negativo é outro lançamento</span></label>
           <div class="qty-wrapper">
             <button class="qty-btn" type="button" onclick="adjustQty(-1)" aria-label="Diminuir quantidade">−</button>
             <input type="number" inputmode="numeric" class="input-field qty-input positive" id="qtdInput" value="1" step="1" autocomplete="off" aria-describedby="qtyContext" oninput="updateSaveButton()" onkeydown="handleQtdKeydown(event)">
@@ -508,30 +509,25 @@
           <button class="btn-save" id="btnSave" type="button" onclick="saveData()" disabled data-state="unavailable" aria-live="polite">
             <svg class="icon" id="saveIcon" aria-hidden="true"><use href="#icon-check"></use></svg>
             <span class="save-spinner" aria-hidden="true"></span>
-            <span id="saveText">Informe um código</span>
+            <span id="saveText">Enviar contagem</span>
           </button>
-          <button class="btn-scan" id="btnScan" type="button" onclick="openScanner()" aria-label="Ler código com a câmera"><svg class="icon" aria-hidden="true"><use href="#icon-camera"></use></svg><span>Ler código</span></button>
         </div>
         <div class="debug-panel" id="debugPanel"></div>
       </section>
 
-      <section class="history-card" aria-labelledby="historyTitle">
-        <div class="history-header">
-          <div class="history-title-block">
-            <h2 class="history-title" id="historyTitle">Últimos lançamentos</h2>
-            <p class="history-subtitle">Registros armazenados neste aparelho.</p>
+      <details class="pending-panel" id="pendingDetails">
+        <summary class="pending-summary">
+          <span class="pending-summary-copy"><span class="pending-title">Pendências</span><span class="pending-subtitle">Somente operações deste aparelho ainda não confirmadas.</span></span>
+          <span class="pending-count" id="pendingCount" aria-label="Quantidade de operações não confirmadas">0</span>
+        </summary>
+        <div class="pending-content">
+          <p class="local-history-note">Este aparelho não mostra uma visão consolidada das contagens. O CSV de recuperação inclui todos os registros locais, inclusive os confirmados.</p>
+          <div class="history-list" id="historyList" tabindex="-1" aria-live="polite" aria-relevant="additions text"></div>
+          <div class="history-actions" aria-label="Ações de recuperação">
+            <button class="btn-history" id="btnExportHistory" type="button" onclick="exportHistory()"><svg class="icon" aria-hidden="true"><use href="#icon-download"></use></svg><span>Exportar CSV de recuperação</span></button>
           </div>
-          <span class="history-count" id="savedBadge" aria-label="Quantidade de lançamentos locais">0</span>
         </div>
-        <div class="history-list" id="historyList" tabindex="-1" aria-live="polite" aria-relevant="additions text">
-          <div class="history-empty">Nenhum lançamento neste aparelho</div>
-        </div>
-        <p class="local-history-note">Os números acima são locais e não consolidam contagens de outros aparelhos.</p>
-        <div class="history-actions" aria-label="Ações secundárias do histórico">
-          <button class="btn-history" type="button" onclick="exportHistory()"><svg class="icon" aria-hidden="true"><use href="#icon-download"></use></svg><span>Exportar CSV local</span></button>
-          <button class="btn-history danger-action" type="button" onclick="clearAllHistory()"><svg class="icon" aria-hidden="true"><use href="#icon-trash"></use></svg><span>Limpar histórico</span></button>
-        </div>
-      </section>
+      </details>
     </div>
   </main>
 
@@ -687,12 +683,9 @@
       btnSave: document.getElementById('btnSave'),
       saveIcon: document.getElementById('saveIcon'),
       saveText: document.getElementById('saveText'),
-      savedBadge: document.getElementById('savedBadge'),
+      pendingCount: document.getElementById('pendingCount'),
       formFrame: document.getElementById('formFrame'),
       historyList: document.getElementById('historyList'),
-      statTotal: document.getElementById('statTotal'),
-      statUnique: document.getElementById('statUnique'),
-      statCadastro: document.getElementById('statCadastro'),
       settingsModal: document.getElementById('settingsModal'),
       settingsDialog: document.getElementById('settingsDialog'),
       confirmOverlay: document.getElementById('confirmOverlay'),
@@ -707,14 +700,14 @@
       qtyContext: document.getElementById('qtyContext'),
       qtyContextMark: document.getElementById('qtyContextMark'),
       qtyContextText: document.getElementById('qtyContextText'),
-      statPending: document.getElementById('statPending'),
+      statCadastro: document.getElementById('statCadastro'),
       logoContainer: document.getElementById('logoContainer'),
       logoDisplay: document.getElementById('logoDisplay'),
       logoTextContainer: document.getElementById('logoTextContainer'),
       companyName: document.getElementById('companyName'),
       companySubtitle: document.getElementById('companySubtitle'),
       apiStatusDot: document.getElementById('apiStatusDot'),
-      apiStatusText: document.getElementById('apiStatusText'),
+      collectionStatusText: document.getElementById('collectionStatusText'),
       themeColorMeta: document.getElementById('themeColorMeta'),
       debugPanel: document.getElementById('debugPanel')
     };
@@ -759,6 +752,11 @@
         showAlert('Outra aba alterou o histórico. Recarregue para evitar sobrescrever registros.', 'error');
       }
     });
+    window.addEventListener('offline', () => {
+      apiConnected = false;
+      updateCollectionStatus();
+    });
+    window.addEventListener('online', checkApiStatus);
 
     let settingsDraft = null;
     let settingsReturnFocus = null;
@@ -799,28 +797,30 @@
     // ============================================
     // API STATUS
     // ============================================
+    function updateCollectionStatus() {
+      const pendingCount = history.filter(item => item.syncStatus !== 'confirmed').length;
+      const state = isSaving ? 'Enviando' : pendingCount ? 'Com pendências' : apiConnected ? 'Pronto' : 'Sem conexão';
+      el.collectionStatusText.textContent = state;
+      el.apiStatusDot.className = `api-status-dot ${isSaving ? 'sending' : pendingCount ? 'pending' : apiConnected ? 'connected' : 'error'}`;
+    }
+
     async function checkApiStatus() {
       const apiUrl = CONFIG.API_URL;
       if (!apiUrl) {
-        el.apiStatusDot.className = 'api-status-dot error';
-        el.apiStatusText.textContent = 'API não configurada';
         apiConnected = false;
+        updateCollectionStatus();
         return;
       }
-      el.apiStatusText.textContent = 'Verificando...';
       try {
         const response = await fetch(`${apiUrl}?action=test`);
         if (!response.ok) throw new Error('HTTP inválido');
         const data = await response.json();
         if (data.success !== true) throw new Error('Resposta inválida');
-        el.apiStatusDot.className = 'api-status-dot connected';
-        el.apiStatusText.textContent = `API OK (${Number(data.totalRows) || 0} linhas)`;
         apiConnected = true;
       } catch (error) {
-        el.apiStatusDot.className = 'api-status-dot error';
-        el.apiStatusText.textContent = 'API offline';
         apiConnected = false;
       }
+      updateCollectionStatus();
     }
 
     async function testApiConnection() {
@@ -1052,18 +1052,9 @@
       } else if (hasUncertain) {
         el.btnSave.dataset.state = 'uncertain';
         el.saveText.textContent = 'Confirmação incerta';
-      } else if (!hasCode) {
-        el.btnSave.dataset.state = 'unavailable';
-        el.saveText.textContent = 'Informe um código';
-      } else if (!isValid) {
-        el.btnSave.dataset.state = 'unavailable';
-        el.saveText.textContent = 'Código não validado';
-      } else if (!quantity.valid) {
-        el.btnSave.dataset.state = 'unavailable';
-        el.saveText.textContent = 'Revise a quantidade';
       } else {
-        el.btnSave.dataset.state = 'ready';
-        el.saveText.textContent = 'Registrar lançamento';
+        el.btnSave.dataset.state = canSave ? 'ready' : 'unavailable';
+        el.saveText.textContent = 'Enviar contagem';
       }
       updateQuantityContext(quantity);
     }
@@ -1225,9 +1216,11 @@
       el.btnSave.dataset.state = 'saving';
       el.saveIcon.classList.add('icon-loading');
       el.saveText.textContent = 'Salvando…';
+      updateCollectionStatus();
       const snapshotRevision = formRevision;
       if (!persistHistory([item, ...history], 'Não foi possível salvar no aparelho; o registro não foi enviado à API.')) return finishSave();
       let remoteMessage = 'Registro salvo apenas neste aparelho.';
+      let remoteConfirmed = false;
       let formCleared = false;
       let uncertainOutcome = null;
       try {
@@ -1241,8 +1234,10 @@
               const confirmedAt = new Date().toISOString();
               const serverTimestamp = typeof data.data?.timestamp === 'string' && Number.isFinite(Date.parse(data.data.timestamp)) ? new Date(data.data.timestamp).toISOString() : null;
               const updated = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'confirmed', synced: true, remoteConfirmedAt: confirmedAt, remoteServerTimestamp: serverTimestamp } : entry);
-              if (persistHistory(updated, 'A API confirmou, mas o estado local não foi atualizado; o registro precisa ser conferido antes de nova ação.')) remoteMessage = serverTimestamp ? 'Confirmado pela API. Horário de gravação confirmado pelo servidor.' : 'Confirmado pela API; horário do servidor não informado.';
-              else {
+              if (persistHistory(updated, 'A API confirmou, mas o estado local não foi atualizado; o registro precisa ser conferido antes de nova ação.')) {
+                remoteConfirmed = true;
+                remoteMessage = 'Contagem confirmada. Próxima coleta pronta.';
+              } else {
                 history = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'uncertain', remoteConfirmedAt: confirmedAt, remoteServerTimestamp: serverTimestamp } : entry);
                 uncertainOutcome = { revision: snapshotRevision, code: barras, quantity: qty };
                 remoteMessage = 'A API confirmou, mas o estado local não pôde ser atualizado. Não reenvie este ID.';
@@ -1262,26 +1257,27 @@
         }
         updateStats();
         renderHistory();
-        showAlert(remoteMessage, remoteMessage.startsWith('Confirmado') ? 'success' : remoteMessage.startsWith('A API rejeitou') ? 'error' : 'info');
+        showAlert(remoteMessage, remoteConfirmed ? 'success' : remoteMessage.startsWith('A API rejeitou') ? 'error' : 'info');
         vibrate([50, 30, 50]);
-        if (formRevision === snapshotRevision && el.barrasInput.value.trim() === barras && el.qtdInput.value.trim() === String(qty) && (remoteMessage.startsWith('Confirmado') || remoteMessage === 'Registro salvo apenas neste aparelho.')) {
+        if (formRevision === snapshotRevision && el.barrasInput.value.trim() === barras && el.qtdInput.value.trim() === String(qty) && (remoteConfirmed || remoteMessage === 'Registro salvo apenas neste aparelho.')) {
           clearFields();
           formCleared = true;
         }
       } finally {
-        finishSave(formCleared, remoteMessage, uncertainOutcome);
+        finishSave(formCleared && !remoteConfirmed, uncertainOutcome);
       }
     }
 
-    function finishSave(completed = false, remoteMessage = '', uncertainOutcome = null) {
+    function finishSave(savedLocally = false, uncertainOutcome = null) {
       isSaving = false;
       uncertainSaveOutcome = uncertainOutcome;
       el.saveIcon.classList.remove('icon-loading');
       updateSaveButton();
-      if (completed) {
+      if (savedLocally) {
         el.btnSave.dataset.state = 'saved';
-        el.saveText.textContent = remoteMessage.startsWith('Confirmado') ? 'Confirmado na planilha' : 'Salvo neste aparelho';
+        el.saveText.textContent = 'Salvo neste aparelho';
       }
+      updateCollectionStatus();
     }
 
     // ============================================
@@ -1367,14 +1363,15 @@
 
     function renderHistory() {
       el.historyList.replaceChildren();
-      if (!history.length) {
+      const pending = history.filter(item => item.syncStatus !== 'confirmed');
+      if (!pending.length) {
         const empty = document.createElement('div');
         empty.className = 'history-empty';
-        empty.textContent = 'Nenhum lançamento neste aparelho';
+        empty.textContent = 'Nenhuma pendência. As contagens confirmadas ficam na planilha central.';
         el.historyList.appendChild(empty);
         return;
       }
-      for (const item of history.slice(0, 15)) {
+      for (const item of pending) {
         const row = document.createElement('div');
         row.className = 'history-item';
         const info = document.createElement('div');
@@ -1393,16 +1390,11 @@
         if (item.collectedAt) time.dateTime = item.collectedAt;
         time.textContent = `${item.date ? `${item.date} · ` : ''}${item.time || 'Horário não registrado'}`;
         const status = document.createElement('span');
-        status.className = `history-item-status ${item.syncStatus === 'confirmed' ? 'synced' : item.syncStatus === 'uncertain' ? 'uncertain' : 'pending'}`;
-        status.textContent = item.syncStatus === 'confirmed' ? 'Confirmado na planilha' : item.syncStatus === 'uncertain' ? 'Confirmação incerta' : 'Somente neste aparelho';
-        const remove = document.createElement('button');
-        remove.className = 'btn-delete';
-        remove.textContent = '×';
-        remove.setAttribute('aria-label', `Revisar exclusão do lançamento ${item.code}`);
-        remove.addEventListener('click', () => askDelete(item.id));
+        status.className = `history-item-status ${item.syncStatus === 'uncertain' ? 'uncertain' : 'pending'}`;
+        status.textContent = item.syncStatus === 'uncertain' ? 'Confirmação incerta' : 'Não enviado';
         meta.append(qty, time, status);
         info.append(code, meta);
-        row.append(info, remove);
+        row.append(info);
         el.historyList.appendChild(row);
       }
     }
@@ -1440,10 +1432,8 @@
     }
 
     function updateStats() {
-      el.savedBadge.textContent = history.length;
-      el.statTotal.textContent = history.reduce((sum, item) => sum + item.qty, 0);
-      el.statUnique.textContent = new Set(history.map(item => item.code)).size;
-      el.statPending.textContent = history.filter(item => item.syncStatus !== 'confirmed').length;
+      el.pendingCount.textContent = String(history.filter(item => item.syncStatus !== 'confirmed').length);
+      updateCollectionStatus();
     }
 
     // ============================================

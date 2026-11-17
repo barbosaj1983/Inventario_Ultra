@@ -135,7 +135,7 @@ test('bloqueia Enter e chamadas repetidas enquanto uma gravação está pendente
   assert.equal((await savedHistory(app)).length, 1);
   assert.equal(app.elements.get('barrasInput').value, '000999');
   assert.equal(app.elements.get('qtdInput').value, '4');
-  assert.equal(app.elements.get('saveText').textContent, 'Registrar lançamento');
+  assert.equal(app.elements.get('saveText').textContent, 'Enviar contagem');
   assert.equal(app.elements.get('btnSave').disabled, false);
   assert.equal(app.elements.get('btnSave').dataset.state, 'ready');
 });
@@ -150,14 +150,14 @@ test('lançamento local concluído mantém o estado final do botão até a próx
   assert.equal((await savedHistory(app))[0].syncStatus, 'pending');
 });
 
-test('confirmação remota mantém o botão identificado como confirmado', async () => {
+test('confirmação remota limpa o botão para a próxima coleta', async () => {
   const app = createApp({ storage: { apiUrl: 'https://api.example/exec' } });
   app.run('apiConnected = true;');
   setForm(app, '000051', '2');
   await app.context.saveData();
-  assert.equal(app.elements.get('btnSave').dataset.state, 'saved');
+  assert.equal(app.elements.get('btnSave').dataset.state, 'unavailable');
   assert.equal(app.elements.get('btnSave').disabled, true);
-  assert.equal(app.elements.get('saveText').textContent, 'Confirmado na planilha');
+  assert.equal(app.elements.get('saveText').textContent, 'Enviar contagem');
   assert.equal((await savedHistory(app))[0].syncStatus, 'confirmed');
 });
 
@@ -168,8 +168,8 @@ test('mais de 100 registros ficam persistidos e a exibição é limitada separad
     await app.context.saveData();
   }
   assert.equal((await savedHistory(app)).length, 125);
-  assert.equal(app.elements.get('savedBadge').textContent, 125);
-  assert.equal(app.elements.get('historyList').children.length, 15);
+  assert.equal(app.elements.get('pendingCount').textContent, '125');
+  assert.equal(app.elements.get('historyList').children.length, 125);
 });
 
 test('histórico com pendências não pode ser limpo silenciosamente', async () => {
@@ -223,7 +223,7 @@ test('persistência local falha antes do envio remoto e não anuncia gravação'
   assert.equal(app.requests.length, 0);
   assert.equal(app.storage.has('history'), false);
   assert.match(app.elements.get('alertMessage').textContent, /Não foi possível salvar/);
-  assert.equal(app.elements.get('saveText').textContent, 'Registrar lançamento');
+  assert.equal(app.elements.get('saveText').textContent, 'Enviar contagem');
 });
 
 test('histórico inválido é arquivado e histórico antigo mantém horário ausente', async () => {
@@ -374,6 +374,63 @@ test('exportação inclui todos os registros, escapa CSV, protege fórmulas e li
   assert.deepEqual(app.revokedUrls, [download.url]);
 });
 
+test('home prioriza coleta sem totais nem histórico fixo', () => {
+  assert.equal(/class="stats-bar"/.test(html), false, 'cartões de totais não devem estar na home');
+  assert.equal(/<section class="history-card"/.test(html), false, 'histórico não deve ocupar painel permanente');
+  assert.match(html, /<details[^>]*id="pendingDetails"/);
+  assert.match(html, /Pendências/);
+  assert.match(html, /Enviar contagem/);
+  assert.match(html, /collectionStatusText/);
+  assert.match(html, /btnScan/);
+  assert.match(html, /Exportar CSV de recuperação/);
+});
+
+test('estado compacto distingue pronto, envio, desconexão e pendências', () => {
+  const app = createApp();
+  app.context.updateCollectionStatus();
+  assert.equal(app.elements.get('collectionStatusText').textContent, 'Sem conexão');
+  app.run('apiConnected = true; updateCollectionStatus();');
+  assert.equal(app.elements.get('collectionStatusText').textContent, 'Pronto');
+  app.run('isSaving = true; updateCollectionStatus();');
+  assert.equal(app.elements.get('collectionStatusText').textContent, 'Enviando');
+  app.run('isSaving = false; history = [{ syncStatus: "uncertain" }]; updateCollectionStatus();');
+  assert.equal(app.elements.get('collectionStatusText').textContent, 'Com pendências');
+});
+
+test('pendências recolhíveis mostram apenas não enviados e incertos sem ações', async () => {
+  const records = [
+    { id: 'confirmed', code: '0001', qty: 12, date: '17/11/2026', time: '10:32:15', syncStatus: 'confirmed' },
+    { id: 'pending', code: '0002', qty: -2, date: '17/11/2026', time: '10:35:42', syncStatus: 'pending' },
+    { id: 'uncertain', code: '0003', qty: 0, date: '17/11/2026', time: '10:38:10', syncStatus: 'uncertain' }
+  ];
+  const app = createApp({ storage: { history: JSON.stringify(records) } });
+  app.context.renderHistory();
+  app.context.updateStats();
+  assert.equal(app.elements.get('pendingCount').textContent, '2');
+  assert.equal(app.elements.get('historyList').children.length, 2);
+  assert.equal(app.elements.get('historyList').children[0].children[0].children[0].textContent, '0002');
+  assert.equal(app.elements.get('historyList').children[0].children[0].children[1].children[0].textContent, '−2 un.');
+  assert.equal(app.elements.get('historyList').children[0].children[0].children[1].children[1].textContent, '17/11/2026 · 10:35:42');
+  assert.equal(app.elements.get('historyList').children[0].children[0].children[1].children[2].textContent, 'Não enviado');
+  assert.equal(app.elements.get('historyList').children[1].children[0].children[1].children[2].textContent, 'Confirmação incerta');
+  assert.equal(app.elements.get('historyList').children[0].children.length, 1);
+  assert.equal(app.elements.get('historyList').children[1].children.length, 1);
+  assert.deepEqual(await savedHistory(app), records);
+});
+
+test('confirmação remota dá aviso breve e prepara o próximo código', async () => {
+  const app = createApp({ storage: { apiUrl: 'https://api.example/exec' } });
+  app.run('apiConnected = true;');
+  setForm(app, '000051', '2');
+  await app.context.saveData();
+  assert.equal((await savedHistory(app))[0].syncStatus, 'confirmed');
+  assert.equal(app.elements.get('barrasInput').value, '');
+  assert.equal(app.elements.get('qtdInput').value, '1');
+  assert.equal(app.document.activeElement, app.elements.get('barrasInput'));
+  assert.equal(app.elements.get('alertMessage').textContent, 'Contagem confirmada. Próxima coleta pronta.');
+  assert.equal(app.elements.get('confirmOverlay').classList.contains('show'), false);
+});
+
 test('configurações legadas e IDs padrão são preservados', () => {
   const app = createApp({ storage: { apiUrl: 'https://api.example/exec', cadastroId: 'legacy-cadastro', dadosId: 'legacy-dados', sound: 'true' } });
   assert.equal(app.run('CONFIG.API_URL'), 'https://api.example/exec');
@@ -443,15 +500,15 @@ test('novos registros guardam segundos e timestamp completo; antigas datas não 
   assert.equal(item.remoteConfirmedAt, null);
 });
 
-test('totais permanecem identificados como locais e renderização não usa HTML de dados', async () => {
+test('totais não são exibidos como consolidados e pendências usam renderização segura', async () => {
   const app = createApp();
   setForm(app, '<img src=x onerror=alert(1)>', '1');
   await app.context.saveData();
   assert.equal(app.elements.get('historyList').children[0].children[0].children[0].textContent, '<img src=x onerror=alert(1)>');
   assert.equal(app.elements.get('historyList').children[0].children[0].children[0].innerHTML, '');
-  assert.equal(app.elements.get('statPending').textContent, 1);
-  assert.equal(app.elements.get('historyList').children[0].children[0].children[1].children[2].textContent, 'Somente neste aparelho');
-  assert.match(html, /números acima são locais e não consolidam contagens de outros aparelhos/i);
+  assert.equal(app.elements.get('pendingCount').textContent, '1');
+  assert.equal(app.elements.get('historyList').children[0].children[0].children[1].children[2].textContent, 'Não enviado');
+  assert.equal(/Unidades contabilizadas|Produtos distintos|Últimos lançamentos/.test(html), false);
 });
 
 test('alteração concorrente do histórico em outra aba bloqueia sobrescrita', async () => {
