@@ -2,402 +2,535 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#059669">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" id="themeColorMeta" content="#f3f6f4">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Inventário Ultra Popular</title>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>Inventário Ultra Popular · V8</title>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
-  
+
   <style>
-    :root {
-      --primary: #059669;
-      --primary-dark: #047857;
-      --danger: #dc2626;
-      --danger-light: #ef4444;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --bg: #f8fafc;
-      --bg-dark: #0f172a;
-      --card: #ffffff;
-      --card-dark: #1e293b;
-      --text: #1e293b;
-      --text-dark: #f1f5f9;
-      --border: #e2e8f0;
-      --border-dark: #334155;
-    }
-    
-    [data-theme="dark"] {
-      --bg: var(--bg-dark);
-      --card: var(--card-dark);
-      --text: var(--text-dark);
-      --border: var(--border-dark);
-    }
-    
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    
-    body {
-      min-height: 100vh;
-      background: linear-gradient(135deg, var(--bg) 0%, var(--border) 100%);
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      color: var(--text);
-      overflow-x: hidden;
-      transition: background 0.3s, color 0.3s;
-    }
+  :root {
+    color-scheme: light;
+    --green-700: #176b4d;
+    --green-800: #11563d;
+    --green-100: #e7f2ec;
+    --green-50: #f3f8f5;
+    --red-700: #a13f35;
+    --red-100: #f8e9e6;
+    --amber-800: #81591c;
+    --amber-100: #f5efdf;
+    --page: #f3f6f4;
+    --surface: #ffffff;
+    --surface-muted: #f7f9f8;
+    --ink: #182720;
+    --ink-muted: #627168;
+    --ink-subtle: #7b8981;
+    --line: #dce5df;
+    --line-strong: #c8d5cd;
+    --focus: #19825b;
+    --shadow-card: 0 2px 10px rgba(22, 47, 34, 0.045);
+    --shadow-dialog: 0 18px 60px rgba(10, 25, 17, 0.24);
+    --radius-sm: 9px;
+    --radius-md: 14px;
+    --radius-lg: 18px;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --font-body: "Aptos", "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
 
-    .header {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      color: white;
-      padding: 12px 20px;
-      padding-top: max(12px, env(safe-area-inset-top));
-      box-shadow: 0 4px 20px rgba(5, 150, 105, 0.3);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    
-    .header-content { max-width: 500px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
-    .header h1 { font-size: 16px; font-weight: 600; }
-    .header-actions { display: flex; gap: 8px; align-items: center; }
-    .header-badge { background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
-    .btn-header { background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  [data-theme="dark"] {
+    color-scheme: dark;
+    --green-700: #65bd90;
+    --green-800: #8bd2aa;
+    --green-100: #20392d;
+    --green-50: #1c2b23;
+    --red-700: #f08f82;
+    --red-100: #442a28;
+    --amber-800: #e9c77d;
+    --amber-100: #3c3322;
+    --page: #111a15;
+    --surface: #1b2720;
+    --surface-muted: #202e26;
+    --ink: #edf4ef;
+    --ink-muted: #b4c2b8;
+    --ink-subtle: #93a399;
+    --line: #304137;
+    --line-strong: #40554a;
+    --focus: #83d2a6;
+    --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.13);
+    --shadow-dialog: 0 18px 60px rgba(0, 0, 0, 0.48);
+  }
 
-    .logo-section { padding: 20px 20px 12px; text-align: center; }
-    .logo-container { display: inline-flex; align-items: center; gap: 10px; background: var(--card); padding: 12px 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer; transition: transform 0.2s; position: relative; }
-    .logo-container:hover { transform: translateY(-2px); }
-    .logo-container.has-image { padding: 8px; }
-    .logo-edit-hint { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; font-size: 9px; padding: 2px 8px; border-radius: 10px; opacity: 0; transition: opacity 0.2s; white-space: nowrap; }
-    .logo-container:hover .logo-edit-hint { opacity: 1; }
-    .logo-image-full { height: 60px; max-width: 200px; object-fit: contain; border-radius: 8px; }
-    .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; color: white; }
-    .logo-text-container { text-align: left; }
-    .logo-text { font-size: 22px; font-weight: 700; color: var(--primary); line-height: 1; }
-    .logo-subtitle { font-size: 9px; color: var(--danger); font-weight: 600; letter-spacing: 0.5px; }
-    #logoInput { display: none; }
+  * { box-sizing: border-box; }
+  html { min-width: 320px; scroll-padding-top: 76px; }
+  body {
+    min-height: 100vh;
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.45;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 160ms ease, color 160ms ease;
+  }
+  button, input { font: inherit; }
+  button { color: inherit; }
+  button:focus-visible, input:focus-visible, [tabindex]:focus-visible {
+    outline: 3px solid var(--focus);
+    outline: 3px solid color-mix(in srgb, var(--focus) 52%, transparent);
+    outline-offset: 2px;
+  }
+  button:disabled { cursor: not-allowed; }
+  .icon-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+  .icon { display: block; width: 18px; height: 18px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
-    .main-content { max-width: 500px; margin: 0 auto; padding: 0 16px 160px; }
+  .header {
+    position: sticky;
+    z-index: 100;
+    top: 0;
+    padding: max(0px, env(safe-area-inset-top)) 0 0;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .header-content {
+    display: flex;
+    width: min(1120px, 100%);
+    min-height: 64px;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin: 0 auto;
+    padding: 8px 24px;
+  }
+  .brand-lockup { display: inline-flex; min-width: 0; align-items: center; gap: 11px; padding: 0; border: 0; background: transparent; text-align: left; cursor: pointer; }
+  .logo-icon { display: grid; width: 38px; height: 38px; flex: 0 0 auto; place-items: center; border-radius: 11px; background: var(--green-700); color: white; font-size: 19px; font-weight: 700; }
+  .logo-image-full { display: block; width: 38px; height: 38px; object-fit: contain; border-radius: 9px; }
+  .brand-copy { display: grid; min-width: 0; gap: 1px; }
+  .logo-text { overflow: hidden; color: var(--ink); font-size: 14px; font-weight: 700; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
+  .logo-subtitle { color: var(--ink-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.06em; line-height: 1.3; }
+  #logoInput { display: none; }
+  .header-meta { display: inline-flex; align-items: center; gap: 7px; margin-left: 8px; color: var(--ink-muted); font-size: 11px; white-space: nowrap; }
+  .header-meta strong { color: var(--green-700); font-weight: 700; }
+  .header-actions { display: flex; min-width: 0; align-items: center; justify-content: flex-end; gap: var(--space-2); }
+  .api-status { display: inline-flex; min-height: 40px; align-items: center; gap: 8px; padding: 0 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); text-align: left; cursor: pointer; }
+  .api-status-dot { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; background: var(--ink-subtle); }
+  .api-status-dot.connected { background: #238456; }
+  .api-status-dot.pending { background: #a77925; }
+  .api-status-dot.sending { background: #3168a8; }
+  .api-status-dot.error { background: #b34a3f; }
+  [data-theme="dark"] .api-status-dot.connected { background: #72ce9b; }
+  [data-theme="dark"] .api-status-dot.pending { background: #e9c77d; }
+  [data-theme="dark"] .api-status-dot.sending { background: #8ab8f0; }
+  [data-theme="dark"] .api-status-dot.error { background: #fa9b8d; }
+  .api-status-text { max-width: 190px; overflow: hidden; color: var(--ink-muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+  .btn-header { display: grid; width: 44px; height: 44px; flex: 0 0 auto; place-items: center; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink-muted); cursor: pointer; }
+  .btn-header:hover, .api-status:hover { border-color: var(--line-strong); background: var(--surface-muted); }
 
-    .stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
-    .stat-card { background: var(--card); padding: 12px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-    .stat-card-value { font-size: 20px; font-weight: 700; color: var(--primary); }
-    .stat-card-label { font-size: 10px; color: #64748b; margin-top: 2px; }
+  .main-content { width: min(1120px, 100%); margin: 0 auto; padding: 24px 24px calc(40px + env(safe-area-inset-bottom)); }
+  .page-intro { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4); margin: 0 0 18px; }
+  .page-eyebrow { margin: 0 0 4px; color: var(--green-700); font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; }
+  .page-title { margin: 0; color: var(--ink); font-size: clamp(22px, 3vw, 28px); font-weight: 700; letter-spacing: -0.035em; line-height: 1.18; }
+  .page-description { margin: 5px 0 0; color: var(--ink-muted); font-size: 13px; }
+  .version-badge { display: inline-flex; align-items: center; padding: 4px 8px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink-muted); font-size: 11px; font-weight: 700; letter-spacing: 0.03em; }
 
-    .form-card { background: var(--card); border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 12px; }
+  .collector-layout { display: grid; grid-template-columns: minmax(0, 760px); justify-content: center; gap: 14px; }
+  .form-card, .pending-panel { min-width: 0; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-card); }
+  .form-card { padding: 22px; }
+  .pending-panel { overflow: hidden; }
+  .pending-summary { display: flex; min-height: 68px; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 18px; cursor: pointer; list-style: none; }
+  .pending-summary::-webkit-details-marker { display: none; }
+  .pending-summary::after { width: 8px; height: 8px; flex: 0 0 auto; margin-left: 2px; transform: rotate(45deg); border-right: 2px solid var(--ink-subtle); border-bottom: 2px solid var(--ink-subtle); content: ""; transition: transform 120ms ease; }
+  .pending-panel[open] .pending-summary::after { transform: rotate(225deg); }
+  .pending-summary-copy { display: grid; min-width: 0; gap: 2px; margin-right: auto; }
+  .pending-title { color: var(--ink); font-size: 13px; font-weight: 700; }
+  .pending-subtitle { color: var(--ink-muted); font-size: 10px; }
+  .pending-count { display: inline-flex; min-width: 30px; min-height: 30px; align-items: center; justify-content: center; padding: 0 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface-muted); color: var(--ink-muted); font-size: 11px; font-variant-numeric: tabular-nums; font-weight: 700; }
+  .pending-content { padding: 0 18px 16px; }
+  .pending-content .history-list { max-height: min(54vh, 620px); overflow-y: auto; overscroll-behavior: contain; }
+  .pending-content .history-item { align-items: flex-start; }
+  .history-item-error { flex: 1 1 100%; color: var(--red-700); font-size: 10px; overflow-wrap: anywhere; }
+  .btn-sync { flex: 0 0 auto; min-height: 38px; padding: 0 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--green-700); font-size: 10px; font-weight: 700; cursor: pointer; }
+  .btn-sync:disabled { cursor: wait; opacity: .65; }
+  .pending-content .history-item-status.pending { color: var(--amber-800); }
+  .form-status-line { margin-top: 4px; }
 
-    .input-group { margin-bottom: 16px; }
-    .input-label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
-    .input-wrapper { display: flex; gap: 8px; }
-    .input-field { flex: 1; padding: 12px 14px; font-size: 16px; font-weight: 500; border: 2px solid var(--border); border-radius: 10px; transition: all 0.2s; background: var(--bg); color: var(--text); -webkit-appearance: none; }
-    .input-field:focus { outline: none; border-color: var(--primary); background: var(--card); }
-    .input-field.valid { border-color: var(--success); background: rgba(16, 185, 129, 0.1); }
-    .input-field.invalid { border-color: var(--danger); background: rgba(220, 38, 38, 0.1); }
-    .btn-clear { padding: 12px 14px; background: var(--bg); border: 2px solid var(--border); border-radius: 10px; font-size: 12px; font-weight: 600; color: #64748b; cursor: pointer; }
+  .card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin: 0 0 18px; }
+  .card-heading h2, .history-title { margin: 0; color: var(--ink); font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
+  .card-heading p { margin: 4px 0 0; color: var(--ink-muted); font-size: 12px; }
+  .input-group { min-width: 0; margin: 0 0 18px; }
+  .input-label { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 7px; color: var(--ink); font-size: 12px; font-weight: 700; }
+  .label-hint { color: var(--ink-subtle); font-size: 11px; font-weight: 500; }
+  .input-wrapper { display: flex; min-width: 0; gap: 8px; }
+  .input-field { display: block; width: 100%; min-width: 0; min-height: 52px; padding: 12px 14px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface-muted); color: var(--ink); font-size: 17px; font-weight: 600; transition: border-color 120ms ease, background-color 120ms ease; }
+  .input-field::placeholder { color: var(--ink-subtle); font-size: 14px; font-weight: 400; }
+  .input-field:focus { border-color: var(--focus); background: var(--surface); outline: 3px solid color-mix(in srgb, var(--focus) 16%, transparent); }
+  .input-field.valid { border-color: var(--green-700); }
+  .input-field.invalid { border-color: var(--red-700); }
+  .code-field { font-variant-numeric: tabular-nums; letter-spacing: 0.025em; }
+  .btn-clear, .btn-scan { display: inline-flex; min-width: 48px; min-height: 48px; flex: 0 0 auto; align-items: center; justify-content: center; gap: 8px; padding: 0 13px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink-muted); font-size: 12px; font-weight: 700; cursor: pointer; }
+  .btn-clear:hover, .btn-scan:hover { border-color: var(--line-strong); background: var(--surface-muted); color: var(--ink); }
+  .validation-msg { display: none; min-height: 19px; align-items: center; gap: 6px; margin-top: 5px; color: var(--ink-muted); font-size: 11px; }
+  .validation-msg.show { display: flex; }
+  .validation-msg.valid { color: var(--green-700); }
+  .validation-msg.invalid { color: var(--red-700); }
+  .validation-symbol { display: inline-grid; width: 16px; height: 16px; flex: 0 0 auto; place-items: center; border: 1px solid currentColor; border-radius: 50%; font-size: 10px; font-weight: 700; }
+  .qty-wrapper { display: grid; grid-template-columns: 48px minmax(72px, 1fr) 48px; gap: 8px; align-items: center; }
+  .qty-btn { display: grid; width: 48px; height: 48px; place-items: center; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--green-700); font-size: 21px; font-weight: 500; cursor: pointer; }
+  .qty-btn:hover { border-color: var(--green-700); background: var(--green-50); }
+  .qty-input { text-align: center; font-size: 22px; font-variant-numeric: tabular-nums; }
+  .qty-input.negative { border-color: var(--red-700); color: var(--red-700); }
+  .qty-input.positive { border-color: var(--green-700); color: var(--green-700); }
+  .qty-context { display: flex; min-height: 24px; align-items: center; gap: 7px; margin-top: 7px; color: var(--ink-muted); font-size: 11px; }
+  .qty-context-mark { display: inline-grid; width: 18px; height: 18px; place-items: center; border-radius: 50%; background: var(--green-100); color: var(--green-700); font-size: 12px; font-weight: 800; }
+  .qty-context.negative .qty-context-mark { background: var(--red-100); color: var(--red-700); }
+  .qty-context.zero .qty-context-mark { background: var(--surface-muted); color: var(--ink-muted); }
+  .form-status-line { display: flex; min-height: 34px; align-items: center; justify-content: space-between; gap: 12px; margin: 3px 0 14px; padding: 8px 10px; border-radius: var(--radius-sm); background: var(--surface-muted); color: var(--ink-muted); font-size: 11px; }
+  .form-status-label { color: var(--ink-subtle); }
+  #statCadastro { color: var(--ink); font-weight: 600; text-align: right; }
+  .action-buttons { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .btn-save { display: inline-flex; width: 100%; min-height: 54px; align-items: center; justify-content: center; gap: 9px; padding: 12px 18px; border: 1px solid var(--green-700); border-radius: 11px; background: var(--green-700); color: #fff; font-size: 14px; font-weight: 700; letter-spacing: 0.01em; cursor: pointer; transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease; }
+  .btn-save:hover:not(:disabled) { border-color: var(--green-800); background: var(--green-800); }
+  .btn-save:active:not(:disabled) { transform: translateY(1px); }
+  .btn-save:disabled { border-color: var(--line); background: var(--line); color: var(--ink-subtle); }
+  .btn-save[data-state="saving"] { border-color: var(--green-800); background: var(--green-800); color: #fff; }
+  .btn-save[data-state="saved"] { border-color: #23734f; background: #23734f; color: #fff; }
+  .btn-save[data-state="uncertain"] { border-color: var(--amber-800); background: var(--amber-100); color: var(--amber-800); }
+  .btn-save:disabled[data-state="saved"] { border-color: #23734f; background: #23734f; color: #fff; }
+  .btn-save:disabled[data-state="uncertain"] { border-color: var(--amber-800); background: var(--amber-100); color: var(--amber-800); }
+  .btn-save .icon { width: 17px; height: 17px; }
+  .save-spinner { display: none; width: 17px; height: 17px; border: 2px solid rgba(255,255,255,.42); border-top-color: #fff; border-radius: 50%; }
+  .btn-save[data-state="saving"] .save-spinner { display: block; animation: spin 700ms linear infinite; }
+  .btn-save[data-state="saving"] #saveIcon { display: none; }
+  .debug-panel { display: none; max-height: 160px; margin-top: 14px; padding: 12px; overflow: auto; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-muted); color: var(--ink-muted); font: 11px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; }
+  .debug-panel.show { display: block; }
+  .debug-panel .log-success { color: var(--green-700); }
+  .debug-panel .log-error { color: var(--red-700); }
 
-    .qty-wrapper { display: flex; gap: 8px; align-items: center; }
-    .qty-btn { width: 44px; height: 44px; border: 2px solid var(--border); border-radius: 10px; background: var(--bg); font-size: 20px; font-weight: 600; color: var(--primary); cursor: pointer; }
-    .qty-btn:active { transform: scale(0.9); background: var(--primary); color: white; }
-    .qty-input { width: 80px; text-align: center; font-size: 20px; font-weight: 700; }
+  .history-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .history-title-block { min-width: 0; }
+  .history-subtitle { margin: 4px 0 0; color: var(--ink-muted); font-size: 11px; }
+  .history-count { display: inline-flex; min-width: 28px; min-height: 28px; align-items: center; justify-content: center; padding: 0 8px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink-muted); font-size: 11px; font-variant-numeric: tabular-nums; font-weight: 700; }
+  .history-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .btn-history { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; gap: 7px; padding: 0 11px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink-muted); font-size: 11px; font-weight: 700; cursor: pointer; }
+  .btn-history:hover { border-color: var(--line-strong); background: var(--surface-muted); color: var(--ink); }
+  .btn-history.danger-action { color: var(--red-700); }
+  .history-list { max-height: 460px; overflow-y: auto; overscroll-behavior: contain; }
+  .history-item { display: flex; min-width: 0; align-items: center; gap: 10px; padding: 12px 2px; border-bottom: 1px solid var(--line); }
+  .history-item:last-child { border-bottom: 0; }
+  .history-item-info { min-width: 0; flex: 1; }
+  .history-item-code { display: block; overflow-wrap: anywhere; color: var(--ink); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 14px; font-variant-numeric: tabular-nums; font-weight: 700; }
+  .history-item-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 9px; margin-top: 6px; }
+  .history-item-qty { display: inline-flex; align-items: center; gap: 4px; padding: 3px 7px; border: 1px solid var(--green-100); border-radius: 6px; background: var(--green-50); color: var(--green-700); font-size: 11px; font-variant-numeric: tabular-nums; font-weight: 700; }
+  .history-item-qty.negative { border-color: var(--red-100); background: var(--red-100); color: var(--red-700); }
+  .history-item-time { color: var(--ink-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .history-item-status { display: inline-flex; align-items: center; gap: 5px; color: var(--ink-muted); font-size: 10px; font-weight: 600; }
+  .history-item-status::before { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-subtle); content: ""; }
+  .history-item-status.synced::before { background: #238456; }
+  .history-item-status.pending::before { background: #a77925; }
+  .history-item-status.uncertain::before { background: #b34a3f; }
+  [data-theme="dark"] .history-item-status.synced::before { background: #72ce9b; }
+  [data-theme="dark"] .history-item-status.pending::before { background: #e9c77d; }
+  [data-theme="dark"] .history-item-status.uncertain::before { background: #fa9b8d; }
+  .btn-delete { display: grid; width: 44px; height: 44px; flex: 0 0 auto; place-items: center; border: 1px solid transparent; border-radius: 10px; background: transparent; color: var(--ink-subtle); cursor: pointer; }
+  .btn-delete:hover { border-color: var(--red-100); background: var(--red-100); color: var(--red-700); }
+  .history-empty { padding: 34px 12px; color: var(--ink-muted); font-size: 12px; text-align: center; }
+  .history-empty::before { display: block; width: 34px; height: 34px; margin: 0 auto 9px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface-muted); content: "—"; line-height: 32px; }
+  .local-history-note { margin: 12px 0 0; color: var(--ink-subtle); font-size: 10px; line-height: 1.5; }
 
-    .validation-msg { display: none; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; font-weight: 500; }
-    .validation-msg.show { display: flex; }
-    .validation-msg.valid { color: var(--success); }
-    .validation-msg.invalid { color: var(--danger); }
+  .loading-overlay { position: fixed; z-index: 1000; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: var(--page); color: var(--ink-muted); transition: opacity 180ms ease; }
+  .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+  .loading-spinner { width: 30px; height: 30px; border: 3px solid var(--line); border-top-color: var(--green-700); border-radius: 50%; animation: spin 750ms linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 12px; font-weight: 600; }
+  .alert { position: fixed; z-index: 800; top: calc(72px + env(safe-area-inset-top)); left: 50%; display: flex; visibility: hidden; width: min(520px, calc(100% - 28px)); min-height: 48px; align-items: center; gap: 10px; padding: 10px 12px; transform: translate(-50%, -8px); border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow-card); color: var(--ink); font-size: 12px; opacity: 0; pointer-events: none; transition: opacity 150ms ease, transform 150ms ease, visibility 150ms; }
+  .alert.show { visibility: visible; transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
+  .alert-icon { display: grid; width: 22px; height: 22px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: var(--green-100); color: var(--green-700); font-size: 12px; font-weight: 800; }
+  .alert-error .alert-icon { background: var(--red-100); color: var(--red-700); }
+  .alert-success .alert-icon { background: var(--green-100); color: var(--green-700); }
+  .alert-info .alert-icon { background: var(--surface-muted); color: var(--ink-muted); }
+  .alert-message { min-width: 0; flex: 1; }
+  .alert-close { display: grid; width: 36px; height: 36px; flex: 0 0 auto; place-items: center; border: 0; border-radius: 8px; background: transparent; color: var(--ink-muted); font-size: 18px; cursor: pointer; }
+  .confirm-overlay, .modal-overlay { position: fixed; z-index: 500; inset: 0; display: flex; visibility: hidden; align-items: center; justify-content: center; padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom)); background: rgba(10, 20, 14, 0.48); opacity: 0; pointer-events: none; transition: opacity 150ms ease, visibility 150ms; }
+  .confirm-overlay.show, .modal-overlay.show { visibility: visible; opacity: 1; pointer-events: auto; }
+  .confirm-dialog, .modal { width: min(100%, 480px); max-height: min(88dvh, 720px); overflow: auto; transform: translateY(8px); border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-dialog); transition: transform 150ms ease; }
+  .confirm-overlay.show .confirm-dialog, .modal-overlay.show .modal { transform: translateY(0); }
+  .confirm-dialog { padding: 22px; }
+  .confirm-title { margin: 0; color: var(--ink); font-size: 17px; font-weight: 700; }
+  .confirm-message { margin: 7px 0 14px; color: var(--ink-muted); font-size: 12px; }
+  .confirm-code { overflow-wrap: anywhere; margin: 0 0 12px; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-muted); color: var(--ink); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 13px; font-weight: 700; }
+  .confirm-status { margin-bottom: 16px; padding: 10px 11px; border: 1px solid var(--amber-100); border-radius: var(--radius-sm); background: var(--amber-100); color: var(--amber-800); font-size: 11px; }
+  .confirm-actions { display: flex; gap: 9px; }
+  .btn-confirm { display: inline-flex; min-height: 46px; flex: 1; align-items: center; justify-content: center; padding: 10px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); font-size: 12px; font-weight: 700; cursor: pointer; }
+  .btn-confirm-delete { border-color: var(--red-700); background: var(--red-700); color: #fff; }
+  .btn-confirm-delete:disabled { opacity: 0.55; }
 
-    .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-    .btn-scan { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 20px; background: linear-gradient(135deg, var(--danger-light) 0%, var(--danger) 100%); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
-    .btn-save { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 20px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4); }
-    .btn-save:disabled, .btn-scan:disabled { background: #94a3b8; box-shadow: none; cursor: not-allowed; }
+  .modal { padding: 0; }
+  .modal-header { position: sticky; z-index: 2; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); background: var(--surface); }
+  .modal-title { color: var(--ink); font-size: 16px; font-weight: 700; }
+  .modal-close { display: grid; width: 44px; height: 44px; flex: 0 0 auto; place-items: center; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink-muted); font-size: 20px; cursor: pointer; }
+  .modal-body { padding: 18px 20px; }
+  .settings-section + .settings-section { margin-top: 20px; padding-top: 17px; border-top: 1px solid var(--line); }
+  .settings-section-title { margin: 0 0 4px; color: var(--ink); font-size: 12px; font-weight: 700; }
+  .settings-section-note { margin: 0 0 14px; color: var(--ink-muted); font-size: 11px; }
+  .setting-group { margin-bottom: 14px; }
+  .setting-label { display: block; margin-bottom: 5px; color: var(--ink); font-size: 11px; font-weight: 700; }
+  .setting-label-badge { display: inline-flex; margin-left: 5px; padding: 2px 5px; border-radius: 4px; background: var(--green-100); color: var(--green-700); font-size: 9px; letter-spacing: 0.03em; }
+  .setting-input { width: 100%; min-height: 44px; padding: 10px 11px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--surface-muted); color: var(--ink); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; }
+  .setting-hint { margin-top: 4px; color: var(--ink-subtle); font-size: 10px; line-height: 1.45; }
+  .setting-toggle { display: flex; min-height: 50px; align-items: center; justify-content: space-between; gap: 14px; border-bottom: 1px solid var(--line); }
+  .toggle-label { color: var(--ink); font-size: 12px; font-weight: 600; }
+  .toggle-switch { position: relative; width: 48px; height: 28px; flex: 0 0 auto; padding: 0; border: 1px solid var(--line-strong); border-radius: 99px; background: var(--surface-muted); cursor: pointer; transition: background 120ms ease, border-color 120ms ease; }
+  .toggle-switch::after { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--ink-subtle); content: ""; transition: transform 120ms ease, background-color 120ms ease; }
+  .toggle-switch.active { border-color: var(--green-700); background: var(--green-700); }
+  .toggle-switch.active::after { transform: translateX(20px); background: #fff; }
+  .modal-footer { position: sticky; bottom: 0; display: flex; gap: 9px; padding: 13px 20px max(13px, env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: var(--surface); }
+  .btn-modal { display: inline-flex; min-height: 46px; flex: 1; align-items: center; justify-content: center; padding: 10px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); font-size: 12px; font-weight: 700; cursor: pointer; }
+  .btn-modal-primary { border-color: var(--green-700); background: var(--green-700); color: #fff; }
 
-    .history-card { background: var(--card); border-radius: 16px; padding: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-    .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-    .history-title { font-size: 14px; font-weight: 600; color: #64748b; }
-    .history-actions { display: flex; gap: 8px; }
-    .btn-history { padding: 6px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; font-size: 11px; font-weight: 600; color: #64748b; cursor: pointer; }
-    .history-list { max-height: 250px; overflow-y: auto; }
-    .history-item { display: flex; align-items: center; padding: 10px 12px; background: var(--bg); border-radius: 8px; margin-bottom: 6px; font-size: 13px; gap: 10px; }
-    .history-item-info { flex: 1; min-width: 0; }
-    .history-item-code { font-weight: 600; font-family: monospace; font-size: 14px; display: block; }
-    .history-item-meta { display: flex; gap: 8px; align-items: center; margin-top: 2px; flex-wrap: wrap; }
-    .history-item-qty { background: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; }
-    .history-item-time { color: #94a3b8; font-size: 10px; }
-    .history-item-status { font-size: 10px; padding: 2px 6px; border-radius: 8px; }
-    .history-item-status.synced { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-    .history-item-status.pending { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
-    .btn-delete { width: 32px; height: 32px; border: none; background: rgba(220, 38, 38, 0.1); color: var(--danger); border-radius: 8px; font-size: 14px; cursor: pointer; }
-    .btn-delete:hover { background: var(--danger); color: white; }
-    .history-empty { text-align: center; padding: 20px; color: #94a3b8; font-size: 13px; }
+  .scanner-overlay { position: fixed; z-index: 300; inset: 0; display: flex; visibility: hidden; flex-direction: column; padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); background: #07110b; opacity: 0; pointer-events: none; transition: opacity 150ms ease, visibility 150ms; }
+  .scanner-overlay.show { visibility: visible; opacity: 1; pointer-events: auto; }
+  .scanner-header { position: absolute; z-index: 10; top: env(safe-area-inset-top); right: 0; left: 0; display: flex; min-height: 64px; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px; background: rgba(7, 17, 11, 0.86); color: #fff; }
+  .scanner-header h3 { margin: 0; font-size: 15px; font-weight: 700; }
+  .scanner-header-actions { display: flex; gap: 8px; }
+  .btn-scanner { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; gap: 7px; padding: 0 11px; border: 1px solid rgba(255,255,255,.24); border-radius: 10px; background: rgba(255,255,255,.08); color: #fff; font-size: 11px; font-weight: 700; cursor: pointer; }
+  .btn-scanner.active { border-color: #8bd2aa; background: rgba(101,189,144,.25); }
+  .btn-scanner:disabled { opacity: .58; }
+  #scanner-container { position: relative; flex: 1; overflow: hidden; }
+  #scanner-container video { width: 100%; height: 100%; object-fit: cover; }
+  #scanner-container canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .scanner-target { position: absolute; z-index: 5; top: 50%; left: 50%; width: min(76vw, 370px); height: 142px; transform: translate(-50%, -50%); border: 2px solid #9be2b6; border-radius: 12px; box-shadow: 0 0 0 9999px rgba(0,0,0,.46); }
+  .scanner-target::before { position: absolute; top: 50%; right: 8px; left: 8px; height: 2px; background: #9be2b6; box-shadow: 0 0 12px rgba(155,226,182,.7); content: ""; }
+  .scanner-footer { position: absolute; z-index: 10; right: 0; bottom: 0; left: 0; padding: 16px 16px max(16px, env(safe-area-inset-bottom)); background: rgba(7, 17, 11, 0.9); }
+  .scanner-status { margin: 0 0 12px; color: #fff; font-size: 12px; text-align: center; }
+  .scanner-actions { display: flex; gap: 9px; }
+  .btn-manual, .btn-cancel { display: inline-flex; min-height: 48px; flex: 1; align-items: center; justify-content: center; gap: 8px; padding: 10px 12px; border: 1px solid rgba(255,255,255,.25); border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; }
+  .btn-manual { border-color: var(--green-700); background: var(--green-700); color: white; }
+  .btn-cancel { background: rgba(255,255,255,.08); color: white; }
+  .hidden-iframe { display: none; }
 
-    .api-status { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: var(--bg); border-radius: 8px; margin-bottom: 12px; font-size: 11px; cursor: pointer; }
-    .api-status-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
-    .api-status-dot.connected { background: var(--success); }
-    .api-status-dot.error { background: var(--danger); }
-    .api-status-text { color: #64748b; flex: 1; }
-    .api-status-action { color: var(--primary); font-weight: 600; }
-
-    .loading-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; transition: opacity 0.3s; }
-    .loading-overlay.hidden { opacity: 0; pointer-events: none; }
-    .loading-spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-text { color: white; font-size: 14px; font-weight: 500; }
-
-    .alert { position: fixed; top: 70px; left: 50%; transform: translateX(-50%) translateY(-20px); padding: 12px 16px; border-radius: 10px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; z-index: 200; max-width: 90%; box-shadow: 0 4px 20px rgba(0,0,0,0.15); opacity: 0; transition: all 0.3s; pointer-events: none; }
-    .alert.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
-    .alert-error { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
-    .alert-success { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; }
-    .alert-info { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
-    .alert-close { background: none; border: none; font-size: 18px; cursor: pointer; opacity: 0.6; margin-left: 4px; }
-
-    .confirm-overlay, .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-    .confirm-overlay.show, .modal-overlay.show { opacity: 1; pointer-events: auto; }
-    .confirm-dialog, .modal { background: var(--card); border-radius: 16px; padding: 24px; width: 100%; max-width: 320px; text-align: center; transform: scale(0.9); transition: transform 0.3s; }
-    .confirm-overlay.show .confirm-dialog, .modal-overlay.show .modal { transform: scale(1); }
-    .confirm-icon { font-size: 48px; margin-bottom: 16px; }
-    .confirm-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
-    .confirm-message { font-size: 14px; color: #64748b; margin-bottom: 16px; }
-    .confirm-code { font-family: monospace; background: var(--bg); padding: 8px 12px; border-radius: 8px; font-size: 16px; font-weight: 600; margin-bottom: 16px; }
-    .confirm-status { font-size: 12px; padding: 8px; background: #fffbeb; color: #b45309; border-radius: 8px; margin-bottom: 16px; }
-    .confirm-actions { display: flex; gap: 10px; }
-    .btn-confirm { flex: 1; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
-    .btn-confirm-cancel { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
-    .btn-confirm-delete { background: var(--danger); color: white; }
-    .btn-confirm-delete:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .modal { max-width: 400px; max-height: 80vh; overflow-y: auto; text-align: left; padding: 0; }
-    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
-    .modal-title { font-size: 16px; font-weight: 600; }
-    .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b; }
-    .modal-body { padding: 20px; }
-    .setting-group { margin-bottom: 16px; }
-    .setting-label { font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-    .setting-label-badge { background: var(--primary); color: white; font-size: 9px; padding: 2px 6px; border-radius: 4px; }
-    .setting-input { width: 100%; padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 11px; font-family: monospace; background: var(--bg); color: var(--text); }
-    .setting-input:focus { outline: none; border-color: var(--primary); }
-    .setting-hint { font-size: 10px; color: #94a3b8; margin-top: 4px; }
-    .setting-toggle { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
-    .toggle-label { font-size: 14px; font-weight: 500; }
-    .toggle-switch { width: 50px; height: 28px; background: var(--border); border-radius: 14px; position: relative; cursor: pointer; transition: background 0.3s; }
-    .toggle-switch.active { background: var(--primary); }
-    .toggle-switch::after { content: ''; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: transform 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-    .toggle-switch.active::after { transform: translateX(22px); }
-    .modal-footer { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
-    .btn-modal { flex: 1; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
-    .btn-modal-primary { background: var(--primary); color: white; }
-    .btn-modal-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
-
-    .scanner-overlay { position: fixed; inset: 0; background: #000; z-index: 300; display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-    .scanner-overlay.show { opacity: 1; pointer-events: auto; }
-    .scanner-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; padding-top: max(12px, env(safe-area-inset-top)); background: rgba(0,0,0,0.8); color: white; position: absolute; top: 0; left: 0; right: 0; z-index: 10; }
-    .scanner-header h3 { font-size: 15px; font-weight: 600; }
-    .scanner-header-actions { display: flex; gap: 8px; }
-    .btn-scanner { background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-    .btn-scanner.active { background: var(--warning); }
-    #scanner-container { flex: 1; position: relative; overflow: hidden; }
-    #scanner-container video { width: 100%; height: 100%; object-fit: cover; }
-    #scanner-container canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-    .scanner-target { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 280px; height: 150px; border: 3px solid var(--primary); border-radius: 12px; box-shadow: 0 0 0 9999px rgba(0,0,0,0.5); z-index: 5; }
-    .scanner-target::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, #00ff00, transparent); animation: scanLine 1.5s ease-in-out infinite; }
-    @keyframes scanLine { 0%, 100% { top: 0; } 50% { top: calc(100% - 3px); } }
-    .scanner-footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px; padding-bottom: max(16px, env(safe-area-inset-bottom)); background: rgba(0,0,0,0.8); z-index: 10; }
-    .scanner-status { text-align: center; color: white; margin-bottom: 12px; font-size: 13px; }
-    .scanner-actions { display: flex; gap: 10px; }
-    .btn-manual, .btn-cancel { flex: 1; padding: 12px 14px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
-    .btn-manual { background: var(--primary); color: white; }
-    .btn-cancel { background: rgba(255,255,255,0.2); color: white; }
-
-    .debug-panel { background: #1e293b; color: #94a3b8; padding: 12px; border-radius: 8px; margin-top: 12px; font-size: 10px; font-family: monospace; max-height: 150px; overflow-y: auto; display: none; }
-    .debug-panel.show { display: block; }
-    .debug-panel .log-success { color: #4ade80; }
-    .debug-panel .log-error { color: #f87171; }
-    .debug-panel .log-info { color: #60a5fa; }
-
-    .hidden-iframe { display: none; }
-  </style>
+  @media (max-width: 760px) {
+    .header-content { min-height: 60px; padding: 7px 16px; }
+    .header-meta { display: none; }
+    .api-status { min-height: 38px; gap: 6px; padding: 0 10px; }
+    .api-status-text { max-width: 112px; font-size: 10px; }
+    .main-content { padding: 18px 16px calc(28px + env(safe-area-inset-bottom)); }
+    .page-intro { align-items: center; margin-bottom: 14px; }
+    .page-description { max-width: 35ch; font-size: 12px; }
+    .collector-layout { gap: 12px; }
+    .form-card { padding: 18px; }
+    .pending-summary { min-height: 62px; padding: 12px 15px; }
+    .pending-content { padding: 0 15px 14px; }
+    .pending-content .history-list { max-height: min(48vh, 400px); }
+    .alert { top: calc(66px + env(safe-area-inset-top)); }
+  }
+  @media (max-width: 390px) {
+    .header-content { gap: 8px; padding-right: 11px; padding-left: 11px; }
+    .logo-icon, .logo-image-full { width: 34px; height: 34px; }
+    .brand-lockup { gap: 8px; }
+    .logo-text { max-width: 70px; font-size: 12px; }
+    .logo-subtitle { font-size: 9px; }
+    .header-actions { gap: 6px; }
+    .api-status { width: 116px; max-width: 116px; min-width: 116px; padding: 0 8px; }
+    .api-status-text { max-width: 90px; }
+    .btn-header { width: 42px; height: 42px; }
+    .main-content { padding-right: 12px; padding-left: 12px; }
+    .form-card { padding: 15px; }
+    .pending-summary { gap: 9px; padding-right: 12px; padding-left: 12px; }
+    .pending-subtitle { max-width: 28ch; }
+    .pending-content { padding-right: 12px; padding-left: 12px; }
+    .btn-scan { min-width: 44px; padding: 0 10px; font-size: 0; }
+    .btn-scan .icon { width: 19px; height: 19px; }
+    .input-field { padding-right: 10px; padding-left: 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  }
+</style>
 </head>
 <body>
+  <svg class="icon-sprite" aria-hidden="true" focusable="false">
+    <symbol id="icon-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.7 1.7-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2h-2.4v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1L8 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H6.7v-2.4h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9L8 8.6l1.7-1.7.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5v-.2h2.4v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.7 1.7-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.2V14h-.2a1.7 1.7 0 0 0-1.5 1z"></path></symbol>
+    <symbol id="icon-camera" viewBox="0 0 24 24"><path d="M4 7.5h3l1.5-2h7l1.5 2h3a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-16A1.5 1.5 0 0 1 2.5 18v-9A1.5 1.5 0 0 1 4 7.5z"></path><circle cx="12" cy="13" r="3.5"></circle></symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></symbol>
+    <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v3h16v-3"></path></symbol>
+    <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3m3 0-.8 13H6.8L6 7m4 4v5m4-5v5"></path></symbol>
+    <symbol id="icon-flash" viewBox="0 0 24 24"><path d="m13 2-9 12h7l-1 8 10-13h-7l1-7z"></path></symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"></path></symbol>
+  </svg>
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner"></div>
     <div class="loading-text" id="loadingText">Carregando...</div>
   </div>
 
-  <div class="alert" id="alert">
-    <span id="alertIcon">⚠️</span>
-    <span id="alertMessage"></span>
-    <button class="alert-close" onclick="hideAlert()">×</button>
+  <div class="alert" id="alert" role="status" aria-live="polite" aria-atomic="true">
+    <span class="alert-icon" id="alertIcon" aria-hidden="true">i</span>
+    <span class="alert-message" id="alertMessage"></span>
+    <button class="alert-close" type="button" onclick="hideAlert()" aria-label="Fechar aviso">×</button>
   </div>
 
-  <div class="confirm-overlay" id="confirmOverlay">
-    <div class="confirm-dialog">
-      <div class="confirm-icon">🗑️</div>
-      <div class="confirm-title">Deletar Item?</div>
-      <div class="confirm-message">Remove do histórico e da planilha</div>
+  <div class="confirm-overlay" id="confirmOverlay" aria-hidden="true">
+    <section class="confirm-dialog" id="confirmDialog" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMessage confirmStatus" tabindex="-1">
+      <h2 class="confirm-title" id="confirmTitle">Remover lançamento?</h2>
+      <p class="confirm-message" id="confirmMessage">Confira o lançamento antes de continuar.</p>
       <div class="confirm-code" id="confirmCode"></div>
       <div class="confirm-status" id="confirmStatus"></div>
       <div class="confirm-actions">
-        <button class="btn-confirm btn-confirm-cancel" onclick="closeConfirm()">Cancelar</button>
-        <button class="btn-confirm btn-confirm-delete" id="btnConfirmDelete" onclick="confirmDelete()">Deletar</button>
+        <button class="btn-confirm btn-confirm-cancel" id="btnConfirmCancel" type="button" onclick="closeConfirm()">Cancelar</button>
+        <button class="btn-confirm btn-confirm-delete" id="btnConfirmDelete" type="button" onclick="confirmDelete()">Remover</button>
       </div>
-    </div>
+    </section>
   </div>
 
-  <div class="scanner-overlay" id="scannerOverlay">
+  <section class="scanner-overlay" id="scannerOverlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="scannerTitle" aria-describedby="scannerStatus" tabindex="-1">
     <div class="scanner-header">
-      <h3>📷 Scanner</h3>
+      <h3 id="scannerTitle">Ler código de barras</h3>
       <div class="scanner-header-actions">
-        <button class="btn-scanner" id="btnFlash" onclick="toggleFlash()">🔦</button>
-        <button class="btn-scanner" onclick="closeScanner()">✕</button>
+        <button class="btn-scanner" id="btnFlash" type="button" onclick="toggleFlash()" aria-label="Ativar lanterna"><svg class="icon" aria-hidden="true"><use href="#icon-flash"></use></svg><span>Lanterna</span></button>
+        <button class="btn-scanner" id="scannerClose" type="button" onclick="closeScanner()" aria-label="Fechar leitor"><svg class="icon" aria-hidden="true"><use href="#icon-close"></use></svg><span>Fechar</span></button>
       </div>
     </div>
-    <div id="scanner-container"><div class="scanner-target"></div></div>
+    <div id="scanner-container" aria-hidden="true"><div class="scanner-target"></div></div>
     <div class="scanner-footer">
-      <div class="scanner-status" id="scannerStatus">Posicione o código de barras</div>
+      <p class="scanner-status" id="scannerStatus" role="status">Posicione o código dentro do enquadramento.</p>
       <div class="scanner-actions">
-        <button class="btn-manual" onclick="manualInput()">⌨️ Digitar</button>
-        <button class="btn-cancel" onclick="closeScanner()">Cancelar</button>
+        <button class="btn-manual" type="button" onclick="manualInput()">Digitar código</button>
+        <button class="btn-cancel" type="button" onclick="closeScanner()">Fechar leitor</button>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="modal-overlay" id="settingsModal">
-    <div class="modal">
+  <section class="modal-overlay" id="settingsModal" aria-hidden="true">
+    <div class="modal" id="settingsDialog" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" tabindex="-1">
       <div class="modal-header">
-        <span class="modal-title">⚙️ Configurações</span>
-        <button class="modal-close" onclick="closeSettings()">×</button>
+        <span class="modal-title" id="settingsTitle">Configurações</span>
+        <button class="modal-close" id="settingsClose" type="button" onclick="closeSettings()" aria-label="Fechar configurações">×</button>
       </div>
       <div class="modal-body">
-        <div class="setting-group">
-          <div class="setting-label">
-            🔗 URL do Apps Script (API)
-            <span class="setting-label-badge">SALVAR/DELETAR</span>
+        <section class="settings-section" aria-labelledby="settingsIntegrationTitle">
+          <h2 class="settings-section-title" id="settingsIntegrationTitle">Integrações</h2>
+          <p class="settings-section-note">Estes valores mantêm a conexão atual com Apps Script e planilhas.</p>
+          <div class="setting-group">
+            <label class="setting-label" for="settingApiUrl">URL do Apps Script (API) <span class="setting-label-badge">LANÇAMENTOS</span></label>
+            <input type="text" class="setting-input" id="settingApiUrl" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="url" spellcheck="false">
+            <div class="setting-hint">Usada para enviar lançamentos e solicitar exclusões confirmadas.</div>
           </div>
-          <input type="text" class="setting-input" id="settingApiUrl" placeholder="https://script.google.com/macros/s/.../exec">
-          <div class="setting-hint">Para salvar e deletar da planilha de dados</div>
-        </div>
-        
-        <div class="setting-group">
-          <div class="setting-label">
-            📋 ID Planilha CADASTRO
-            <span class="setting-label-badge">VALIDAÇÃO</span>
+          <div class="setting-group">
+            <label class="setting-label" for="settingCadastroId">ID da planilha de cadastro <span class="setting-label-badge">VALIDAÇÃO</span></label>
+            <input type="text" class="setting-input" id="settingCadastroId" placeholder="ID da planilha" autocomplete="off" spellcheck="false">
+            <div class="setting-hint">BaseAlpha7 — valida códigos de barras.</div>
           </div>
-          <input type="text" class="setting-input" id="settingCadastroId" placeholder="1VdZPW6...">
-          <div class="setting-hint">BaseAlpha7 - para validar códigos de barras</div>
-        </div>
-        
-        <div class="setting-group">
-          <div class="setting-label">
-            📊 ID Planilha DADOS
-            <span class="setting-label-badge">INVENTÁRIO</span>
+          <div class="setting-group">
+            <label class="setting-label" for="settingDadosId">ID da planilha de dados <span class="setting-label-badge">DESTINO</span></label>
+            <input type="text" class="setting-input" id="settingDadosId" placeholder="ID da planilha" autocomplete="off" spellcheck="false">
+            <div class="setting-hint">Planilha associada ao Apps Script existente.</div>
           </div>
-          <input type="text" class="setting-input" id="settingDadosId" placeholder="1ROSdUmw...">
-          <div class="setting-hint">Onde os dados são salvos (mesma do Apps Script)</div>
-        </div>
-        
-        <div class="setting-toggle">
-          <span class="toggle-label">🔊 Sons</span>
-          <div class="toggle-switch" id="toggleSound" onclick="toggleSetting('sound')"></div>
-        </div>
-        <div class="setting-toggle">
-          <span class="toggle-label">📳 Vibração</span>
-          <div class="toggle-switch" id="toggleVibration" onclick="toggleSetting('vibration')"></div>
-        </div>
-        <div class="setting-toggle">
-          <span class="toggle-label">🌙 Tema Escuro</span>
-          <div class="toggle-switch" id="toggleDarkMode" onclick="toggleSetting('darkMode')"></div>
-        </div>
-        <div class="setting-toggle">
-          <span class="toggle-label">🐛 Modo Debug</span>
-          <div class="toggle-switch" id="toggleDebug" onclick="toggleSetting('debug')"></div>
-        </div>
+        </section>
+        <section class="settings-section" aria-labelledby="settingsPreferencesTitle">
+          <h2 class="settings-section-title" id="settingsPreferencesTitle">Preferências deste aparelho</h2>
+          <p class="settings-section-note">As alterações só serão mantidas ao tocar em Salvar.</p>
+          <div class="setting-toggle"><label class="toggle-label" for="toggleSound">Sons</label><button class="toggle-switch" id="toggleSound" type="button" role="switch" aria-checked="false" onclick="toggleSetting('sound')" aria-label="Sons"></button></div>
+          <div class="setting-toggle"><label class="toggle-label" for="toggleVibration">Vibração</label><button class="toggle-switch" id="toggleVibration" type="button" role="switch" aria-checked="true" onclick="toggleSetting('vibration')" aria-label="Vibração"></button></div>
+          <div class="setting-toggle"><label class="toggle-label" for="toggleDarkMode">Tema escuro</label><button class="toggle-switch" id="toggleDarkMode" type="button" role="switch" aria-checked="false" onclick="toggleSetting('darkMode')" aria-label="Tema escuro"></button></div>
+          <div class="setting-toggle"><label class="toggle-label" for="toggleDebug">Modo de diagnóstico</label><button class="toggle-switch" id="toggleDebug" type="button" role="switch" aria-checked="false" onclick="toggleSetting('debug')" aria-label="Modo de diagnóstico"></button></div>
+        </section>
       </div>
       <div class="modal-footer">
-        <button class="btn-modal btn-modal-secondary" onclick="closeSettings()">Cancelar</button>
-        <button class="btn-modal btn-modal-primary" onclick="saveSettings()">Salvar</button>
+        <button class="btn-modal btn-modal-secondary" type="button" onclick="closeSettings()">Cancelar</button>
+        <button class="btn-modal btn-modal-primary" type="button" onclick="saveSettings()">Salvar alterações</button>
       </div>
     </div>
-  </div>
+  </section>
 
   <header class="header">
     <div class="header-content">
-      <h1>📦 Inventário</h1>
+      <button class="brand-lockup" id="logoContainer" type="button" onclick="document.getElementById('logoInput').click()" aria-label="Identidade visual Drogarias Ultra Popular; alterar logotipo">
+        <span id="logoDisplay"><span class="logo-icon" aria-hidden="true">+</span></span>
+        <span class="brand-copy" id="logoTextContainer">
+          <span class="logo-text" id="companyName">Ultra</span>
+          <span class="logo-subtitle" id="companySubtitle">DROGARIAS • POPULAR</span>
+        </span>
+      </button>
+      <input type="file" id="logoInput" accept="image/*" onchange="handleLogoUpload(event)" aria-label="Selecionar logotipo">
       <div class="header-actions">
-        <span class="header-badge" id="savedBadge">0</span>
-        <button class="btn-header" onclick="openSettings()">⚙️</button>
+        <button class="api-status" id="apiStatus" type="button" onclick="testApiConnection()" aria-label="Situação da coleta; testar conexão">
+          <span class="api-status-dot" id="apiStatusDot" aria-hidden="true"></span>
+          <span class="api-status-text" id="collectionStatusText" role="status" aria-live="polite">Sem conexão</span>
+        </button>
+        <span class="header-meta">Inventário <strong>V8</strong></span>
+        <button class="btn-header" id="btnSettings" type="button" onclick="openSettings()" aria-label="Abrir configurações"><svg class="icon" aria-hidden="true"><use href="#icon-settings"></use></svg></button>
       </div>
     </div>
   </header>
 
-  <div class="logo-section">
-    <div class="logo-container" id="logoContainer" onclick="document.getElementById('logoInput').click()">
-      <div id="logoDisplay"><div class="logo-icon">✚</div></div>
-      <div class="logo-text-container" id="logoTextContainer">
-        <div class="logo-text" id="companyName">Ultra</div>
-        <div class="logo-subtitle" id="companySubtitle">DROGARIAS • POPULAR</div>
-      </div>
-      <span class="logo-edit-hint">📷 Trocar logo</span>
-    </div>
-    <input type="file" id="logoInput" accept="image/*" onchange="handleLogoUpload(event)">
-  </div>
-
   <main class="main-content">
-    <div class="stats-bar">
-      <div class="stat-card"><div class="stat-card-value" id="statTotal">0</div><div class="stat-card-label">Total Itens</div></div>
-      <div class="stat-card"><div class="stat-card-value" id="statUnique">0</div><div class="stat-card-label">Únicos</div></div>
-      <div class="stat-card"><div class="stat-card-value" id="statCadastro">-</div><div class="stat-card-label">Cadastro</div></div>
+    <div class="page-intro">
+      <div>
+        <p class="page-eyebrow">Drogarias Ultra Popular</p>
+        <h1 class="page-title">Coleta de contagem</h1>
+        <p class="page-description">Registre uma operação por vez na planilha central.</p>
+      </div>
+      <span class="version-badge">VERSÃO 8</span>
     </div>
 
-    <div class="form-card">
-      <div class="api-status" id="apiStatus" onclick="testApiConnection()">
-        <div class="api-status-dot" id="apiStatusDot"></div>
-        <span class="api-status-text" id="apiStatusText">Verificando...</span>
-        <span class="api-status-action">Testar</span>
-      </div>
-      
-      <div class="input-group">
-        <label class="input-label"><span>🏷️</span> Código de Barras</label>
-        <div class="input-wrapper">
-          <input type="text" inputmode="numeric" class="input-field" id="barrasInput" placeholder="Escaneie ou digite" autocomplete="off" oninput="validateBarras()" onkeydown="handleBarrasKeydown(event)">
-          <button class="btn-clear" onclick="clearFields()">✕</button>
+    <div class="collector-layout">
+      <section class="form-card" aria-labelledby="countTitle">
+        <div class="card-heading">
+          <div><h2 id="countTitle">Nova contagem</h2><p>Cada entrada é um lançamento separado, inclusive ajustes.</p></div>
         </div>
-        <div class="validation-msg" id="validationMsg">
-          <span id="validationIcon">✓</span>
-          <span id="validationText"></span>
+        <div class="input-group">
+          <label class="input-label" for="barrasInput"><span>Código de barras</span><span class="label-hint">Leitor físico compatível</span></label>
+          <div class="input-wrapper">
+            <input type="text" inputmode="numeric" class="input-field code-field" id="barrasInput" placeholder="Digite ou leia o código" autocomplete="off" aria-describedby="validationMsg" oninput="validateBarras()" onkeydown="handleBarrasKeydown(event)">
+            <button class="btn-scan" id="btnScan" type="button" onclick="openScanner()" aria-label="Ler código com a câmera" title="Abrir câmera"><svg class="icon" aria-hidden="true"><use href="#icon-camera"></use></svg><span>Câmera</span></button>
+            <button class="btn-clear" type="button" onclick="clearFields()" aria-label="Limpar código e quantidade"><svg class="icon" aria-hidden="true"><use href="#icon-close"></use></svg></button>
+          </div>
+          <div class="validation-msg" id="validationMsg" aria-live="polite">
+            <span class="validation-symbol" id="validationIcon" aria-hidden="true">✓</span>
+            <span id="validationText"></span>
+          </div>
         </div>
-      </div>
 
-      <div class="input-group">
-        <label class="input-label"><span>📊</span> Quantidade</label>
-        <div class="qty-wrapper">
-          <button class="qty-btn" onclick="adjustQty(-1)">−</button>
-          <input type="number" inputmode="numeric" class="input-field qty-input" id="qtdInput" value="1" min="1" autocomplete="off" oninput="updateSaveButton()" onkeydown="handleQtdKeydown(event)">
-          <button class="qty-btn" onclick="adjustQty(1)">+</button>
+        <div class="input-group">
+          <label class="input-label" for="qtdInput"><span>Quantidade</span><span class="label-hint">Ajuste negativo é outro lançamento</span></label>
+          <div class="qty-wrapper">
+            <button class="qty-btn" type="button" onclick="adjustQty(-1)" aria-label="Diminuir quantidade">−</button>
+            <input type="number" inputmode="numeric" class="input-field qty-input positive" id="qtdInput" value="1" step="1" autocomplete="off" aria-describedby="qtyContext" oninput="updateSaveButton()" onkeydown="handleQtdKeydown(event)">
+            <button class="qty-btn" type="button" onclick="adjustQty(1)" aria-label="Aumentar quantidade">+</button>
+          </div>
+          <div class="qty-context" id="qtyContext" aria-live="polite"><span class="qty-context-mark" id="qtyContextMark" aria-hidden="true">+</span><span id="qtyContextText">Entrada de 1 unidade</span></div>
         </div>
-      </div>
-
-      <div class="action-buttons">
-        <button class="btn-scan" onclick="openScanner()">📷 SCAN</button>
-        <button class="btn-save" id="btnSave" onclick="saveData()" disabled>
-          <span id="saveIcon">💾</span>
-          <span id="saveText">SALVAR</span>
-        </button>
-      </div>
-      
-      <div class="debug-panel" id="debugPanel"></div>
-    </div>
-
-    <div class="history-card">
-      <div class="history-header">
-        <span class="history-title">📋 Últimos Salvos</span>
-        <div class="history-actions">
-          <button class="btn-history" onclick="exportHistory()">📥 CSV</button>
-          <button class="btn-history" onclick="clearAllHistory()">🗑️</button>
+        <div class="form-status-line"><span class="form-status-label">Cadastro de produtos</span><span id="statCadastro">Verificando...</span></div>
+        <div class="action-buttons">
+          <button class="btn-save" id="btnSave" type="button" onclick="saveData()" disabled data-state="unavailable" aria-live="polite">
+            <svg class="icon" id="saveIcon" aria-hidden="true"><use href="#icon-check"></use></svg>
+            <span class="save-spinner" aria-hidden="true"></span>
+            <span id="saveText">Enviar contagem</span>
+          </button>
         </div>
-      </div>
-      <div class="history-list" id="historyList">
-        <div class="history-empty">Nenhum item salvo</div>
-      </div>
+        <div class="debug-panel" id="debugPanel"></div>
+      </section>
+
+      <details class="pending-panel" id="pendingDetails">
+        <summary class="pending-summary">
+          <span class="pending-summary-copy"><span class="pending-title">Pendências</span><span class="pending-subtitle">Somente operações deste aparelho ainda não confirmadas.</span></span>
+          <span class="pending-count" id="pendingCount" aria-label="Quantidade de operações não confirmadas">0</span>
+        </summary>
+        <div class="pending-content">
+          <p class="local-history-note">Este aparelho não mostra uma visão consolidada das contagens. O CSV de recuperação inclui todos os registros locais, inclusive os confirmados.</p>
+          <div class="history-list" id="historyList" tabindex="-1" aria-live="polite" aria-relevant="additions text"></div>
+          <div class="history-actions" aria-label="Ações de recuperação">
+            <button class="btn-history" id="btnExportHistory" type="button" onclick="exportHistory()"><svg class="icon" aria-hidden="true"><use href="#icon-download"></use></svg><span>Exportar CSV de recuperação</span></button>
+          </div>
+        </div>
+      </details>
     </div>
   </main>
 
@@ -415,8 +548,20 @@
       DADOS_ID: '1ROSdUmwBl2P9EwCPCGKe-Qh6eyBOzoYMX8h9vC-nph4'
     };
 
+    function safeStorageGet(key) {
+      try { return localStorage.getItem(key); } catch (error) { return null; }
+    }
+
+    function safeStorageSet(key, value) {
+      localStorage.setItem(key, value);
+    }
+
+    function safeStorageRemove(key) {
+      localStorage.removeItem(key);
+    }
+
     function getConfig(key) {
-      const saved = localStorage.getItem(key);
+      const saved = safeStorageGet(key);
       return (saved !== null && saved !== '') ? saved : DEFAULT_CONFIG[key] || '';
     }
 
@@ -424,7 +569,7 @@
       get API_URL() { return getConfig('apiUrl'); },
       get CADASTRO_ID() { return getConfig('cadastroId') || DEFAULT_CONFIG.CADASTRO_ID; },
       get DADOS_ID() { return getConfig('dadosId') || DEFAULT_CONFIG.DADOS_ID; },
-      
+
       // URLs para carregar cadastro (validação)
       get CADASTRO_URLS() {
         const id = this.CADASTRO_ID;
@@ -435,24 +580,96 @@
       }
     };
 
-    let settings = {
-      sound: localStorage.getItem('sound') === 'true',
-      vibration: localStorage.getItem('vibration') !== 'false',
-      darkMode: localStorage.getItem('darkMode') === 'true',
-      debug: localStorage.getItem('debug') === 'true'
-    };
+    function normalizeHistoryItem(item) {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) return null;
+      const quantityText = typeof item.qty === 'string' ? item.qty : null;
+      const qty = typeof item.qty === 'number' ? item.qty : quantityText && /^-?\d+$/.test(quantityText) ? Number(quantityText) : NaN;
+      if (!Number.isSafeInteger(qty) || typeof item.code !== 'string') return null;
+      if (item.syncStatus && !['pending', 'confirmed', 'uncertain'].includes(item.syncStatus)) return null;
+      const interruptedAttempt = item.syncAttempted === true && item.syncStatus !== 'confirmed' && (item.syncStatus === 'pending' || item.syncError === 'Enviando à API…');
+      return {
+        ...item,
+        id: typeof item.id === 'string' && item.id ? item.id : createId(),
+        remoteId: typeof item.remoteId === 'string' && item.remoteId ? item.remoteId : typeof item.id === 'string' && item.id ? item.id : null,
+        qty,
+        syncStatus: interruptedAttempt ? 'uncertain' : item.syncStatus || (item.synced === true ? 'confirmed' : 'pending'),
+        syncError: interruptedAttempt && !item.syncError ? 'Tentativa anterior interrompida; confirmação remota incerta.' : item.syncError || '',
+        synced: interruptedAttempt ? false : item.syncStatus ? item.syncStatus === 'confirmed' : item.synced === true
+      };
+    }
 
-    // ============================================
-    // ESTADO
-    // ============================================
+    function createId() {
+      return typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+    }
+
+    let history = [];
+    let historyStorageSnapshot = null;
+    let historyLoadBlocked = false;
     let cadastro = [];
-    let history = JSON.parse(localStorage.getItem('history') || '[]');
+    let cadastroState = 'unavailable';
     let isValid = false;
     let isSaving = false;
+    let uncertainSaveOutcome = null;
+    let isDeleting = false;
     let apiConnected = false;
+    let apiStatusError = 'A API ainda não foi verificada.';
+    const syncInProgress = new Set();
     let deleteTarget = null;
     let cameraTrack = null;
     let flashOn = false;
+    let scannerSession = 0;
+    let scannerActive = false;
+    let scannerStarting = false;
+    let cadastroLoadPromise = null;
+
+    function loadHistory() {
+      let stored;
+      try {
+        stored = localStorage.getItem('history');
+        historyStorageSnapshot = stored;
+        const parsed = stored ? JSON.parse(stored) : [];
+        if (!Array.isArray(parsed)) throw new Error('Formato de histórico inválido');
+        const normalized = parsed.map(normalizeHistoryItem);
+        if (normalized.some(item => !item)) throw new Error('Registro de histórico inválido');
+        history = normalized;
+      } catch (error) {
+        historyLoadBlocked = true;
+        try {
+          const raw = stored ?? localStorage.getItem('history');
+          if (raw !== null) localStorage.setItem(`history.corrupt.${Date.now()}`, raw);
+          history = [];
+          historyStorageSnapshot = raw ?? null;
+          historyLoadBlocked = false;
+          showAlert('Histórico inválido preservado para recuperação; registros novos estão separados.', 'error');
+        } catch (archiveError) {
+          history = [];
+          showAlert('Não foi possível ler ou preservar o histórico. Novos registros foram bloqueados.', 'error');
+        }
+      }
+    }
+
+    function persistHistory(nextHistory, failureMessage = 'Não foi possível atualizar o histórico deste aparelho.') {
+      try {
+        if (historyLoadBlocked) throw new Error('Histórico anterior não foi preservado');
+        const current = localStorage.getItem('history');
+        if (current !== historyStorageSnapshot) throw new Error('O histórico mudou em outra aba');
+        const serialized = JSON.stringify(nextHistory);
+        localStorage.setItem('history', serialized);
+        history = nextHistory;
+        historyStorageSnapshot = serialized;
+        return true;
+      } catch (error) {
+        showAlert(error.message === 'O histórico mudou em outra aba' ? 'Histórico alterado em outra aba; recarregue antes de continuar.' : failureMessage, 'error');
+        return false;
+      }
+    }
+
+    const settings = {
+      sound: safeStorageGet('sound') === 'true',
+      vibration: safeStorageGet('vibration') !== 'false',
+      darkMode: safeStorageGet('darkMode') === 'true',
+      debug: safeStorageGet('debug') === 'true'
+    };
 
     // ============================================
     // ELEMENTOS DOM
@@ -473,37 +690,50 @@
       btnSave: document.getElementById('btnSave'),
       saveIcon: document.getElementById('saveIcon'),
       saveText: document.getElementById('saveText'),
-      savedBadge: document.getElementById('savedBadge'),
+      pendingCount: document.getElementById('pendingCount'),
       formFrame: document.getElementById('formFrame'),
       historyList: document.getElementById('historyList'),
-      statTotal: document.getElementById('statTotal'),
-      statUnique: document.getElementById('statUnique'),
-      statCadastro: document.getElementById('statCadastro'),
       settingsModal: document.getElementById('settingsModal'),
+      settingsDialog: document.getElementById('settingsDialog'),
       confirmOverlay: document.getElementById('confirmOverlay'),
+      confirmDialog: document.getElementById('confirmDialog'),
       confirmCode: document.getElementById('confirmCode'),
       confirmStatus: document.getElementById('confirmStatus'),
       btnConfirmDelete: document.getElementById('btnConfirmDelete'),
+      btnConfirmCancel: document.getElementById('btnConfirmCancel'),
       btnFlash: document.getElementById('btnFlash'),
+      btnScan: document.getElementById('btnScan'),
+      btnSettings: document.getElementById('btnSettings'),
+      qtyContext: document.getElementById('qtyContext'),
+      qtyContextMark: document.getElementById('qtyContextMark'),
+      qtyContextText: document.getElementById('qtyContextText'),
+      statCadastro: document.getElementById('statCadastro'),
       logoContainer: document.getElementById('logoContainer'),
       logoDisplay: document.getElementById('logoDisplay'),
       logoTextContainer: document.getElementById('logoTextContainer'),
       companyName: document.getElementById('companyName'),
       companySubtitle: document.getElementById('companySubtitle'),
       apiStatusDot: document.getElementById('apiStatusDot'),
-      apiStatusText: document.getElementById('apiStatusText'),
+      collectionStatusText: document.getElementById('collectionStatusText'),
+      themeColorMeta: document.getElementById('themeColorMeta'),
       debugPanel: document.getElementById('debugPanel')
     };
+
+    let alertTimeout;
+    loadHistory();
 
     // ============================================
     // DEBUG
     // ============================================
     function log(message, type = 'info') {
       const time = new Date().toLocaleTimeString();
-      console.log(`[${type.toUpperCase()}] ${message}`);
+      const line = `[${time}] ${String(message).replace(/https?:\/\/\S+/g, '[URL ocultada]')}`;
       if (settings.debug) {
         el.debugPanel.classList.add('show');
-        el.debugPanel.innerHTML += `<div class="log-${type}">[${time}] ${message}</div>`;
+        const entry = document.createElement('div');
+        entry.className = `log-${type}`;
+        entry.textContent = line;
+        el.debugPanel.appendChild(entry);
         el.debugPanel.scrollTop = el.debugPanel.scrollHeight;
       }
     }
@@ -516,159 +746,295 @@
       loadLogo();
       initSettingsUI();
       if (settings.debug) el.debugPanel.classList.add('show');
-      
-      log(`Cadastro ID: ${CONFIG.CADASTRO_ID}`);
-      log(`Dados ID: ${CONFIG.DADOS_ID}`);
-      log(`API URL: ${CONFIG.API_URL || '(não configurada)'}`);
-      
-      await checkApiStatus();
-      await loadCadastro();
       renderHistory();
       updateStats();
+      updateSaveButton();
+      await Promise.allSettled([checkApiStatus(), loadCadastro()]);
     });
 
-    function applyTheme() {
-      document.body.setAttribute('data-theme', settings.darkMode ? 'dark' : 'light');
+    document.addEventListener('keydown', handleOverlayKeydown);
+
+    window.addEventListener('storage', event => {
+      if (event.key === 'history' && event.newValue !== historyStorageSnapshot) {
+        showAlert('Outra aba alterou o histórico. Recarregue para evitar sobrescrever registros.', 'error');
+      }
+    });
+    window.addEventListener('offline', () => {
+      apiConnected = false;
+      updateCollectionStatus();
+    });
+    window.addEventListener('online', checkApiStatus);
+    setInterval(async () => {
+      if (!apiConnected && history.some(item => item.syncStatus === 'pending' && item.syncAttempted !== true)) await checkApiStatus();
+    }, 30000);
+
+    let settingsDraft = null;
+    let settingsReturnFocus = null;
+    let confirmReturnFocus = null;
+    let scannerReturnFocus = null;
+
+    function applyTheme(preferences = settings) {
+      const dark = Boolean(preferences.darkMode);
+      document.body.setAttribute('data-theme', dark ? 'dark' : 'light');
+      el.themeColorMeta.content = dark ? '#111a15' : '#f3f6f4';
+    }
+
+    function handleOverlayKeydown(event) {
+      if (event.key === 'Escape') {
+        if (scannerActive) closeScanner();
+        else if (el.confirmOverlay.classList.contains('show')) closeConfirm();
+        else if (el.settingsModal.classList.contains('show')) closeSettings();
+        else return;
+        event.preventDefault();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const dialog = scannerActive ? el.scannerOverlay : el.confirmOverlay.classList.contains('show') ? el.confirmDialog : el.settingsModal.classList.contains('show') ? el.settingsDialog : null;
+      if (!dialog) return;
+      const focusable = Array.from(dialog.querySelectorAll('button:not(:disabled), input:not(:disabled), [tabindex="0"]')).filter(element => !element.hidden);
+      if (!focusable.length) { event.preventDefault(); dialog.focus(); return; }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || document.activeElement === dialog)) {
+        event.preventDefault();
+        first.focus();
+      }
     }
 
     // ============================================
     // API STATUS
     // ============================================
-    async function checkApiStatus() {
+    function updateCollectionStatus() {
+      const pendingCount = history.filter(item => item.syncStatus !== 'confirmed').length;
+      const state = isSaving || syncInProgress.size ? 'Enviando' : pendingCount ? 'Com pendências' : apiConnected ? 'Pronto' : 'Sem conexão';
+      el.collectionStatusText.textContent = state;
+      el.apiStatusDot.className = `api-status-dot ${isSaving || syncInProgress.size ? 'sending' : pendingCount ? 'pending' : apiConnected ? 'connected' : 'error'}`;
+    }
+
+    async function checkApiStatus(options = {}) {
       const apiUrl = CONFIG.API_URL;
-      
       if (!apiUrl) {
-        el.apiStatusDot.className = 'api-status-dot error';
-        el.apiStatusText.textContent = 'API não configurada';
         apiConnected = false;
-        log('API URL não configurada', 'error');
+        apiStatusError = 'Endpoint da API não configurado.';
+        updateCollectionStatus();
         return;
       }
-      
-      el.apiStatusText.textContent = 'Verificando...';
-      log(`Testando API: ${apiUrl}`);
-      
       try {
         const response = await fetch(`${apiUrl}?action=test`);
+        if (!response.ok) throw new Error(`HTTP ${response.status || 'inválido'}`);
         const data = await response.json();
-        
-        if (data.success) {
-          el.apiStatusDot.className = 'api-status-dot connected';
-          el.apiStatusText.textContent = `API OK (${data.totalRows || 0} linhas)`;
-          apiConnected = true;
-          log(`API conectada! Sheet: ${data.sheetName}`, 'success');
-        } else {
-          throw new Error(data.error);
-        }
+        if (data.success !== true) throw new Error(typeof data.error === 'string' ? data.error : 'Resposta inválida da API.');
+        apiConnected = true;
+        apiStatusError = '';
+        if (options.resume !== false) await resumePendingSync();
       } catch (error) {
-        el.apiStatusDot.className = 'api-status-dot error';
-        el.apiStatusText.textContent = 'API offline';
         apiConnected = false;
-        log(`Erro API: ${error.message}`, 'error');
+        apiStatusError = String(error?.message || 'Falha ao acessar o endpoint da API.').slice(0, 240);
+        const updated = history.map(item => item.syncStatus === 'pending' && item.syncAttempted !== true ? { ...item, syncError: apiStatusError } : item);
+        if (updated.some((item, index) => item.syncError !== history[index].syncError) && !persistHistory(updated, 'Pendências mantidas; não foi possível salvar o motivo de indisponibilidade.')) history = updated;
+        renderHistory();
       }
+      updateCollectionStatus();
     }
 
     async function testApiConnection() {
       showAlert('Testando conexão...', 'info');
       await checkApiStatus();
-      showAlert(apiConnected ? 'API conectada!' : 'Falha na conexão', apiConnected ? 'success' : 'error');
+      showAlert(apiConnected ? 'API conectada.' : 'Falha na conexão com a API.', apiConnected ? 'success' : 'error');
     }
 
     // ============================================
     // LOGO UPLOAD
     // ============================================
     function loadLogo() {
-      const savedLogo = localStorage.getItem('companyLogo');
-      const savedName = localStorage.getItem('companyName');
-      const savedSubtitle = localStorage.getItem('companySubtitle');
-      
-      if (savedLogo) {
-        el.logoDisplay.innerHTML = `<img src="${savedLogo}" class="logo-image-full" alt="Logo">`;
+      const savedLogo = safeStorageGet('companyLogo');
+      const savedName = safeStorageGet('companyName');
+      const savedSubtitle = safeStorageGet('companySubtitle');
+      const validLogo = savedLogo && savedLogo.length <= 262144 && /^data:image\/(png|jpeg|webp|gif);base64,/i.test(savedLogo);
+      el.logoDisplay.replaceChildren();
+      if (validLogo) {
+        const image = document.createElement('img');
+        image.src = savedLogo;
+        image.className = 'logo-image-full';
+        image.alt = 'Logo';
+        el.logoDisplay.appendChild(image);
         el.logoTextContainer.style.display = 'none';
         el.logoContainer.classList.add('has-image');
       } else {
-        el.logoDisplay.innerHTML = `<div class="logo-icon">✚</div>`;
+        const icon = document.createElement('div');
+        icon.className = 'logo-icon';
+        icon.textContent = '✚';
+        el.logoDisplay.appendChild(icon);
         el.logoTextContainer.style.display = 'block';
         el.logoContainer.classList.remove('has-image');
-        if (savedName) el.companyName.textContent = savedName;
-        if (savedSubtitle) el.companySubtitle.textContent = savedSubtitle;
       }
+      if (savedName) el.companyName.textContent = savedName;
+      if (savedSubtitle) el.companySubtitle.textContent = savedSubtitle;
+      if (savedLogo && !validLogo) showAlert('Logo antiga inválida ou grande demais; dados preservados no armazenamento.', 'error');
     }
 
-    function handleLogoUpload(event) {
-      const file = event.target.files[0];
-      if (!file || !file.type.startsWith('image/')) return;
-      
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        localStorage.setItem('companyLogo', e.target.result);
-        el.logoDisplay.innerHTML = `<img src="${e.target.result}" class="logo-image-full" alt="Logo">`;
-        el.logoTextContainer.style.display = 'none';
-        el.logoContainer.classList.add('has-image');
-        showAlert('Logo atualizada!', 'success');
-        
-        setTimeout(() => {
-          if (confirm('Logo salva!\n\nDeseja REMOVER a logo?')) {
-            localStorage.removeItem('companyLogo');
-            loadLogo();
-          }
-        }, 500);
-      };
-      reader.readAsDataURL(file);
+    async function handleLogoUpload(event) {
+      const file = event.target.files?.[0];
       event.target.value = '';
+      if (!file || !file.type.startsWith('image/')) return;
+      if (file.size > 2 * 1024 * 1024) { showAlert('Imagem excede 2 MB; escolha um arquivo menor.', 'error'); return; }
+      try {
+        const source = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(new Error('Falha ao ler imagem'));
+          reader.readAsDataURL(file);
+        });
+        const image = new Image();
+        image.src = source;
+        await image.decode();
+        const scale = Math.min(1, 600 / Math.max(image.width, image.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(image.width * scale));
+        canvas.height = Math.max(1, Math.round(image.height * scale));
+        canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+        const compressed = canvas.toDataURL('image/jpeg', 0.8);
+        if (compressed.length > 262144) throw new Error('Imagem compactada excede o limite local');
+        safeStorageSet('companyLogo', compressed);
+        loadLogo();
+        showAlert('Logo salva neste aparelho.', 'success');
+        if (confirm('Logo salva. Deseja removê-la?')) {
+          safeStorageRemove('companyLogo');
+          loadLogo();
+        }
+      } catch (error) {
+        showAlert('Não foi possível salvar a logo; armazenamento inalterado.', 'error');
+      }
     }
 
     // ============================================
     // CARREGAR CADASTRO (BaseAlpha7)
     // ============================================
-    async function loadCadastro() {
-      el.loadingText.textContent = 'Carregando cadastro...';
-      log('Carregando cadastro de: ' + CONFIG.CADASTRO_ID);
-      
-      for (const url of CONFIG.CADASTRO_URLS) {
-        try {
-          log(`Tentando: ${url.substring(0, 60)}...`);
-          const response = await fetch(url);
-          if (!response.ok) {
-            log(`HTTP ${response.status}`, 'error');
-            continue;
-          }
-          
-          const csvText = await response.text();
-          log(`CSV recebido: ${csvText.length} bytes`);
-          
-          cadastro = csvText.split('\n').slice(1)
-            .map(line => {
-              const cols = line.split(',');
-              return cols[0]?.replace(/"/g, '').trim();
-            })
-            .filter(code => code && code !== 'BARRAS' && code.length > 0);
-          
-          if (cadastro.length > 0) {
-            el.statCadastro.textContent = cadastro.length;
-            el.loadingText.textContent = `✓ ${cadastro.length} produtos`;
-            log(`Cadastro OK: ${cadastro.length} códigos`, 'success');
-            log(`Exemplos: ${cadastro.slice(0, 3).join(', ')}...`);
-            setTimeout(() => el.loadingOverlay.classList.add('hidden'), 500);
-            return;
-          }
-        } catch (e) {
-          log(`Erro: ${e.message}`, 'error');
-        }
+    function parseCsv(text) {
+      const rows = [];
+      let row = [];
+      let field = '';
+      let quoted = false;
+      let afterQuote = false;
+      const finishField = () => { row.push(field); field = ''; afterQuote = false; };
+      const finishRow = () => { finishField(); rows.push(row); row = []; };
+      for (let index = 0; index < text.length; index++) {
+        const char = text[index];
+        if (quoted) {
+          if (char === '"' && text[index + 1] === '"') { field += '"'; index++; }
+          else if (char === '"') { quoted = false; afterQuote = true; }
+          else field += char;
+        } else if (afterQuote) {
+          if (char === ',') finishField();
+          else if (char === '\n' || char === '\r') {
+            if (char === '\r' && text[index + 1] === '\n') index++;
+            finishRow();
+          } else if (char !== ' ' && char !== '\t') throw new Error('CSV contém texto após aspas fechadas');
+        } else if (char === '"') {
+          if (field !== '') throw new Error('Aspas em campo CSV não delimitado');
+          quoted = true;
+        } else if (char === ',') finishField();
+        else if (char === '\n' || char === '\r') {
+          if (char === '\r' && text[index + 1] === '\n') index++;
+          finishRow();
+        } else field += char;
       }
-      
-      el.statCadastro.textContent = 'OFF';
-      el.loadingText.textContent = 'Modo offline';
-      log('Cadastro não carregado - modo offline', 'error');
-      setTimeout(() => el.loadingOverlay.classList.add('hidden'), 500);
+      if (quoted) throw new Error('CSV com aspas incompletas');
+      if (field || row.length || afterQuote) { finishField(); rows.push(row); }
+      return rows;
+    }
+
+    function parseCadastroCsv(text) {
+      const normalized = String(text || '').replace(/^\uFEFF/, '').trim();
+      if (!normalized || /^<(?:!doctype|html|head|body)\b/i.test(normalized)) throw new Error('Resposta não é CSV');
+      const rows = parseCsv(normalized).filter(row => row.some(value => value.trim() !== ''));
+      const headings = (rows[0] || []).map(value => value.trim());
+      const hasHeader = (headings[0] || '').toLocaleUpperCase('pt-BR') === 'BARRAS';
+      let codes;
+      if (hasHeader) {
+        if (headings.some(value => !value) || new Set(headings).size !== headings.length) throw new Error('Cabeçalho CSV inesperado');
+        codes = rows.slice(1).map(row => {
+          if (row.length !== headings.length) throw new Error('Estrutura de linha CSV inválida');
+          return String(row[0] ?? '').trim();
+        });
+      } else {
+        if (rows.some(row => row.length !== 1)) throw new Error('Estrutura de linha CSV inválida');
+        codes = rows.map(row => String(row[0] ?? '').trim());
+      }
+      if (!codes.length || codes.some(code => !/^\d+$/.test(code))) throw new Error('Cadastro sem códigos de barras válidos');
+      return codes;
+    }
+
+    async function loadCadastro() {
+      if (cadastroLoadPromise) return cadastroLoadPromise;
+      cadastroLoadPromise = (async () => {
+        el.loadingText.textContent = 'Carregando cadastro...';
+        const cacheKey = 'cadastroCache';
+        try {
+          for (const url of CONFIG.CADASTRO_URLS) {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 8000);
+            try {
+              const response = await fetch(url, { signal: controller.signal, headers: { Accept: 'text/csv,text/plain' } });
+              if (!response.ok) throw new Error('Falha de rede');
+              const codes = parseCadastroCsv(await response.text());
+              cadastro = codes;
+              cadastroState = 'verified';
+              try { safeStorageSet(cacheKey, JSON.stringify({ id: CONFIG.CADASTRO_ID, codes })); } catch (error) {}
+              el.statCadastro.textContent = `${codes.length} verificados`;
+              return;
+            } catch (error) {
+              continue;
+            } finally {
+              clearTimeout(timeout);
+            }
+          }
+          const cached = safeStorageGet(cacheKey);
+          if (cached) {
+            try {
+              const parsed = JSON.parse(cached);
+              if (parsed.id === CONFIG.CADASTRO_ID && Array.isArray(parsed.codes) && parsed.codes.length > 0 && parsed.codes.every(code => typeof code === 'string' && /^\d+$/.test(code))) {
+                cadastro = parsed.codes;
+                cadastroState = 'cached';
+                el.statCadastro.textContent = `${cadastro.length} cache`;
+                return;
+              }
+            } catch (error) {}
+          }
+          cadastro = [];
+          cadastroState = 'unavailable';
+          el.statCadastro.textContent = 'Alpha7 indisponível';
+        } finally {
+          el.loadingOverlay.classList.add('hidden');
+          if (cadastroState === 'unavailable') showAlert('Cadastro Alpha7 indisponível. Conecte-se à internet e recarregue a página para carregar o cadastro.', 'error');
+        }
+      })();
+      return cadastroLoadPromise;
     }
 
     // ============================================
     // VALIDAÇÃO
     // ============================================
+    function parseQuantity(value) {
+      const text = String(value ?? '').trim();
+      if (!/^-?\d+$/.test(text)) return { valid: false };
+      const quantity = Number(text);
+      if (!Number.isSafeInteger(quantity)) return { valid: false };
+      return { valid: true, quantity };
+    }
+
+    function getBarrasValidationMessage(barras) {
+      if (!barras) return 'Informe um código válido.';
+      if (!['verified', 'cached'].includes(cadastroState) || !Array.isArray(cadastro) || cadastro.length === 0) return 'Cadastro Alpha7 indisponível. Carregue o cadastro antes de coletar. Contagem não registrada.';
+      if (!cadastro.includes(barras)) return 'Código não encontrado no cadastro Alpha7. Contagem não registrada.';
+      return '';
+    }
+
     function validateBarras() {
       const barras = el.barrasInput.value.trim();
-      
       if (!barras) {
         isValid = false;
         el.barrasInput.className = 'input-field';
@@ -676,99 +1042,169 @@
         updateSaveButton();
         return;
       }
-
-      if (cadastro.length === 0) {
-        isValid = true;
-        el.barrasInput.className = 'input-field valid';
-        el.validationMsg.className = 'validation-msg show valid';
-        el.validationIcon.textContent = '✓';
-        el.validationText.textContent = 'Modo offline';
-      } else {
-        const found = cadastro.includes(barras);
-        isValid = found;
-        el.barrasInput.className = `input-field ${found ? 'valid' : 'invalid'}`;
-        el.validationMsg.className = `validation-msg show ${found ? 'valid' : 'invalid'}`;
-        el.validationIcon.textContent = found ? '✓' : '✗';
-        el.validationText.textContent = found ? 'Cadastrado ✓' : 'Não cadastrado';
-        if (!found) {
-          showAlert('Código não encontrado no cadastro', 'error');
-          vibrate(30);
-        }
-      }
+      const found = !getBarrasValidationMessage(barras);
+      isValid = found;
+      el.barrasInput.className = `input-field ${found ? 'valid' : 'invalid'}`;
+      el.validationMsg.className = `validation-msg show ${found ? 'valid' : 'invalid'}`;
+      el.validationIcon.textContent = found ? '✓' : cadastroState === 'unavailable' ? '!' : '✗';
+      el.validationText.textContent = found ? (cadastroState === 'cached' ? 'Encontrado no último cadastro válido' : 'Encontrado no cadastro Alpha7') : getBarrasValidationMessage(barras);
       updateSaveButton();
+    }
+
+    function updateQuantityContext(quantity = parseQuantity(el.qtdInput.value)) {
+      if (!quantity.valid) {
+        el.qtdInput.className = 'input-field qty-input';
+        el.qtyContext.className = 'qty-context zero';
+        el.qtyContextMark.textContent = '!';
+        el.qtyContextText.textContent = 'Informe um número inteiro seguro.';
+        return;
+      }
+      const kind = quantity.quantity < 0 ? 'negative' : quantity.quantity === 0 ? 'zero' : 'positive';
+      el.qtdInput.className = `input-field qty-input ${kind}`;
+      el.qtyContext.className = `qty-context ${kind === 'negative' ? 'negative' : kind === 'zero' ? 'zero' : ''}`;
+      el.qtyContextMark.textContent = kind === 'negative' ? '−' : kind === 'zero' ? '0' : '+';
+      el.qtyContextText.textContent = kind === 'negative' ? `Ajuste aditivo de ${Math.abs(quantity.quantity)} unidades` : kind === 'zero' ? 'Registro de zero unidade; não remove lançamentos' : `Entrada de ${quantity.quantity} ${quantity.quantity === 1 ? 'unidade' : 'unidades'}`;
+    }
+
+    function hasUncertainSubmission(code, quantity) {
+      return uncertainSaveOutcome?.revision === formRevision && uncertainSaveOutcome.code === code && uncertainSaveOutcome.quantity === quantity;
     }
 
     function updateSaveButton() {
-      el.btnSave.disabled = !(isValid && el.barrasInput.value.trim() && el.qtdInput.value.trim() && !isSaving);
+      const quantity = parseQuantity(el.qtdInput.value);
+      const hasCode = Boolean(el.barrasInput.value.trim());
+      const hasUncertain = quantity.valid && hasUncertainSubmission(el.barrasInput.value.trim(), quantity.quantity);
+      const canSave = isValid && hasCode && quantity.valid && !isSaving && !hasUncertain;
+      el.btnSave.disabled = !canSave;
+      if (isSaving) {
+        el.btnSave.dataset.state = 'saving';
+        el.saveText.textContent = 'Salvando…';
+      } else if (hasUncertain) {
+        el.btnSave.dataset.state = 'uncertain';
+        el.saveText.textContent = 'Confirmação incerta';
+      } else {
+        el.btnSave.dataset.state = canSave ? 'ready' : 'unavailable';
+        el.saveText.textContent = 'Enviar contagem';
+      }
+      updateQuantityContext(quantity);
     }
 
     function adjustQty(delta) {
-      el.qtdInput.value = Math.max(1, (parseInt(el.qtdInput.value) || 1) + delta);
-      vibrate(10);
+      const current = parseQuantity(el.qtdInput.value);
+      const next = (current.valid ? current.quantity : 0) + delta;
+      if (Number.isSafeInteger(next)) { el.qtdInput.value = String(next); formRevision++; }
       updateSaveButton();
+      vibrate(10);
     }
 
     // ============================================
     // SCANNER
     // ============================================
     function openScanner() {
+      if (scannerActive || scannerStarting) return;
+      if (typeof Quagga === 'undefined') { showAlert('Leitor de câmera indisponível. Você ainda pode digitar ou usar o leitor físico.', 'error'); return; }
+      scannerReturnFocus = document.activeElement && document.activeElement !== document.body ? document.activeElement : el.btnScan;
+      scannerActive = true;
+      scannerStarting = true;
+      const session = ++scannerSession;
       el.scannerOverlay.classList.add('show');
-      el.scannerStatus.textContent = 'Iniciando câmera...';
-      
-      Quagga.init({
-        inputStream: { name: "Live", type: "LiveStream", target: '#scanner-container', constraints: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } }, area: { top: "25%", right: "10%", left: "10%", bottom: "25%" } },
-        locator: { patchSize: "medium", halfSample: false },
-        numOfWorkers: navigator.hardwareConcurrency || 4,
-        decoder: { readers: ["ean_reader", "ean_8_reader", "code_128_reader", "code_39_reader", "upc_reader"] },
-        locate: true
-      }, (err) => {
-        if (err) { el.scannerStatus.textContent = '❌ Erro na câmera'; return; }
-        el.scannerStatus.textContent = 'Posicione o código';
-        Quagga.start();
-        const video = document.querySelector('#scanner-container video');
-        if (video?.srcObject) cameraTrack = video.srcObject.getVideoTracks()[0];
-      });
-      Quagga.onDetected(onBarcodeDetected);
+      el.scannerOverlay.setAttribute('aria-hidden', 'false');
+      el.scannerOverlay.focus();
+      el.btnFlash.disabled = true;
+      el.btnFlash.setAttribute('aria-label', 'Lanterna indisponível até a câmera iniciar');
+      el.scannerStatus.textContent = 'Iniciando câmera. Se houver erro, digite ou use o leitor físico.';
+      try {
+        Quagga.offDetected(onBarcodeDetected);
+        Quagga.onDetected(onBarcodeDetected);
+        Quagga.init({
+          inputStream: { name: 'Live', type: 'LiveStream', target: '#scanner-container', constraints: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } }, area: { top: '25%', right: '10%', left: '10%', bottom: '25%' } },
+          locator: { patchSize: 'medium', halfSample: false },
+          numOfWorkers: navigator.hardwareConcurrency || 4,
+          decoder: { readers: ['ean_reader', 'ean_8_reader', 'code_128_reader', 'code_39_reader', 'upc_reader'] },
+          locate: true
+        }, error => {
+          if (session !== scannerSession || !scannerActive) { try { Quagga.stop(); } catch (stopError) {} return; }
+          scannerStarting = false;
+          if (error) { showAlert('Câmera indisponível ou permissão negada.', 'error'); closeScanner(); return; }
+          try {
+            Quagga.start();
+            const video = document.querySelector('#scanner-container video');
+            if (video?.srcObject) cameraTrack = video.srcObject.getVideoTracks()[0] || null;
+            let flashAvailable = false;
+            try { flashAvailable = Boolean(cameraTrack?.getCapabilities?.().torch); } catch (flashError) {}
+            el.btnFlash.disabled = !flashAvailable;
+            el.btnFlash.setAttribute('aria-label', flashAvailable ? 'Ativar ou desligar lanterna' : 'Lanterna indisponível neste aparelho');
+            el.scannerStatus.textContent = flashAvailable ? 'Câmera pronta. Posicione o código dentro do enquadramento.' : 'Câmera pronta. Lanterna indisponível; posicione o código dentro do enquadramento.';
+          } catch (startError) { showAlert('Não foi possível iniciar a câmera.', 'error'); closeScanner(); }
+        });
+      } catch (error) {
+        showAlert('Não foi possível abrir o scanner.', 'error');
+        closeScanner();
+      }
     }
 
     let lastCode = '', lastCodeTime = 0, codeBuffer = [];
     function onBarcodeDetected(result) {
-      const code = result.codeResult.code;
-      if (code === lastCode && Date.now() - lastCodeTime < 2000) return;
+      const code = result?.codeResult?.code;
+      if (!scannerActive || !code || code === lastCode && Date.now() - lastCodeTime < 2000) return;
       codeBuffer.push(code);
       if (codeBuffer.length > 5) codeBuffer.shift();
-      if (codeBuffer.filter(c => c === code).length >= 2) {
-        lastCode = code; lastCodeTime = Date.now(); codeBuffer = [];
+      if (codeBuffer.filter(value => value === code).length >= 2) {
+        lastCode = code;
+        lastCodeTime = Date.now();
+        codeBuffer = [];
         vibrate([100, 50, 100]);
         closeScanner();
+        formRevision++;
         el.barrasInput.value = code;
         validateBarras();
         if (isValid) { el.qtdInput.value = '1'; el.qtdInput.focus(); }
+        else showAlert(el.validationText.textContent, 'error');
         updateSaveButton();
       }
     }
 
     function closeScanner() {
-      codeBuffer = []; flashOn = false;
+      scannerActive = false;
+      scannerStarting = false;
+      scannerSession++;
+      codeBuffer = [];
+      flashOn = false;
       el.btnFlash?.classList.remove('active');
-      try { Quagga.offDetected(onBarcodeDetected); Quagga.stop(); } catch(e) {}
+      if (el.btnFlash) el.btnFlash.disabled = false;
+      try { if (typeof Quagga !== 'undefined') { Quagga.offDetected(onBarcodeDetected); Quagga.stop(); } } catch (error) {}
+      try { cameraTrack?.stop(); } catch (error) {}
+      cameraTrack = null;
       el.scannerOverlay.classList.remove('show');
+      el.scannerOverlay.setAttribute('aria-hidden', 'true');
+      const returnFocus = scannerReturnFocus;
+      scannerReturnFocus = null;
+      returnFocus?.focus();
     }
 
-    function toggleFlash() {
-      if (!cameraTrack?.getCapabilities()?.torch) { showAlert('Lanterna indisponível', 'info'); return; }
-      flashOn = !flashOn;
-      cameraTrack.applyConstraints({ advanced: [{ torch: flashOn }] });
-      el.btnFlash.classList.toggle('active', flashOn);
+    async function toggleFlash() {
+      try {
+        if (!cameraTrack || !cameraTrack.getCapabilities?.().torch) { showAlert('Lanterna indisponível neste aparelho.', 'info'); return; }
+        const next = !flashOn;
+        await cameraTrack.applyConstraints({ advanced: [{ torch: next }] });
+        flashOn = next;
+        el.btnFlash.classList.toggle('active', flashOn);
+      } catch (error) {
+        flashOn = false;
+        el.btnFlash.classList.remove('active');
+        showAlert('Não foi possível controlar a lanterna.', 'info');
+      }
     }
 
     function manualInput() {
       closeScanner();
       const code = prompt('Digite o código:');
       if (code?.trim()) {
+        formRevision++;
         el.barrasInput.value = code.trim();
         validateBarras();
         if (isValid) { el.qtdInput.value = '1'; el.qtdInput.focus(); }
+        else showAlert(el.validationText.textContent, 'error');
         updateSaveButton();
       }
     }
@@ -776,236 +1212,409 @@
     // ============================================
     // SALVAR
     // ============================================
+    let formRevision = 0;
+    el.barrasInput.addEventListener('input', () => { formRevision++; updateSaveButton(); });
+    el.qtdInput.addEventListener('input', () => { formRevision++; updateSaveButton(); });
+
     async function saveData() {
+      if (isSaving) return;
       const barras = el.barrasInput.value.trim();
-      const qtd = el.qtdInput.value.trim();
-      if (!barras || !qtd || !isValid) return;
-
+      const parsedQuantity = parseQuantity(el.qtdInput.value);
+      const validationMessage = getBarrasValidationMessage(barras);
+      if (validationMessage) { showAlert(validationMessage, 'error'); return; }
+      if (!parsedQuantity.valid) { showAlert('Quantidade inválida; informe um inteiro dentro da faixa segura.', 'error'); return; }
+      const qty = parsedQuantity.quantity;
+      if (hasUncertainSubmission(barras, qty)) {
+        showAlert('Este código e quantidade já têm uma confirmação incerta. Confira a planilha antes de repetir.', 'error');
+        updateSaveButton();
+        return;
+      }
+      const id = createId();
+      const collectedAt = new Date();
+      const item = {
+        id,
+        remoteId: id,
+        code: barras,
+        qty,
+        date: collectedAt.toLocaleDateString('pt-BR'),
+        time: collectedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        collectedAt: collectedAt.toISOString(),
+        remoteConfirmedAt: null,
+        verificationStatus: cadastroState === 'unavailable' ? 'not-verified' : cadastroState === 'cached' ? 'cached' : 'verified',
+        syncStatus: 'pending',
+        syncAttempted: false,
+        syncError: CONFIG.API_URL ? 'Aguardando envio à API.' : 'Endpoint da API não configurado.',
+        synced: false
+      };
       isSaving = true;
-      el.saveIcon.textContent = '⏳';
-      el.saveText.textContent = 'SALVANDO...';
       el.btnSave.disabled = true;
-
-      const id = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-      log(`Salvando: ${barras} x${qtd} (ID: ${id})`);
-      
-      let savedViaApi = false;
-      
+      el.btnSave.dataset.state = 'saving';
+      el.saveIcon.classList.add('icon-loading');
+      el.saveText.textContent = 'Salvando…';
+      updateCollectionStatus();
+      const snapshotRevision = formRevision;
+      if (!persistHistory([item, ...history], 'Não foi possível salvar no aparelho; o registro não foi enviado à API.')) return finishSave();
+      let remoteMessage = 'Registro salvo neste aparelho; aguardando acesso à API.';
+      let remoteConfirmed = false;
+      let formCleared = false;
+      let uncertainOutcome = null;
       try {
         if (apiConnected && CONFIG.API_URL) {
-          log('Salvando via API...');
-          const url = `${CONFIG.API_URL}?action=add&barras=${encodeURIComponent(barras)}&qtd=${encodeURIComponent(qtd)}&id=${encodeURIComponent(id)}`;
-          const response = await fetch(url);
-          const data = await response.json();
-          if (data.success) {
-            savedViaApi = true;
-            log('Salvo via API!', 'success');
-          } else {
-            log(`API erro: ${data.error}`, 'error');
-          }
+          const result = await syncPendingItem(id);
+          remoteConfirmed = result.confirmed;
+          remoteMessage = result.message;
+          if (result.uncertain) uncertainOutcome = { revision: snapshotRevision, code: barras, quantity: qty };
         } else {
-          log('API não disponível', 'error');
+          const error = CONFIG.API_URL ? apiStatusError || 'A API não está acessível neste momento.' : 'Endpoint da API não configurado.';
+          const updated = history.map(entry => entry.id === id ? { ...entry, syncError: error } : entry);
+          if (!persistHistory(updated, 'Contagem preservada no aparelho; não foi possível registrar o motivo da indisponibilidade.')) history = updated;
+          remoteMessage = `Contagem salva apenas neste aparelho. Não enviada: ${error}`;
         }
-        
-        // Histórico local
-        history.unshift({
-          id, code: barras, qty: parseInt(qtd),
-          time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-          synced: savedViaApi
-        });
-        if (history.length > 100) history.pop();
-        localStorage.setItem('history', JSON.stringify(history));
-        
         updateStats();
         renderHistory();
-        showAlert(savedViaApi ? '✓ Salvo na planilha!' : '⚠️ Salvo apenas localmente', savedViaApi ? 'success' : 'info');
+        showAlert(remoteMessage, remoteConfirmed ? 'success' : 'info');
         vibrate([50, 30, 50]);
-        clearFields();
-        
-      } catch (error) {
-        log(`Erro: ${error.message}`, 'error');
-        showAlert('Erro ao salvar', 'error');
+        if (formRevision === snapshotRevision && el.barrasInput.value.trim() === barras && el.qtdInput.value.trim() === String(qty) && (remoteConfirmed || remoteMessage.startsWith('Contagem salva apenas neste aparelho.'))) {
+          clearFields();
+          formCleared = true;
+        }
       } finally {
-        isSaving = false;
-        el.saveIcon.textContent = '💾';
-        el.saveText.textContent = 'SALVAR';
-        updateSaveButton();
+        finishSave(formCleared && !remoteConfirmed, uncertainOutcome);
       }
+    }
+
+    async function syncPendingItem(id, options = {}) {
+      const item = history.find(entry => entry.id === id);
+      if (!item || item.syncStatus === 'confirmed' || syncInProgress.has(id)) return { confirmed: false, skipped: true, message: 'Esta operação não está disponível para sincronização.' };
+      if (options.automatic && (item.syncStatus !== 'pending' || item.syncAttempted === true)) return { confirmed: false, skipped: true };
+      if (!CONFIG.API_URL || !apiConnected) return { confirmed: false, message: apiStatusError || 'API indisponível; a pendência foi preservada.' };
+
+      syncInProgress.add(id);
+      const attempted = history.map(entry => entry.id === id ? { ...entry, syncAttempted: true, syncError: 'Enviando à API…' } : entry);
+      if (!persistHistory(attempted, 'Não foi possível registrar a tentativa; nenhum envio foi iniciado.')) {
+        syncInProgress.delete(id);
+        const reason = 'Não foi possível registrar a tentativa neste aparelho; nenhum envio foi iniciado.';
+        history = history.map(entry => entry.id === id ? { ...entry, syncError: reason } : entry);
+        renderHistory();
+        updateCollectionStatus();
+        return { confirmed: false, message: reason };
+      }
+      renderHistory();
+      updateCollectionStatus();
+      try {
+        const url = `${CONFIG.API_URL}?action=add&barras=${encodeURIComponent(item.code)}&qtd=${encodeURIComponent(String(item.qty))}&id=${encodeURIComponent(item.remoteId || item.id)}`;
+        const response = await fetch(url);
+        let data;
+        try {
+          data = await response.json();
+        } catch (error) {
+          throw new Error(`Resposta JSON inválida da API: ${String(error?.message || 'formato inesperado')}`);
+        }
+        if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('Resposta JSON inválida da API: esperado um objeto.');
+        if (!response.ok) throw new Error(typeof data.error === 'string' && data.error ? data.error : `Resposta HTTP ${response.status || 'inválida'}`);
+        if (data.success !== true) throw new Error(typeof data.error === 'string' && data.error ? data.error : 'A API não confirmou a inclusão.');
+        if (!data.data || data.data.id !== (item.remoteId || item.id) || data.data.barras !== item.code || Number(data.data.qtd) !== item.qty) {
+          throw new Error('A resposta da API não corresponde ao ID, código e quantidade desta operação.');
+        }
+        const confirmedAt = new Date().toISOString();
+        const serverTimestamp = typeof data.data.timestamp === 'string' && Number.isFinite(Date.parse(data.data.timestamp)) ? new Date(data.data.timestamp).toISOString() : null;
+        const updated = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'confirmed', syncAttempted: true, syncError: '', synced: true, remoteConfirmedAt: confirmedAt, remoteServerTimestamp: serverTimestamp } : entry);
+        if (!persistHistory(updated, 'A API confirmou, mas a confirmação não pôde ser salva no aparelho; a operação permanece para conferência.')) {
+          history = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'uncertain', syncError: 'A API confirmou, mas a confirmação não pôde ser salva no aparelho.' } : entry);
+          renderHistory();
+          return { confirmed: false, uncertain: true, message: 'A API confirmou, mas o estado local falhou. A operação permanece para conferência.' };
+        }
+        renderHistory();
+        updateStats();
+        return { confirmed: true, message: 'Contagem confirmada. Próxima coleta pronta.' };
+      } catch (error) {
+        const reason = String(error?.message || 'Falha sem detalhe informado pela API.').slice(0, 240);
+        const updated = history.map(entry => entry.id === id ? { ...entry, syncStatus: 'uncertain', syncAttempted: true, syncError: reason, synced: false } : entry);
+        if (!persistHistory(updated, 'A tentativa falhou; a operação continua preservada para conferência.')) history = updated;
+        renderHistory();
+        updateStats();
+        return { confirmed: false, uncertain: true, message: `Confirmação incerta: ${reason}` };
+      } finally {
+        syncInProgress.delete(id);
+        renderHistory();
+        updateCollectionStatus();
+      }
+    }
+
+    async function resumePendingSync() {
+      if (!CONFIG.API_URL || !apiConnected) return;
+      const ids = history.filter(item => item.syncStatus === 'pending' && item.syncAttempted !== true).map(item => item.id);
+      for (const id of ids) await syncPendingItem(id, { automatic: true });
+    }
+
+    async function retrySync(id) {
+      const item = history.find(entry => entry.id === id);
+      if (!item || item.syncStatus === 'confirmed' || syncInProgress.has(id)) return;
+      const snapshotRevision = formRevision;
+      await checkApiStatus({ resume: false });
+      if (!apiConnected) {
+        const updated = history.map(entry => entry.id === id ? { ...entry, syncError: apiStatusError || 'A API segue indisponível.' } : entry);
+        if (!persistHistory(updated, 'Pendência mantida; não foi possível atualizar o motivo da falha.')) history = updated;
+        renderHistory();
+        showAlert(`Ainda não foi possível acessar a API: ${apiStatusError}`, 'error');
+        return;
+      }
+      const result = await syncPendingItem(id);
+      if (result.confirmed && formRevision === snapshotRevision && el.barrasInput.value.trim() === item.code && el.qtdInput.value.trim() === String(item.qty)) clearFields();
+      showAlert(result.message || 'A operação continua preservada neste aparelho.', result.confirmed ? 'success' : 'error');
+    }
+
+    function finishSave(savedLocally = false, uncertainOutcome = null) {
+      isSaving = false;
+      uncertainSaveOutcome = uncertainOutcome;
+      el.saveIcon.classList.remove('icon-loading');
+      updateSaveButton();
+      if (savedLocally) {
+        el.btnSave.dataset.state = 'saved';
+        el.saveText.textContent = 'Salvo neste aparelho';
+      }
+      updateCollectionStatus();
     }
 
     // ============================================
     // DELETAR
     // ============================================
-    function askDelete(index) {
-      const item = history[index];
-      if (!item) return;
-      
-      deleteTarget = { index, item };
-      el.confirmCode.textContent = `${item.code} (×${item.qty})`;
-      
-      if (!apiConnected || !CONFIG.API_URL) {
-        el.confirmStatus.textContent = '⚠️ API não configurada - só deleta do local';
-        el.confirmStatus.style.background = '#fffbeb';
-        el.confirmStatus.style.color = '#b45309';
+    function askDelete(id) {
+      const item = history.find(entry => entry.id === id);
+      if (!item || isDeleting) return;
+      confirmReturnFocus = document.activeElement && document.activeElement !== document.body ? document.activeElement : el.historyList;
+      deleteTarget = { id: item.id, item };
+      const uncertain = item.syncStatus === 'uncertain';
+      el.btnConfirmDelete.disabled = uncertain;
+      el.btnConfirmDelete.textContent = uncertain ? 'Remoção bloqueada' : 'Remover';
+      el.confirmCode.textContent = `${item.code} (${item.qty > 0 ? '+' : ''}${item.qty} un.)`;
+      if (item.syncStatus === 'uncertain') {
+        el.confirmStatus.textContent = 'Resultado remoto incerto; mantenha este registro e confira a planilha antes de qualquer ação.';
+      } else if (item.syncStatus !== 'confirmed') {
+        el.confirmStatus.textContent = 'Este registro ainda não foi confirmado na planilha. Remover aqui descartará a única cópia local.';
+      } else if (apiConnected && CONFIG.API_URL && item.remoteId) {
+        el.confirmStatus.textContent = 'A exclusão será solicitada à API somente pelo ID. A cópia local será removida apenas após confirmação.';
       } else {
-        el.confirmStatus.textContent = '✓ Vai deletar da planilha e do local';
-        el.confirmStatus.style.background = '#f0fdf4';
-        el.confirmStatus.style.color = '#047857';
+        el.confirmStatus.textContent = 'Sem ID remoto verificável ou API indisponível. A remoção será somente local; a linha da planilha continuará existindo.';
       }
-      el.confirmStatus.style.display = 'block';
       el.confirmOverlay.classList.add('show');
+      el.confirmOverlay.setAttribute('aria-hidden', 'false');
+      el.btnConfirmCancel.focus();
     }
 
-    function closeConfirm() {
+    function closeConfirm(restoreFocus = true) {
       el.confirmOverlay.classList.remove('show');
+      el.confirmOverlay.setAttribute('aria-hidden', 'true');
+      el.btnConfirmDelete.disabled = false;
+      el.btnConfirmDelete.textContent = 'Remover';
       deleteTarget = null;
+      const returnFocus = confirmReturnFocus;
+      confirmReturnFocus = null;
+      if (restoreFocus) returnFocus?.focus();
     }
 
     async function confirmDelete() {
-      if (!deleteTarget) return;
-      const { index, item } = deleteTarget;
-      
+      if (!deleteTarget || isDeleting) return;
+      const target = deleteTarget;
+      const item = target.item;
+      if (item.syncStatus === 'uncertain') { showAlert('Registro incerto preservado. Confira a planilha antes de agir.', 'error'); return; }
+      isDeleting = true;
       el.btnConfirmDelete.disabled = true;
       el.btnConfirmDelete.textContent = 'Deletando...';
-      
-      log(`Deletando: ${item.code} x${item.qty} (ID: ${item.id})`);
-      
       try {
-        if (apiConnected && CONFIG.API_URL) {
-          // Tenta por ID primeiro
-          let url = `${CONFIG.API_URL}?action=delete&id=${encodeURIComponent(item.id)}`;
-          log(`GET: ${url}`);
-          let response = await fetch(url);
-          let data = await response.json();
-          log(`Response: ${JSON.stringify(data)}`);
-          
-          // Se não achou por ID, tenta por Barras+Qtd
-          if (!data.success) {
-            log('ID não encontrado, tentando Barras+Qtd...');
-            url = `${CONFIG.API_URL}?action=delete&barras=${encodeURIComponent(item.code)}&qtd=${encodeURIComponent(item.qty)}`;
-            log(`GET: ${url}`);
-            response = await fetch(url);
-            data = await response.json();
-            log(`Response: ${JSON.stringify(data)}`);
+        if (item.syncStatus === 'confirmed' && apiConnected && CONFIG.API_URL && item.remoteId) {
+          try {
+            const response = await fetch(`${CONFIG.API_URL}?action=delete&id=${encodeURIComponent(item.remoteId)}`);
+            if (!response.ok) throw new Error('Resposta HTTP inválida');
+            const data = await response.json();
+            if (data.success !== true) throw new Error('Exclusão não confirmada');
+          } catch (error) {
+            const updated = history.map(entry => entry.id === target.id ? { ...entry, syncStatus: 'uncertain' } : entry);
+            if (!persistHistory(updated, 'Resposta remota incerta e estado local não atualizado; confira a planilha.')) history = updated;
+            renderHistory();
+            showAlert('Exclusão remota não confirmada; registro local mantido e marcado como incerto.', 'error');
+            return;
           }
-          
-          if (data.success) {
-            log(`Deletado! Linha ${data.row}`, 'success');
-            showAlert('Deletado da planilha!', 'success');
-          } else {
-            log(`Não encontrado: ${data.error}`, 'error');
-            showAlert('Não encontrado na planilha', 'info');
+          const remainingHistory = history.filter(entry => entry.id !== target.id);
+          if (!persistHistory(remainingHistory, 'Exclusão confirmada pela API, mas não foi possível atualizar o histórico local.')) {
+            history = history.map(entry => entry.id === target.id ? { ...entry, syncStatus: 'uncertain' } : entry);
+            renderHistory();
+            return;
           }
+          showAlert('Exclusão confirmada pela API e removida deste aparelho.', 'success');
         } else {
-          showAlert('Removido do local', 'info');
+          if (!persistHistory(history.filter(entry => entry.id !== target.id))) return;
+          showAlert('Registro removido somente deste aparelho.', 'info');
         }
-        
-        history.splice(index, 1);
-        localStorage.setItem('history', JSON.stringify(history));
         renderHistory();
         updateStats();
-        
-      } catch (error) {
-        log(`Erro: ${error.message}`, 'error');
-        showAlert('Erro: ' + error.message, 'error');
       } finally {
+        isDeleting = false;
         el.btnConfirmDelete.disabled = false;
-        el.btnConfirmDelete.textContent = 'Deletar';
-        closeConfirm();
+        el.btnConfirmDelete.textContent = 'Remover';
+        closeConfirm(false);
+        el.historyList.focus();
       }
     }
 
-    // ============================================
-    // HISTÓRICO
-    // ============================================
     function renderHistory() {
-      if (history.length === 0) {
-        el.historyList.innerHTML = '<div class="history-empty">Nenhum item salvo</div>';
+      el.historyList.replaceChildren();
+      const pending = history.filter(item => item.syncStatus !== 'confirmed');
+      if (!pending.length) {
+        const empty = document.createElement('div');
+        empty.className = 'history-empty';
+        empty.textContent = 'Nenhuma pendência. As contagens confirmadas ficam na planilha central.';
+        el.historyList.appendChild(empty);
         return;
       }
-      el.historyList.innerHTML = history.slice(0, 15).map((item, i) => `
-        <div class="history-item">
-          <div class="history-item-info">
-            <span class="history-item-code">${item.code}</span>
-            <div class="history-item-meta">
-              <span class="history-item-qty">×${item.qty}</span>
-              <span class="history-item-time">${item.time}</span>
-              <span class="history-item-status ${item.synced ? 'synced' : 'pending'}">${item.synced ? '✓ Sync' : '⏳ Local'}</span>
-            </div>
-          </div>
-          <button class="btn-delete" onclick="askDelete(${i})">🗑️</button>
-        </div>
-      `).join('');
+      for (const item of pending) {
+        const row = document.createElement('div');
+        row.className = 'history-item';
+        const info = document.createElement('div');
+        info.className = 'history-item-info';
+        const code = document.createElement('span');
+        code.className = 'history-item-code';
+        code.textContent = item.code;
+        const meta = document.createElement('div');
+        meta.className = 'history-item-meta';
+        const qty = document.createElement('span');
+        qty.className = `history-item-qty ${item.qty < 0 ? 'negative' : ''}`;
+        qty.textContent = item.qty > 0 ? `+${item.qty} un.` : item.qty < 0 ? `−${Math.abs(item.qty)} un.` : '0 un.';
+        qty.setAttribute('aria-label', item.qty < 0 ? `Ajuste de menos ${Math.abs(item.qty)} unidades` : `${item.qty} unidades`);
+        const time = document.createElement('time');
+        time.className = 'history-item-time';
+        if (item.collectedAt) time.dateTime = item.collectedAt;
+        time.textContent = `${item.date ? `${item.date} · ` : ''}${item.time || 'Horário não registrado'}`;
+        const status = document.createElement('span');
+        status.className = `history-item-status ${item.syncStatus === 'uncertain' ? 'uncertain' : 'pending'}`;
+        status.textContent = item.syncStatus === 'uncertain' ? 'Confirmação incerta' : 'Não enviado';
+        meta.append(qty, time, status);
+        if (item.syncError) {
+          const error = document.createElement('span');
+          error.className = 'history-item-error';
+          error.textContent = item.syncError;
+          meta.appendChild(error);
+        }
+        info.append(code, meta);
+        const retry = document.createElement('button');
+        retry.type = 'button';
+        retry.className = 'btn-sync';
+        retry.textContent = syncInProgress.has(item.id) ? 'Enviando…' : 'Tentar sincronizar';
+        retry.disabled = syncInProgress.has(item.id);
+        retry.setAttribute('aria-label', `Tentar sincronizar lançamento ${item.code}, ID ${item.id}`);
+        retry.addEventListener('click', () => retrySync(item.id));
+        row.append(info, retry);
+        el.historyList.appendChild(row);
+      }
     }
 
     function clearAllHistory() {
-      if (confirm('Limpar histórico LOCAL?')) {
-        history = [];
-        localStorage.setItem('history', '[]');
-        renderHistory();
-        updateStats();
-        showAlert('Histórico limpo', 'info');
+      if (history.some(item => item.syncStatus !== 'confirmed')) {
+        showAlert('Há registros pendentes ou incertos. Exporte o histórico e resolva-os antes de limpar.', 'error');
+        return;
       }
+      if (!confirm('Limpar apenas os registros locais confirmados? A planilha não será alterada.')) return;
+      if (!persistHistory([])) return;
+      renderHistory();
+      updateStats();
+      showAlert('Histórico local limpo; linhas da planilha preservadas.', 'info');
+    }
+
+    function csvCell(value) {
+      let text = String(value ?? '');
+      if (/^[\u0000-\u0020]*[=+\-@]/.test(text)) text = `'${text}`;
+      return `"${text.replace(/"/g, '""')}"`;
     }
 
     function exportHistory() {
-      if (!history.length) { showAlert('Nenhum dado', 'info'); return; }
-      const csv = 'Codigo,Quantidade,Hora,ID,Sync\n' + history.map(i => `${i.code},${i.qty},${i.time},${i.id||''},${i.synced?'Sim':'Nao'}`).join('\n');
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-      a.download = `inventario_${new Date().toISOString().split('T')[0]}.csv`;
-      a.click();
-      showAlert('CSV exportado!', 'success');
+      if (!history.length) { showAlert('Nenhum dado local para exportar.', 'info'); return; }
+      const columns = ['Codigo (protegido para planilha)', 'Quantidade', 'Data', 'Hora', 'Timestamp coleta', 'ID local', 'ID remoto', 'Sincronizacao', 'Verificacao cadastro', 'Confirmacao recebida neste aparelho', 'Gravacao confirmada pelo servidor'];
+      const rows = history.map(item => [item.code, item.qty, item.date || '', item.time || '', item.collectedAt || '', item.id, item.remoteId || '', item.syncStatus, item.verificationStatus || '', item.remoteConfirmedAt || '', item.remoteServerTimestamp || '']);
+      const csv = [columns, ...rows].map(row => row.map(csvCell).join(',')).join('\r\n');
+      const url = URL.createObjectURL(new Blob(['\uFEFF', csv], { type: 'text/csv;charset=utf-8' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `inventario_local_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showAlert('CSV local exportado; não é backup completo da planilha.', 'info');
     }
 
     function updateStats() {
-      el.savedBadge.textContent = history.length;
-      el.statTotal.textContent = history.reduce((s, i) => s + i.qty, 0);
-      el.statUnique.textContent = new Set(history.map(h => h.code)).size;
+      el.pendingCount.textContent = String(history.filter(item => item.syncStatus !== 'confirmed').length);
+      updateCollectionStatus();
     }
 
     // ============================================
     // CONFIGURAÇÕES
     // ============================================
-    function initSettingsUI() {
-      document.getElementById('settingApiUrl').value = localStorage.getItem('apiUrl') || '';
-      document.getElementById('settingCadastroId').value = localStorage.getItem('cadastroId') || DEFAULT_CONFIG.CADASTRO_ID;
-      document.getElementById('settingDadosId').value = localStorage.getItem('dadosId') || DEFAULT_CONFIG.DADOS_ID;
-      
-      document.getElementById('toggleSound').classList.toggle('active', settings.sound);
-      document.getElementById('toggleVibration').classList.toggle('active', settings.vibration);
-      document.getElementById('toggleDarkMode').classList.toggle('active', settings.darkMode);
-      document.getElementById('toggleDebug').classList.toggle('active', settings.debug);
+    function initSettingsUI(preferences = settings) {
+      document.getElementById('settingApiUrl').value = safeStorageGet('apiUrl') || '';
+      document.getElementById('settingCadastroId').value = safeStorageGet('cadastroId') || DEFAULT_CONFIG.CADASTRO_ID;
+      document.getElementById('settingDadosId').value = safeStorageGet('dadosId') || DEFAULT_CONFIG.DADOS_ID;
+      for (const key of ['sound', 'vibration', 'darkMode', 'debug']) {
+        const toggle = document.getElementById('toggle' + key.charAt(0).toUpperCase() + key.slice(1));
+        const active = Boolean(preferences[key]);
+        toggle.classList.toggle('active', active);
+        toggle.setAttribute('aria-checked', String(active));
+      }
     }
 
-    function openSettings() { 
-      initSettingsUI();
-      el.settingsModal.classList.add('show'); 
+    function openSettings() {
+      settingsReturnFocus = document.activeElement && document.activeElement !== document.body ? document.activeElement : el.btnSettings;
+      settingsDraft = { ...settings };
+      initSettingsUI(settingsDraft);
+      el.settingsModal.classList.add('show');
+      el.settingsModal.setAttribute('aria-hidden', 'false');
+      el.settingsDialog.focus();
     }
-    
-    function closeSettings() { el.settingsModal.classList.remove('show'); }
+
+    function closeSettings() {
+      el.settingsModal.classList.remove('show');
+      el.settingsModal.setAttribute('aria-hidden', 'true');
+      settingsDraft = null;
+      applyTheme(settings);
+      el.debugPanel.classList.toggle('show', settings.debug);
+      const returnFocus = settingsReturnFocus;
+      settingsReturnFocus = null;
+      returnFocus?.focus();
+    }
 
     function toggleSetting(setting) {
-      settings[setting] = !settings[setting];
-      localStorage.setItem(setting, settings[setting]);
-      document.getElementById('toggle' + setting.charAt(0).toUpperCase() + setting.slice(1)).classList.toggle('active', settings[setting]);
-      if (setting === 'darkMode') applyTheme();
-      if (setting === 'debug') el.debugPanel.classList.toggle('show', settings.debug);
+      if (!settingsDraft) settingsDraft = { ...settings };
+      const nextValue = !settingsDraft[setting];
+      settingsDraft[setting] = nextValue;
+      const toggle = document.getElementById('toggle' + setting.charAt(0).toUpperCase() + setting.slice(1));
+      toggle.classList.toggle('active', nextValue);
+      toggle.setAttribute('aria-checked', String(nextValue));
+      if (setting === 'darkMode') applyTheme(settingsDraft);
+      if (setting === 'debug') el.debugPanel.classList.toggle('show', nextValue);
     }
 
     function saveSettings() {
-      const apiUrl = document.getElementById('settingApiUrl').value.trim();
-      const cadastroId = document.getElementById('settingCadastroId').value.trim();
-      const dadosId = document.getElementById('settingDadosId').value.trim();
-      
-      localStorage.setItem('apiUrl', apiUrl);
-      localStorage.setItem('cadastroId', cadastroId || DEFAULT_CONFIG.CADASTRO_ID);
-      localStorage.setItem('dadosId', dadosId || DEFAULT_CONFIG.DADOS_ID);
-      
-      log(`Salvo: API=${apiUrl}, Cadastro=${cadastroId}, Dados=${dadosId}`, 'success');
-      
+      const preferences = settingsDraft || { ...settings };
+      const values = {
+        apiUrl: document.getElementById('settingApiUrl').value.trim(),
+        cadastroId: document.getElementById('settingCadastroId').value.trim() || DEFAULT_CONFIG.CADASTRO_ID,
+        dadosId: document.getElementById('settingDadosId').value.trim() || DEFAULT_CONFIG.DADOS_ID,
+        sound: String(preferences.sound),
+        vibration: String(preferences.vibration),
+        darkMode: String(preferences.darkMode),
+        debug: String(preferences.debug)
+      };
+      const previous = Object.fromEntries(Object.keys(values).map(key => [key, safeStorageGet(key)]));
+      try {
+        for (const [key, value] of Object.entries(values)) safeStorageSet(key, value);
+      } catch (error) {
+        for (const [key, value] of Object.entries(previous)) {
+          try { if (value === null) safeStorageRemove(key); else safeStorageSet(key, value); } catch (rollbackError) {}
+        }
+        showAlert('Não foi possível salvar as configurações neste aparelho.', 'error');
+        return;
+      }
+      Object.assign(settings, preferences);
       closeSettings();
-      showAlert('Salvo! Recarregando...', 'success');
+      showAlert('Configurações salvas neste aparelho.', 'success');
       setTimeout(() => location.reload(), 1000);
     }
 
@@ -1022,22 +1631,21 @@
       el.barrasInput.focus();
     }
 
-    function handleBarrasKeydown(e) {
-      if (e.key === 'Enter') { e.preventDefault(); validateBarras(); if (isValid) el.qtdInput.focus(); }
+    function handleBarrasKeydown(event) {
+      if (event.key === 'Enter') { event.preventDefault(); validateBarras(); if (isValid) el.qtdInput.focus(); }
     }
 
-    function handleQtdKeydown(e) {
-      if (e.key === 'Enter' && isValid && el.qtdInput.value) { e.preventDefault(); saveData(); }
+    function handleQtdKeydown(event) {
+      if (event.key === 'Enter' && isValid && parseQuantity(el.qtdInput.value).valid) { event.preventDefault(); saveData(); }
     }
 
     // ============================================
     // UTILITÁRIOS
     // ============================================
-    let alertTimeout;
     function showAlert(message, type) {
       clearTimeout(alertTimeout);
       el.alert.className = `alert alert-${type}`;
-      el.alertIcon.textContent = type === 'error' ? '⚠️' : type === 'success' ? '✓' : 'ℹ️';
+      el.alertIcon.textContent = type === 'error' ? '!' : type === 'success' ? '✓' : 'i';
       el.alertMessage.textContent = message;
       setTimeout(() => el.alert.classList.add('show'), 10);
       alertTimeout = setTimeout(hideAlert, 2500);
