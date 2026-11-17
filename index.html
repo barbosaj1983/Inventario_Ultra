@@ -935,13 +935,19 @@
       if (!normalized || /^<(?:!doctype|html|head|body)\b/i.test(normalized)) throw new Error('Resposta não é CSV');
       const rows = parseCsv(normalized).filter(row => row.some(value => value.trim() !== ''));
       const headings = (rows[0] || []).map(value => value.trim());
-      const header = (headings[0] || '').toLocaleUpperCase('pt-BR');
-      if (header !== 'BARRAS' || headings.some(value => !value) || new Set(headings).size !== headings.length) throw new Error('Cabeçalho CSV inesperado');
-      const codes = rows.slice(1).map(row => {
-        if (row.length !== headings.length) throw new Error('Estrutura de linha CSV inválida');
-        return String(row[0] ?? '').trim();
-      }).filter(code => code !== '');
-      if (!codes.length) throw new Error('CSV sem códigos');
+      const hasHeader = (headings[0] || '').toLocaleUpperCase('pt-BR') === 'BARRAS';
+      let codes;
+      if (hasHeader) {
+        if (headings.some(value => !value) || new Set(headings).size !== headings.length) throw new Error('Cabeçalho CSV inesperado');
+        codes = rows.slice(1).map(row => {
+          if (row.length !== headings.length) throw new Error('Estrutura de linha CSV inválida');
+          return String(row[0] ?? '').trim();
+        });
+      } else {
+        if (rows.some(row => row.length !== 1)) throw new Error('Estrutura de linha CSV inválida');
+        codes = rows.map(row => String(row[0] ?? '').trim());
+      }
+      if (!codes.length || codes.some(code => !/^\d+$/.test(code))) throw new Error('Cadastro sem códigos de barras válidos');
       return codes;
     }
 
@@ -973,7 +979,7 @@
           if (cached) {
             try {
               const parsed = JSON.parse(cached);
-              if (parsed.id === CONFIG.CADASTRO_ID && Array.isArray(parsed.codes) && parsed.codes.length > 0 && parsed.codes.every(code => typeof code === 'string')) {
+              if (parsed.id === CONFIG.CADASTRO_ID && Array.isArray(parsed.codes) && parsed.codes.length > 0 && parsed.codes.every(code => typeof code === 'string' && /^\d+$/.test(code))) {
                 cadastro = parsed.codes;
                 cadastroState = 'cached';
                 el.statCadastro.textContent = `${cadastro.length} cache`;
@@ -983,10 +989,10 @@
           }
           cadastro = [];
           cadastroState = 'unavailable';
-          el.statCadastro.textContent = 'Não verificado';
+          el.statCadastro.textContent = 'Alpha7 indisponível';
         } finally {
           el.loadingOverlay.classList.add('hidden');
-          if (cadastroState === 'unavailable') showAlert('Cadastro indisponível; códigos serão marcados como não verificados.', 'info');
+          if (cadastroState === 'unavailable') showAlert('Cadastro Alpha7 indisponível. Conecte-se à internet e recarregue a página para carregar o cadastro.', 'error');
         }
       })();
       return cadastroLoadPromise;
@@ -1003,6 +1009,13 @@
       return { valid: true, quantity };
     }
 
+    function getBarrasValidationMessage(barras) {
+      if (!barras) return 'Informe um código válido.';
+      if (!['verified', 'cached'].includes(cadastroState) || !Array.isArray(cadastro) || cadastro.length === 0) return 'Cadastro Alpha7 indisponível. Carregue o cadastro antes de coletar. Contagem não registrada.';
+      if (!cadastro.includes(barras)) return 'Código não encontrado no cadastro Alpha7. Contagem não registrada.';
+      return '';
+    }
+
     function validateBarras() {
       const barras = el.barrasInput.value.trim();
       if (!barras) {
@@ -1012,12 +1025,12 @@
         updateSaveButton();
         return;
       }
-      const found = cadastro.includes(barras);
-      isValid = found || cadastroState === 'unavailable';
-      el.barrasInput.className = `input-field ${found || cadastroState === 'unavailable' ? 'valid' : 'invalid'}`;
-      el.validationMsg.className = `validation-msg show ${found || cadastroState === 'unavailable' ? 'valid' : 'invalid'}`;
+      const found = !getBarrasValidationMessage(barras);
+      isValid = found;
+      el.barrasInput.className = `input-field ${found ? 'valid' : 'invalid'}`;
+      el.validationMsg.className = `validation-msg show ${found ? 'valid' : 'invalid'}`;
       el.validationIcon.textContent = found ? '✓' : cadastroState === 'unavailable' ? '!' : '✗';
-      el.validationText.textContent = found ? (cadastroState === 'cached' ? 'Encontrado no último cadastro válido' : 'Encontrado no cadastro') : cadastroState === 'unavailable' ? 'Não verificado — cadastro indisponível' : 'Não cadastrado';
+      el.validationText.textContent = found ? (cadastroState === 'cached' ? 'Encontrado no último cadastro válido' : 'Encontrado no cadastro Alpha7') : getBarrasValidationMessage(barras);
       updateSaveButton();
     }
 
@@ -1129,6 +1142,7 @@
         el.barrasInput.value = code;
         validateBarras();
         if (isValid) { el.qtdInput.value = '1'; el.qtdInput.focus(); }
+        else showAlert(el.validationText.textContent, 'error');
         updateSaveButton();
       }
     }
@@ -1173,6 +1187,7 @@
         el.barrasInput.value = code.trim();
         validateBarras();
         if (isValid) { el.qtdInput.value = '1'; el.qtdInput.focus(); }
+        else showAlert(el.validationText.textContent, 'error');
         updateSaveButton();
       }
     }
@@ -1188,7 +1203,8 @@
       if (isSaving) return;
       const barras = el.barrasInput.value.trim();
       const parsedQuantity = parseQuantity(el.qtdInput.value);
-      if (!barras || !isValid) { showAlert('Informe um código válido.', 'error'); return; }
+      const validationMessage = getBarrasValidationMessage(barras);
+      if (validationMessage) { showAlert(validationMessage, 'error'); return; }
       if (!parsedQuantity.valid) { showAlert('Quantidade inválida; informe um inteiro dentro da faixa segura.', 'error'); return; }
       const qty = parsedQuantity.quantity;
       if (hasUncertainSubmission(barras, qty)) {

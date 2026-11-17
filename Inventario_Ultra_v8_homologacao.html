@@ -421,8 +421,8 @@
           </div>
           <div class="setting-group">
             <label class="setting-label" for="settingCadastroId">ID da planilha de cadastro <span class="setting-label-badge">VALIDAÇÃO</span></label>
-            <input type="text" class="setting-input" id="settingCadastroId" placeholder="Desativado nesta homologação" autocomplete="off" spellcheck="false" readonly aria-readonly="true">
-            <div class="setting-hint">A validação usa o estado “não verificado”; nenhum cadastro de produção é consultado.</div>
+            <input type="text" class="setting-input" id="settingCadastroId" placeholder="ID Alpha7 usado para validar códigos" autocomplete="off" spellcheck="false" readonly aria-readonly="true">
+            <div class="setting-hint">Cadastro da BaseAlpha7 usado somente para validação; nenhum lançamento é escrito nessa planilha.</div>
           </div>
           <div class="setting-group">
             <label class="setting-label" for="settingDadosId">ID da planilha de dados <span class="setting-label-badge">DESTINO</span></label>
@@ -539,6 +539,7 @@
     // CONFIGURAÇÃO - IDs SEPARADOS
     // ============================================
     const HOMOLOGATION_API_URL = 'https://script.google.com/macros/s/AKfycbw5ZkVPQ_moFkNVNsl2ozUUvjgsIte1UBLIPxI1uOJ_mCIMRU8O-GkOKNcGp61UM0cm/exec';
+    const HOMOLOGATION_CADASTRO_ID = '1VdZPW6awQJmV3gTQ_tncPjPtLHMPCLDNLSTglqezvu8';
     const HOMOLOGATION_STORAGE_PREFIX = 'inventario-ultra-v8-homologacao:';
     const HOMOLOGATION_STORAGE = {
       getItem(key) { return localStorage.getItem(`${HOMOLOGATION_STORAGE_PREFIX}${key}`); },
@@ -548,7 +549,7 @@
 
     const DEFAULT_CONFIG = {
       API_URL: HOMOLOGATION_API_URL,
-      CADASTRO_ID: '',
+      CADASTRO_ID: HOMOLOGATION_CADASTRO_ID,
       DADOS_ID: ''
     };
 
@@ -571,9 +572,12 @@
 
     const CONFIG = {
       get API_URL() { return HOMOLOGATION_API_URL; },
-      get CADASTRO_ID() { return ''; },
+      get CADASTRO_ID() { return HOMOLOGATION_CADASTRO_ID; },
       get DADOS_ID() { return ''; },
-      get CADASTRO_URLS() { return []; }
+      get CADASTRO_URLS() {
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${this.CADASTRO_ID}/export?format=csv`;
+        return [csvUrl, `https://corsproxy.io/?${encodeURIComponent(csvUrl)}`];
+      }
     };
 
     function normalizeHistoryItem(item) {
@@ -934,13 +938,19 @@
       if (!normalized || /^<(?:!doctype|html|head|body)\b/i.test(normalized)) throw new Error('Resposta não é CSV');
       const rows = parseCsv(normalized).filter(row => row.some(value => value.trim() !== ''));
       const headings = (rows[0] || []).map(value => value.trim());
-      const header = (headings[0] || '').toLocaleUpperCase('pt-BR');
-      if (header !== 'BARRAS' || headings.some(value => !value) || new Set(headings).size !== headings.length) throw new Error('Cabeçalho CSV inesperado');
-      const codes = rows.slice(1).map(row => {
-        if (row.length !== headings.length) throw new Error('Estrutura de linha CSV inválida');
-        return String(row[0] ?? '').trim();
-      }).filter(code => code !== '');
-      if (!codes.length) throw new Error('CSV sem códigos');
+      const hasHeader = (headings[0] || '').toLocaleUpperCase('pt-BR') === 'BARRAS';
+      let codes;
+      if (hasHeader) {
+        if (headings.some(value => !value) || new Set(headings).size !== headings.length) throw new Error('Cabeçalho CSV inesperado');
+        codes = rows.slice(1).map(row => {
+          if (row.length !== headings.length) throw new Error('Estrutura de linha CSV inválida');
+          return String(row[0] ?? '').trim();
+        });
+      } else {
+        if (rows.some(row => row.length !== 1)) throw new Error('Estrutura de linha CSV inválida');
+        codes = rows.map(row => String(row[0] ?? '').trim());
+      }
+      if (!codes.length || codes.some(code => !/^\d+$/.test(code))) throw new Error('Cadastro sem códigos de barras válidos');
       return codes;
     }
 
@@ -972,7 +982,7 @@
           if (cached) {
             try {
               const parsed = JSON.parse(cached);
-              if (parsed.id === CONFIG.CADASTRO_ID && Array.isArray(parsed.codes) && parsed.codes.length > 0 && parsed.codes.every(code => typeof code === 'string')) {
+              if (parsed.id === CONFIG.CADASTRO_ID && Array.isArray(parsed.codes) && parsed.codes.length > 0 && parsed.codes.every(code => typeof code === 'string' && /^\d+$/.test(code))) {
                 cadastro = parsed.codes;
                 cadastroState = 'cached';
                 el.statCadastro.textContent = `${cadastro.length} cache`;
@@ -982,10 +992,10 @@
           }
           cadastro = [];
           cadastroState = 'unavailable';
-          el.statCadastro.textContent = 'Não verificado';
+          el.statCadastro.textContent = 'Alpha7 indisponível';
         } finally {
           el.loadingOverlay.classList.add('hidden');
-          if (cadastroState === 'unavailable') showAlert('Cadastro indisponível; códigos serão marcados como não verificados.', 'info');
+          if (cadastroState === 'unavailable') showAlert('Cadastro Alpha7 indisponível. Conecte-se à internet e recarregue a página para carregar o cadastro.', 'error');
         }
       })();
       return cadastroLoadPromise;
@@ -1002,6 +1012,13 @@
       return { valid: true, quantity };
     }
 
+    function getBarrasValidationMessage(barras) {
+      if (!barras) return 'Informe um código válido.';
+      if (!['verified', 'cached'].includes(cadastroState) || !Array.isArray(cadastro) || cadastro.length === 0) return 'Cadastro Alpha7 indisponível. Carregue o cadastro antes de coletar. Contagem não registrada.';
+      if (!cadastro.includes(barras)) return 'Código não encontrado no cadastro Alpha7. Contagem não registrada.';
+      return '';
+    }
+
     function validateBarras() {
       const barras = el.barrasInput.value.trim();
       if (!barras) {
@@ -1011,12 +1028,12 @@
         updateSaveButton();
         return;
       }
-      const found = cadastro.includes(barras);
-      isValid = found || cadastroState === 'unavailable';
-      el.barrasInput.className = `input-field ${found || cadastroState === 'unavailable' ? 'valid' : 'invalid'}`;
-      el.validationMsg.className = `validation-msg show ${found || cadastroState === 'unavailable' ? 'valid' : 'invalid'}`;
+      const found = !getBarrasValidationMessage(barras);
+      isValid = found;
+      el.barrasInput.className = `input-field ${found ? 'valid' : 'invalid'}`;
+      el.validationMsg.className = `validation-msg show ${found ? 'valid' : 'invalid'}`;
       el.validationIcon.textContent = found ? '✓' : cadastroState === 'unavailable' ? '!' : '✗';
-      el.validationText.textContent = found ? (cadastroState === 'cached' ? 'Encontrado no último cadastro válido' : 'Encontrado no cadastro') : cadastroState === 'unavailable' ? 'Não verificado — cadastro indisponível' : 'Não cadastrado';
+      el.validationText.textContent = found ? (cadastroState === 'cached' ? 'Encontrado no último cadastro válido' : 'Encontrado no cadastro Alpha7') : getBarrasValidationMessage(barras);
       updateSaveButton();
     }
 
@@ -1128,6 +1145,7 @@
         el.barrasInput.value = code;
         validateBarras();
         if (isValid) { el.qtdInput.value = '1'; el.qtdInput.focus(); }
+        else showAlert(el.validationText.textContent, 'error');
         updateSaveButton();
       }
     }
@@ -1172,6 +1190,7 @@
         el.barrasInput.value = code.trim();
         validateBarras();
         if (isValid) { el.qtdInput.value = '1'; el.qtdInput.focus(); }
+        else showAlert(el.validationText.textContent, 'error');
         updateSaveButton();
       }
     }
@@ -1187,7 +1206,8 @@
       if (isSaving) return;
       const barras = el.barrasInput.value.trim();
       const parsedQuantity = parseQuantity(el.qtdInput.value);
-      if (!barras || !isValid) { showAlert('Informe um código válido.', 'error'); return; }
+      const validationMessage = getBarrasValidationMessage(barras);
+      if (validationMessage) { showAlert(validationMessage, 'error'); return; }
       if (!parsedQuantity.valid) { showAlert('Quantidade inválida; informe um inteiro dentro da faixa segura.', 'error'); return; }
       const qty = parsedQuantity.quantity;
       if (hasUncertainSubmission(barras, qty)) {
@@ -1440,7 +1460,7 @@
     // ============================================
     function initSettingsUI(preferences = settings) {
       document.getElementById('settingApiUrl').value = HOMOLOGATION_API_URL;
-      document.getElementById('settingCadastroId').value = '';
+      document.getElementById('settingCadastroId').value = HOMOLOGATION_CADASTRO_ID;
       document.getElementById('settingDadosId').value = '';
       for (const key of ['sound', 'vibration', 'darkMode', 'debug']) {
         const toggle = document.getElementById('toggle' + key.charAt(0).toUpperCase() + key.slice(1));
@@ -1485,7 +1505,7 @@
       const preferences = settingsDraft || { ...settings };
       const values = {
         apiUrl: HOMOLOGATION_API_URL,
-        cadastroId: '',
+        cadastroId: HOMOLOGATION_CADASTRO_ID,
         dadosId: '',
         sound: String(preferences.sound),
         vibration: String(preferences.vibration),

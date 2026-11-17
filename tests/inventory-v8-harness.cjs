@@ -78,7 +78,7 @@ function createApp(options = {}) {
     URL,
     Blob,
     confirm: () => options.confirm ?? true,
-    prompt: () => null,
+    prompt: () => options.prompt ?? null,
     location: { reload() {} },
     AbortController,
     Date,
@@ -99,7 +99,7 @@ function setForm(app, code = '000123', quantity = '1') {
   const qtd = app.elements.get('qtdInput');
   barras.value = code;
   qtd.value = quantity;
-  app.run('isValid = true; cadastroState = "unavailable";');
+  app.run(`cadastroState = "verified"; cadastro = Array.from(new Set([...cadastro, ${JSON.stringify(code)}]));`);
 }
 
 function response(data, options = {}) {

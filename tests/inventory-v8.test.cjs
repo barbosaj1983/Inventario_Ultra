@@ -80,7 +80,7 @@ function createApp(options = {}) {
     URL,
     Blob,
     confirm: () => options.confirm ?? true,
-    prompt: () => null,
+    prompt: () => options.prompt ?? null,
     location: { reload() {} },
     AbortController,
     Date,
@@ -101,7 +101,7 @@ function setForm(app, code = '000123', quantity = '1') {
   const qtd = app.elements.get('qtdInput');
   barras.value = code;
   qtd.value = quantity;
-  app.run('isValid = true; cadastroState = "unavailable";');
+  app.run(`cadastroState = "verified"; cadastro = Array.from(new Set([...cadastro, ${JSON.stringify(code)}])); validateBarras();`);
 }
 
 function response(data, options = {}) {
@@ -306,21 +306,98 @@ test('duas chamadas de exclusão simultâneas geram uma única requisição', as
   assert.deepEqual(await savedHistory(app), []);
 });
 
-test('cadastro indisponível ou HTML é não verificado, sem perder zeros à esquerda', async () => {
-  const htmlApp = createApp({ fetch: async () => ({ ok: true, text: async () => '<html><body>Login</body></html>' }) });
-  await htmlApp.context.loadCadastro();
-  setForm(htmlApp, '0000123', '1');
-  htmlApp.context.validateBarras();
-  await htmlApp.context.saveData();
-  const [item] = await savedHistory(htmlApp);
-  assert.equal(item.code, '0000123');
-  assert.equal(item.verificationStatus, 'not-verified');
-  assert.equal(htmlApp.elements.get('loadingOverlay').classList.contains('hidden'), true);
-  const csvApp = createApp({ fetch: async () => ({ ok: true, text: async () => 'BARRAS,DESCRICAO\r\n"0000123","Produto, tipo A"\r\n' }) });
-  await csvApp.context.loadCadastro();
-  assert.deepEqual(Array.from(csvApp.run('cadastro')), ['0000123']);
-  assert.throws(() => csvApp.context.parseCadastroCsv('CODIGO,DESCRICAO\r\n0000123,Produto\r\n'));
-  assert.throws(() => csvApp.context.parseCadastroCsv('BARRAS,DESCRICAO\r\n0000123\r\n'));
+test('código presente na Alpha7 é aceito e o CSV válido atualiza o cache local', async () => {
+  const app = createApp({ fetch: async () => ({ ok: true, text: async () => 'BARRAS,DESCRICAO\r\n"0000123","Produto, tipo A"\r\n' }) });
+  await app.context.loadCadastro();
+  assert.deepEqual(Array.from(app.run('cadastro')), ['0000123']);
+  assert.equal(app.run('cadastroState'), 'verified');
+  assert.deepEqual(JSON.parse(app.storage.get('cadastroCache')), { id: '1VdZPW6awQJmV3gTQ_tncPjPtLHMPCLDNLSTglqezvu8', codes: ['0000123'] });
+  app.elements.get('barrasInput').value = '0000123';
+  app.elements.get('qtdInput').value = '1';
+  app.context.validateBarras();
+  await app.context.saveData();
+  assert.equal((await savedHistory(app))[0].code, '0000123');
+  assert.equal(app.elements.get('validationText').textContent, 'Encontrado no cadastro Alpha7');
+});
+
+test('CSV Alpha7 em coluna única mantém códigos textuais e zeros à esquerda', async () => {
+  const app = createApp({ fetch: async () => ({ ok: true, text: async () => '0000123\r\n0000456\r\n' }) });
+  await app.context.loadCadastro();
+  assert.deepEqual(Array.from(app.run('cadastro')), ['0000123', '0000456']);
+  assert.deepEqual(JSON.parse(app.storage.get('cadastroCache')).codes, ['0000123', '0000456']);
+});
+
+test('código ausente da Alpha7 bloqueia envio e não entra no histórico nem na API', async () => {
+  const app = createApp({ fetch: async () => ({ ok: true, text: async () => 'BARRAS,DESCRICAO\r\n"0000123","Produto, tipo A"\r\n' }) });
+  await app.context.loadCadastro();
+  app.elements.get('barrasInput').value = '0000999';
+  app.elements.get('qtdInput').value = '1';
+  app.context.validateBarras();
+  await app.context.saveData();
+  assert.equal(app.run('isValid'), false);
+  assert.deepEqual(await savedHistory(app), []);
+  assert.equal(app.requests.filter(([url]) => String(url).includes('action=add')).length, 0);
+  assert.equal(app.elements.get('alertMessage').textContent, 'Código não encontrado no cadastro Alpha7. Contagem não registrada.');
+});
+
+test('cache de outra planilha ou com estrutura inválida não autoriza coleta', async () => {
+  for (const cache of [
+    JSON.stringify({ id: 'outra-alpha', codes: ['0000123'] }),
+    JSON.stringify({ id: '1VdZPW6awQJmV3gTQ_tncPjPtLHMPCLDNLSTglqezvu8', codes: ['produto-inválido'] })
+  ]) {
+    const app = createApp({ storage: { cadastroCache: cache }, fetch: async () => { throw new Error('offline'); } });
+    await app.context.loadCadastro();
+    app.elements.get('barrasInput').value = '0000123';
+    app.elements.get('qtdInput').value = '1';
+    app.context.validateBarras();
+    await app.context.saveData();
+    assert.equal(app.run('cadastroState'), 'unavailable');
+    assert.deepEqual(await savedHistory(app), []);
+  }
+});
+
+test('scanner e entrada manual mostram o bloqueio Alpha7 para código ausente', () => {
+  const scanner = createApp({ Quagga: { init(config, callback) { callback(null); }, onDetected() {}, offDetected() {}, start() {}, stop() {} } });
+  scanner.run('cadastroState = "verified"; cadastro = ["0000123"];');
+  scanner.context.openScanner();
+  scanner.context.onBarcodeDetected({ codeResult: { code: '0000999' } });
+  scanner.context.onBarcodeDetected({ codeResult: { code: '0000999' } });
+  assert.equal(scanner.elements.get('validationText').textContent, 'Código não encontrado no cadastro Alpha7. Contagem não registrada.');
+  assert.equal(scanner.elements.get('alertMessage').textContent, 'Código não encontrado no cadastro Alpha7. Contagem não registrada.');
+  assert.equal(scanner.elements.get('qtdInput').focused, undefined);
+  const manual = createApp({ prompt: '0000999' });
+  manual.run('cadastroState = "verified"; cadastro = ["0000123"];');
+  manual.context.manualInput();
+  assert.equal(manual.elements.get('validationText').textContent, 'Código não encontrado no cadastro Alpha7. Contagem não registrada.');
+  assert.equal(manual.elements.get('alertMessage').textContent, 'Código não encontrado no cadastro Alpha7. Contagem não registrada.');
+});
+
+test('sem internet usa o cache Alpha7 local e aceita somente código nele presente', async () => {
+  const cache = JSON.stringify({ id: '1VdZPW6awQJmV3gTQ_tncPjPtLHMPCLDNLSTglqezvu8', codes: ['0000123'] });
+  const app = createApp({ storage: { cadastroCache: cache }, fetch: async () => { throw new Error('offline'); } });
+  await app.context.loadCadastro();
+  assert.equal(app.run('cadastroState'), 'cached');
+  app.elements.get('barrasInput').value = '0000123';
+  app.elements.get('qtdInput').value = '2';
+  app.context.validateBarras();
+  await app.context.saveData();
+  assert.equal((await savedHistory(app))[0].code, '0000123');
+  assert.equal(app.elements.get('validationText').textContent, 'Encontrado no último cadastro válido');
+});
+
+test('sem internet e sem cache válido bloqueia coleta com orientação para carregar Alpha7', async () => {
+  const app = createApp({ fetch: async () => { throw new Error('offline'); } });
+  await app.context.loadCadastro();
+  app.elements.get('barrasInput').value = '0000123';
+  app.elements.get('qtdInput').value = '1';
+  app.context.validateBarras();
+  await app.context.saveData();
+  assert.equal(app.run('cadastroState'), 'unavailable');
+  assert.equal(app.run('isValid'), false);
+  assert.deepEqual(await savedHistory(app), []);
+  assert.equal(app.elements.get('statCadastro').textContent, 'Alpha7 indisponível');
+  assert.equal(app.elements.get('alertMessage').textContent, 'Cadastro Alpha7 indisponível. Carregue o cadastro antes de coletar. Contagem não registrada.');
+  assert.equal(app.elements.get('loadingOverlay').classList.contains('hidden'), true);
 });
 
 test('scanner impede sessões paralelas e fecha com segurança durante inicialização', () => {
